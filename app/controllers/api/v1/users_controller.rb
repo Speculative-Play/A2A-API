@@ -1,41 +1,67 @@
 class Api::V1::UsersController < ApplicationController
-  before_action :set_user, only: %i[ show update destroy ]
+  before_action :set_user, only: %i[ show edit update destroy ]
+  before_action :require_user, only: [:edit, :update]
+  before_action :require_same_user, only: [:edit, :update, :destroy]
 
   # GET /users
   def index
     @users = User.all
 
-    render json: @users
+    # render json: @users
   end
 
   # GET /users/1
   def show
-    render json: @user
+    # render json: @user
   end
 
-  # POST /users
+  # GET /users/new
+  def new
+    @user = User.new
+  end
+
+  # GET /users/1/edit
+  def edit
+  end
+
+  # POST /users or /users.json
   def create
     @user = User.new(user_params)
 
-    if @user.save
-      render json: @user, status: :created, location: @user
-    else
-      render json: @user.errors, status: :unprocessable_entity
+    respond_to do |format|
+      if @user.save
+        session[:user_id] = user.id
+        format.html { redirect_to user_url(@user), notice: "User was successfully created." }
+        format.json { render :show, status: :created, location: @user }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @user.errors, status: :unprocessable_entity }
+      end
     end
   end
 
-  # PATCH/PUT /users/1
+  # PATCH/PUT /users/1 or /users/1.json
   def update
-    if @user.update(user_params)
-      render json: @user
-    else
-      render json: @user.errors, status: :unprocessable_entity
+    respond_to do |format|
+      if @user.update(user_params)
+        format.html { redirect_to user_url(@user), notice: "User was successfully updated." }
+        format.json { render :show, status: :ok, location: @user }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @user.errors, status: :unprocessable_entity }
+      end
     end
   end
 
-  # DELETE /users/1
+  # DELETE /users/1 or /users/1.json
   def destroy
     @user.destroy
+    session[:user_id] = nil if @user == current_user
+
+    respond_to do |format|
+      format.html { redirect_to users_url, notice: "User was successfully destroyed." }
+      format.json { head :no_content }
+    end
   end
 
   private
@@ -47,5 +73,12 @@ class Api::V1::UsersController < ApplicationController
     # Only allow a list of trusted parameters through.
     def user_params
       params.require(:user).permit(:username)
+    end
+
+    def require_same_user
+      if current_user != @user && !current_user.admin?
+        flash[:alert] = "You can only edit or delete your own account"
+        redirect_to @user
+      end
     end
 end

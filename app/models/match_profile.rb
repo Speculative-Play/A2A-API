@@ -1,0 +1,2 @@
+class MatchProfile < ApplicationRecord
+end

@@ -1,0 +1,2 @@
+class MatchAnswer < ApplicationRecord
+end
