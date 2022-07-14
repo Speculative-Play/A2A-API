@@ -2,15 +2,15 @@ class Api::V1::SessionsController < ApplicationController
   before_action :set_session, only: %i[ show update destroy ]
 
   # GET /sessions
-  def index
-    @sessions = Session.all
+  # def index
+  #   @sessions = Session.all
 
-    render json: @sessions
-  end
+  #   render json: @sessions
+  # end
 
   # GET /sessions/1
   def show
-    render json: @session
+    # render json: @session
   end
 
   # Creates session object that allows user to be logged in persistently
@@ -28,13 +28,13 @@ class Api::V1::SessionsController < ApplicationController
   end
 
   # PATCH/PUT /sessions/1
-  def update
-    if @session.update(session_params)
-      render json: @session
-    else
-      render json: @session.errors, status: :unprocessable_entity
-    end
-  end
+  # def update
+  #   if @session.update(session_params)
+  #     render json: @session
+  #   else
+  #     render json: @session.errors, status: :unprocessable_entity
+  #   end
+  # end
 
   def destroy
       session[:user_id] = nil
@@ -42,14 +42,14 @@ class Api::V1::SessionsController < ApplicationController
       redirect_to root_path
   end
 
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_session
-      @session = Session.find(params[:id])
-    end
+  # private
+  #   # Use callbacks to share common setup or constraints between actions.
+  #   def set_session
+  #     @session = Session.find(params[:id])
+  #   end
 
-    # Only allow a list of trusted parameters through.
-    def session_params
-      params.fetch(:session, {})
-    end
+  #   # Only allow a list of trusted parameters through.
+  #   def session_params
+  #     params.fetch(:session, {})
+  #   end
 end

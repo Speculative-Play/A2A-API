@@ -4,7 +4,6 @@ class Api::V1::MatchProfilesController < ApplicationController
   # GET /match_profiles
   def index
     @match_profiles = MatchProfile.all
-
     # render json: @match_profiles
   end
 
@@ -37,12 +36,16 @@ class Api::V1::MatchProfilesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /match_profiles/1
+  # PATCH/PUT /match_profiles/1 or /match_profiles/1.json
   def update
-    if @match_profile.update(match_profile_params)
-      render json: @match_profile
-    else
-      render json: @match_profile.errors, status: :unprocessable_entity
+    respond_to do |format|
+      if @match_profile.update(match_profile_params)
+        format.html { redirect_to match_profile_url(@match_profile), notice: "Match profile was successfully updated." }
+        format.json { render :show, status: :ok, location: @match_profile }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @match_profile.errors, status: :unprocessable_entity }
+      end
     end
   end
 

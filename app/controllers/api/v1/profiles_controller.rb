@@ -6,13 +6,12 @@ class Api::V1::ProfilesController < ApplicationController
   # GET /profiles
   def index
     @profiles = Profile.all
-
-    render json: @profiles
+    # render json: @profiles
   end
 
   # GET /profiles/1
   def show
-    render json: @profile
+    # render json: @profile
   end
 
   # GET /profiles/new
