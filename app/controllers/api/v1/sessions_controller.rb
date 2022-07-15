@@ -2,15 +2,14 @@ class Api::V1::SessionsController < ApplicationController
   before_action :set_session, only: %i[ show update destroy ]
 
   # GET /sessions
-  # def index
-  #   @sessions = Session.all
-
-  #   render json: @sessions
-  # end
+  def index
+    @sessions = Session.all
+    render json: @sessions
+  end
 
   # GET /sessions/1
   def show
-    # render json: @session
+    render json: @session
   end
 
   # Creates session object that allows user to be logged in persistently
