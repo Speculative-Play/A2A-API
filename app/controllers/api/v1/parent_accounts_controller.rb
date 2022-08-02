@@ -1,4 +1,4 @@
-class ParentAccountsController < ApplicationController
+class Api::V1::ParentAccountsController < ApplicationController
   before_action :set_parent_account, only: %i[ show update destroy ]
 
   # GET /parent_accounts
