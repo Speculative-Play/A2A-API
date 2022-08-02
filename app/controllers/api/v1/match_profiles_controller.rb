@@ -1,5 +1,7 @@
 class Api::V1::MatchProfilesController < ApplicationController
+  before_action :set_profile
   before_action :set_match_profile, only: %i[ show edit update destroy ]
+  before_action :get_match_profiles
 
   # GET /match_profiles
   def index
@@ -59,10 +61,41 @@ class Api::V1::MatchProfilesController < ApplicationController
     end
   end
 
+  # GET /reorder_match_profiles.json
+  def reorder_match_profiles
+    Rails.logger.info 'hello from match_profiles_controller/reorder_match_profiles'
+    @match_profiles = MatchProfile.all
+    respond_to do |format|
+      if @match_profiles.index()
+            format.json { render :partial => 'reorder_match_profiles.html.erb' }
+            # TODO this needs to be linked to correct react view
+      end
+    end
+  end
+
+  def sort_match_profiles_by_attribute
+    @match_profiles = MatchProfile.order("#{params[:sort]}").reverse
+
+    Rails.logger.info 'inside sort_match_by_attributes match_profiles_controller'
+    @match_profiles = MatchProfile.all
+    respond_to do |format|
+      @match_profiles.sort_by {|prof| prof.culture_score}
+    format.json { render :partial => 'reorder_match_profiles.html.erb' }
+    end
+  end
+
   private
+    def set_profile
+      @profile = current_user.profile
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_match_profile
       @match_profile = MatchProfile.find(params[:id])
+    end
+
+    def get_match_profiles
+      @match_profiles = MatchProfile.all
     end
 
     # Only allow a list of trusted parameters through.

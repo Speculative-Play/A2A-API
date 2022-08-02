@@ -15,11 +15,16 @@ class Api::V1::SessionsController < ApplicationController
   # Creates session object that allows user to be logged in persistently
   def create
     user = User.find_by(username: params[:session][:username].downcase)
+
     if user && user.authenicate(params[:session][:password])
+      if user.admin == 1
+        redirect_to profiles_url, notice: "Logged in as ADMIN!"
+      else
         session[:user_id] = user.id
         flash[:notice] = "Logged in successfully!"
         redirect_to user
         # should this be redirect_to Profile.find_by(current_user.user_id) ??
+      end
     else
         flash.now[:alert] = "There was something wrong with your login details"
         render 'new'
