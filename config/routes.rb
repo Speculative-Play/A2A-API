@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
-  resources :parent_accounts
   namespace :api do
     namespace :v1 do
       resources :users do
+        resources :parent_accounts
         resources :profiles do
           collection do
             post 'update_piechart_percentages'

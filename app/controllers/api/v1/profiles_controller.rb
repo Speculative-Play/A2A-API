@@ -62,7 +62,7 @@ class Api::V1::ProfilesController < ApplicationController
   end
 
   def update_piechart_percentages
-    Rails.logger.info 'hello from update_profile_scores'
+    Rails.logger.info 'hello from update_piechart_percentages'
 
     respond_to do |format|
       if @profile.update(pie_params[:pie_percentages])
