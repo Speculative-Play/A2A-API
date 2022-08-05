@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-      resources :users do
+      resources :user_profiles do
         resources :parent_accounts
         resources :profiles do
           collection do
@@ -25,7 +25,7 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "homepage#index"
 
-  get 'signup', to: 'users#new', as: 'signup'
+  get 'signup', to: 'user_profiles#new', as: 'signup'
   get 'login', to: 'sessions#new', as: 'login'
   delete 'logout', to: 'sessions#destroy', as: 'logout'
   get 'about', to: 'pages#index'

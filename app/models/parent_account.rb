@@ -1,5 +1,5 @@
 class ParentAccount < ApplicationRecord
-    belongs_to :user, class_name: "User", foreign_key: "user_id"
+    belongs_to :user_profile, class_name: "UserProfile", foreign_key: "user_profile_id"
     # TODO test validation functionality below
     # validates_presence_of :username, comparison {equal_to: :child_username}
     validate :username_matches
@@ -8,6 +8,6 @@ class ParentAccount < ApplicationRecord
     protected
 
     def username_matches
-        errors.add(:username, "doesn't match") unless User.username == child_username
+        errors.add(:username, "doesn't match") unless UserProfile.username == child_username
     end
 end

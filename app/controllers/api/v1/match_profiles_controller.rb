@@ -1,5 +1,5 @@
 class Api::V1::MatchProfilesController < ApplicationController
-  before_action :set_profile
+  # before_action :set_profile
   before_action :set_match_profile, only: %i[ show edit update destroy ]
   before_action :get_match_profiles
 
@@ -91,9 +91,9 @@ class Api::V1::MatchProfilesController < ApplicationController
   
 
   private
-    def set_profile
-      @profile = current_user.profile
-    end
+    # def set_profile
+    #   @profile = current_user.profile
+    # end
 
     # Use callbacks to share common setup or constraints between actions.
     def set_match_profile

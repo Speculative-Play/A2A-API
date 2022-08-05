@@ -1,6 +1,6 @@
-class User < ApplicationRecord
+class UserProfile < ApplicationRecord
     before_save { self.username = username.downcase }
-    has_one :profile, dependent: :destroy
+    # has_one :profile, dependent: :destroy
     has_one :parent_account, dependent: :destroy
     validates :username, presence: true, 
                         uniqueness: { case_sensitive: false }, 
