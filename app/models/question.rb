@@ -1,3 +1,3 @@
 class Question < ApplicationRecord
-    belongs_to :answer, class_name: "answer", foreign_key: "answer_id"
+    has_many :user_question_answers, class_name: "user_question_answer", foreign_key: "reference_id"
 end

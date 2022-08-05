@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_05_151757) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_05_165426) do
   create_table "answers", force: :cascade do |t|
     t.string "answer_text"
     t.integer "question_id"
@@ -60,4 +60,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_05_151757) do
     t.boolean "admin", default: false
   end
 
+  create_table "user_question_answers", force: :cascade do |t|
+    t.integer "question_id"
+    t.integer "answer_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["answer_id"], name: "index_user_question_answers_on_answer_id"
+    t.index ["question_id"], name: "index_user_question_answers_on_question_id"
+  end
+
+  add_foreign_key "user_question_answers", "answers"
+  add_foreign_key "user_question_answers", "questions"
 end

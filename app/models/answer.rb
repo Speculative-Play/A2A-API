@@ -1,3 +1,3 @@
 class Answer < ApplicationRecord
-    belongs_to :answerable, polymorphic: true
+    # belongs_to :answerable, polymorphic: true
 end

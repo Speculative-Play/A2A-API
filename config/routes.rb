@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :user_question_answers
   namespace :api do
     namespace :v1 do
       resources :user_profiles do
