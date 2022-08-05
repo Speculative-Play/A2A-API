@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_05_165426) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_05_172841) do
   create_table "answers", force: :cascade do |t|
     t.string "answer_text"
     t.integer "question_id"
@@ -31,6 +31,17 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_05_165426) do
     t.string "about"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "match_question_answers", force: :cascade do |t|
+    t.integer "question_id"
+    t.integer "answer_id"
+    t.integer "match_profile_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["answer_id"], name: "index_match_question_answers_on_answer_id"
+    t.index ["match_profile_id"], name: "index_match_question_answers_on_match_profile_id"
+    t.index ["question_id"], name: "index_match_question_answers_on_question_id"
   end
 
   create_table "parent_accounts", force: :cascade do |t|
@@ -63,12 +74,18 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_05_165426) do
   create_table "user_question_answers", force: :cascade do |t|
     t.integer "question_id"
     t.integer "answer_id"
+    t.integer "user_profile_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["answer_id"], name: "index_user_question_answers_on_answer_id"
     t.index ["question_id"], name: "index_user_question_answers_on_question_id"
+    t.index ["user_profile_id"], name: "index_user_question_answers_on_user_profile_id"
   end
 
+  add_foreign_key "match_question_answers", "answers"
+  add_foreign_key "match_question_answers", "match_profiles"
+  add_foreign_key "match_question_answers", "questions"
   add_foreign_key "user_question_answers", "answers"
   add_foreign_key "user_question_answers", "questions"
+  add_foreign_key "user_question_answers", "user_profiles"
 end
