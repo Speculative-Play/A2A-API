@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_05_215914) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_05_220850) do
   create_table "answers", force: :cascade do |t|
     t.string "answer_text"
     t.integer "question_id"
@@ -63,6 +63,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_05_215914) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "starred_match_profiles", force: :cascade do |t|
+    t.integer "parent_account_id"
+    t.integer "match_profile_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["match_profile_id"], name: "index_starred_match_profiles_on_match_profile_id"
+    t.index ["parent_account_id"], name: "index_starred_match_profiles_on_parent_account_id"
+  end
+
   create_table "user_profiles", force: :cascade do |t|
     t.string "username"
     t.datetime "created_at", null: false
@@ -86,6 +95,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_05_215914) do
   add_foreign_key "match_question_answers", "match_profiles"
   add_foreign_key "match_question_answers", "questions"
   add_foreign_key "parent_accounts", "user_profiles"
+  add_foreign_key "starred_match_profiles", "match_profiles"
+  add_foreign_key "starred_match_profiles", "parent_accounts"
   add_foreign_key "user_question_answers", "answers"
   add_foreign_key "user_question_answers", "questions"
   add_foreign_key "user_question_answers", "user_profiles"

@@ -1,3 +1,4 @@
 class MatchProfile < ApplicationRecord
-    has_many :match_answers, class_name: "match_answer", foreign_key: "match_answer_id"
+    has_many :match_question_answers
+    has_many :starred_match_profiles
 end

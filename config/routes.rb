@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :starred_match_profiles
   resources :match_question_answers
   resources :user_question_answers
   namespace :api do
