@@ -7,4 +7,5 @@ class UserProfile < ApplicationRecord
                         uniqueness: { case_sensitive: false }, 
                         length: { minimum: 3, maximum: 15 }
     has_secure_password
+    has_one_attached :image, :dependent => :destroy
 end
