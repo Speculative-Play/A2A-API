@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_15_161517) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_15_162011) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -46,6 +46,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_15_161517) do
     t.datetime "updated_at", null: false
     t.integer "answerable_id"
     t.string "answerable_type", null: false
+  end
+
+  create_table "category_percentages", force: :cascade do |t|
+    t.integer "category_percentage"
+    t.integer "matchmaking_category_id"
+    t.integer "user_profile_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["matchmaking_category_id"], name: "index_category_percentages_on_matchmaking_category_id"
+    t.index ["user_profile_id"], name: "index_category_percentages_on_user_profile_id"
   end
 
   create_table "match_profiles", force: :cascade do |t|
@@ -128,6 +138,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_15_161517) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "category_percentages", "matchmaking_categories"
+  add_foreign_key "category_percentages", "user_profiles"
   add_foreign_key "match_question_answers", "answers"
   add_foreign_key "match_question_answers", "match_profiles"
   add_foreign_key "match_question_answers", "questions"
