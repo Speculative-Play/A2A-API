@@ -1,28 +1,33 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-      resources :user_profiles do
-        resources :parent_accounts
+      resources :user_profiles, shallow: true do
+        resources :parent_accounts, shallow: true do
+          resources :starred_match_profiles
+        end
+        end
         resources :profiles do
           collection do
             post 'update_piechart_percentages'
           end
-                end
+        end
       end
       resources :match_profiles do
         collection do
           get 'reorder_match_profiles'
           get 'sort_match_profiles_by_attribute'
         end
-            end
+      end
       resources :sessions
-      resources :questions
-      resources :answers
-      resources :matchmaking_categories
-      resources :category_percentages
-      resources :starred_match_profiles
-      resources :match_question_answers
-      resources :user_question_answers
+      resources :matchmaking_categories, shallow: true do
+        resources :category_percentages, shallow: true do
+          resources :questions, shallow: true do
+            resources :answers
+            resources :match_question_answers
+            resources :user_question_answers
+          end
+        end
+      end
     end
   end
   # Defines the root path route ("/")
