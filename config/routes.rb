@@ -2,14 +2,11 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :user_profiles, shallow: true do
+        collection do
+          post 'update_piechart_percentages'
+        end
         resources :parent_accounts, shallow: true do
           resources :starred_match_profiles
-        end
-        end
-        resources :profiles do
-          collection do
-            post 'update_piechart_percentages'
-          end
         end
       end
       resources :match_profiles do

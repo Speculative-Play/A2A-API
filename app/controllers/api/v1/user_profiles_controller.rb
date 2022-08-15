@@ -63,6 +63,18 @@ class Api::V1::UsersProfilesController < ApplicationController
     end
   end
 
+  def update_piechart_percentages
+    Rails.logger.info 'hello from update_piechart_percentages'
+
+    respond_to do |format|
+      if @profile.update(pie_params[:pie_percentages])
+        format.json { redirect_to @profile, notice: 'Profile was successfully updated.' }
+      else
+        format.json { render json: @profile.errors, status: :unprocessable_entity }
+      end
+    end
+  end 
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user_profile
@@ -79,5 +91,10 @@ class Api::V1::UsersProfilesController < ApplicationController
         flash[:alert] = "You can only edit or delete your own account"
         redirect_to @user_profile
       end
+    end
+
+    def pie_params
+      params.permit!
+      # params.permit(pie_percentages: [:cultureScore, :facialScore, :lifestyleScore, :kundaliScore, :locationScore])
     end
 end
