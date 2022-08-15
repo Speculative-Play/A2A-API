@@ -1,7 +1,4 @@
 Rails.application.routes.draw do
-  resources :starred_match_profiles
-  resources :match_question_answers
-  resources :user_question_answers
   namespace :api do
     namespace :v1 do
       resources :user_profiles do
@@ -21,6 +18,10 @@ Rails.application.routes.draw do
       resources :sessions
       resources :questions
       resources :answers
+      resources :matchmaking_categories
+      resources :starred_match_profiles
+      resources :match_question_answers
+      resources :user_question_answers
     end
   end
   # Defines the root path route ("/")

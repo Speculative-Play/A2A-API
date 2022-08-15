@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_06_173747) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_15_161517) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -70,6 +70,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_06_173747) do
     t.index ["answer_id"], name: "index_match_question_answers_on_answer_id"
     t.index ["match_profile_id"], name: "index_match_question_answers_on_match_profile_id"
     t.index ["question_id"], name: "index_match_question_answers_on_question_id"
+  end
+
+  create_table "matchmaking_categories", force: :cascade do |t|
+    t.string "category_name"
+    t.string "category_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "parent_accounts", force: :cascade do |t|
