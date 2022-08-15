@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_15_162011) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_15_163718) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -98,9 +98,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_15_162011) do
 
   create_table "questions", force: :cascade do |t|
     t.string "question_text"
-    t.string "question_category"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "matchmaking_category_id"
+    t.index ["matchmaking_category_id"], name: "index_questions_on_matchmaking_category_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -144,6 +145,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_15_162011) do
   add_foreign_key "match_question_answers", "match_profiles"
   add_foreign_key "match_question_answers", "questions"
   add_foreign_key "parent_accounts", "user_profiles"
+  add_foreign_key "questions", "matchmaking_categories"
   add_foreign_key "starred_match_profiles", "match_profiles"
   add_foreign_key "starred_match_profiles", "parent_accounts"
   add_foreign_key "user_question_answers", "answers"
