@@ -12,6 +12,7 @@ Rails.application.routes.draw do
         resources :parent_accounts, shallow: true do
           resources :starred_match_profiles
         end
+        resources :user_question_answers
       end
 
       resources :match_profiles do
@@ -19,21 +20,19 @@ Rails.application.routes.draw do
           get 'reorder_match_profiles'
           get 'sort_match_profiles_by_attribute'
         end
+        resources :match_question_answers
       end
 
       resources :matchmaking_categories, shallow: true do
         resources :category_percentages, shallow: true do
           resources :questions, shallow: true do
-            resources :answers, shallow: true do
-              resources :match_question_answers
-              resources :user_question_answers
-            end
+            resources :answers
           end
         end
       end
 
     end
-    
+
   end
   # Defines the root path route ("/")
   # root "homepage#index"
