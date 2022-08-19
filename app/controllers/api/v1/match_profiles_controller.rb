@@ -6,12 +6,12 @@ class Api::V1::MatchProfilesController < ApplicationController
   # GET /match_profiles
   def index
     @match_profiles = MatchProfile.all
-    # render json: @match_profiles
+    render json: @match_profiles
   end
 
   # GET /match_profiles/1
   def show
-    # render json: @match_profile
+    render json: @match_profile
   end
 
   # GET /match_profiles/new
