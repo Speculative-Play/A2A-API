@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
   namespace :api do
+
     namespace :v1 do
+
+      resources :sessions
+
       resources :user_profiles, shallow: true do
         collection do
           post 'update_piechart_percentages'
@@ -9,13 +13,14 @@ Rails.application.routes.draw do
           resources :starred_match_profiles
         end
       end
+
       resources :match_profiles do
         collection do
           get 'reorder_match_profiles'
           get 'sort_match_profiles_by_attribute'
         end
       end
-      resources :sessions
+
       resources :matchmaking_categories, shallow: true do
         resources :category_percentages, shallow: true do
           resources :questions, shallow: true do
@@ -26,7 +31,9 @@ Rails.application.routes.draw do
           end
         end
       end
+
     end
+    
   end
   # Defines the root path route ("/")
   # root "homepage#index"

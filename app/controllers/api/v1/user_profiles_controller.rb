@@ -1,4 +1,4 @@
-class Api::V1::UsersProfilesController < ApplicationController
+class Api::V1::UserProfilesController < ApplicationController
   before_action :set_user_profile, only: %i[ show edit update destroy ]
   before_action :require_user_profile, only: [:edit, :update]
   before_action :require_same_user_profile, only: [:edit, :update, :destroy]
@@ -63,17 +63,17 @@ class Api::V1::UsersProfilesController < ApplicationController
     end
   end
 
-  def update_piechart_percentages
-    Rails.logger.info 'hello from update_piechart_percentages'
+  # def update_piechart_percentages
+  #   Rails.logger.info 'hello from update_piechart_percentages'
 
-    respond_to do |format|
-      if @profile.update(pie_params[:pie_percentages])
-        format.json { redirect_to @profile, notice: 'Profile was successfully updated.' }
-      else
-        format.json { render json: @profile.errors, status: :unprocessable_entity }
-      end
-    end
-  end 
+  #   respond_to do |format|
+  #     if @profile.update(pie_params[:pie_percentages])
+  #       format.json { redirect_to @profile, notice: 'Profile was successfully updated.' }
+  #     else
+  #       format.json { render json: @profile.errors, status: :unprocessable_entity }
+  #     end
+  #   end
+  # end 
 
   private
     # Use callbacks to share common setup or constraints between actions.
