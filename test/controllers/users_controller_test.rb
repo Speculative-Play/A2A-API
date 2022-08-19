@@ -12,7 +12,7 @@ class UserProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create user_profile" do
     assert_difference("UserProfile.count") do
-      post user_profiles_url, params: { use_profiler: { username: @user_profile.username } }, as: :json
+      post user_profiles_url, params: { use_profiler: { email: @user_profile.email } }, as: :json
     end
 
     assert_response :created
@@ -24,7 +24,7 @@ class UserProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update user" do
-    patch user_profile_url(@user_profile), params: { user_profile: { username: @user_profile.username } }, as: :json
+    patch user_profile_url(@user_profile), params: { user_profile: { email: @user_profile.email } }, as: :json
     assert_response :success
   end
 

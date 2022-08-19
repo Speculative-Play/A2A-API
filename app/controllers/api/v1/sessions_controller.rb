@@ -14,7 +14,7 @@ class Api::V1::SessionsController < ApplicationController
 
   # Creates session object that allows user_profile to be logged in persistently
   def create
-    user_profile = UserProfile.find_by(username: params[:session][:username].downcase)
+    user_profile = UserProfile.find_by(email: params[:session][:email].downcase)
 
     if user_profile && user_profile.authenicate(params[:session][:password])
       if user_profile.admin == 1

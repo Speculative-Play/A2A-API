@@ -83,7 +83,7 @@ class Api::V1::UserProfilesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_profile_params
-      params.require(:user_profile).permit(:username)
+      params.require(:user_profile).permit(:email)
     end
 
     def require_same_user_profile
