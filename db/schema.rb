@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_19_165121) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_22_152650) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -58,16 +58,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_19_165121) do
   end
 
   create_table "match_profiles", force: :cascade do |t|
-    t.string "name"
-    t.integer "age"
-    t.string "gender"
-    t.string "location"
     t.string "job"
-    t.integer "salary"
-    t.string "religion"
-    t.string "about"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "first_name", null: false
+    t.string "last_name", null: false
   end
 
   create_table "match_question_answers", force: :cascade do |t|
@@ -123,6 +118,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_19_165121) do
     t.string "password_digest"
     t.boolean "admin", default: false
     t.string "email"
+    t.string "first_name", null: false
+    t.string "last_name", null: false
   end
 
   create_table "user_question_answers", force: :cascade do |t|
