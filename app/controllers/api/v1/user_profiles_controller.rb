@@ -27,16 +27,25 @@ class Api::V1::UserProfilesController < ApplicationController
   def create
     @user_profile = UserProfile.new(user_profile_params)
 
-    respond_to do |format|
+    # respond_to do |format|
       if @user_profile.save
         session[:user_profile_id] = user_profile.id
-        format.html { redirect_to user_profile_url(@user_profile), notice: "UserProfile was successfully created." }
-        format.json { render :show, status: :created, location: @user_profile }
+        render json: {
+          status: :created,
+          user: @user
+        }
+        # format.html { redirect_to user_profile_url(@user_profile), notice: "UserProfile was successfully created." }
+        # format.json { render :show, status: :created, location: @user_profile }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @user_profile.errors, status: :unprocessable_entity }
+        @user.save
+        render json: {
+          status: 500,
+          error: @user.errors.full_messages
+        }
+        # format.html { render :new, status: :unprocessable_entity }
+        # format.json { render json: @user_profile.errors, status: :unprocessable_entity }
       end
-    end
+    # end
   end
 
   # PATCH/PUT /user_profiles/1 or /user_profliles/1.json
@@ -83,7 +92,7 @@ class Api::V1::UserProfilesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_profile_params
-      params.require(:user_profile).permit(:email)
+      params.require(:user_profile).permit(:email, :password, :password_confirmation)
     end
 
     def require_same_user_profile
