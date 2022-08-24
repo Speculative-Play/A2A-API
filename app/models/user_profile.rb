@@ -1,12 +1,15 @@
-class ParentAccount < ApplicationRecord
+class UserProfile < ApplicationRecord
     before_save { self.email = email.downcase }
     VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
     # could also use: 
     # validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
     validates :email, presence: true, uniqueness: { case_sensitive: false }, format: {with: VALID_EMAIL_REGEX}
 
+    has_one :parent_account, dependent: :destroy
+    has_many :starred_match_profiles, through: :parent_account, dependent: :destroy
+    has_many :user_question_answers, dependent: :destroy
+    has_many :category_percentages, dependent: :destroy
 
-    belongs_to :user_profile, class_name: "UserProfile", foreign_key: "user_profile_id"
-    has_many :starred_match_profiles, dependent: :destroy
     has_secure_password
+    has_one_attached :image, dependent: :destroy
 end

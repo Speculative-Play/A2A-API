@@ -1,17 +1,17 @@
 class Api::V1::MatchProfilesController < ApplicationController
-  before_action :set_profile
+  # before_action :set_profile
   before_action :set_match_profile, only: %i[ show edit update destroy ]
   before_action :get_match_profiles
 
   # GET /match_profiles
   def index
     @match_profiles = MatchProfile.all
-    # render json: @match_profiles
+    render json: @match_profiles
   end
 
   # GET /match_profiles/1
   def show
-    # render json: @match_profile
+    render json: @match_profile
   end
 
   # GET /match_profiles/new
@@ -91,9 +91,9 @@ class Api::V1::MatchProfilesController < ApplicationController
   
 
   private
-    def set_profile
-      @profile = current_user.profile
-    end
+    # def set_profile
+    #   @profile = current_user.profile
+    # end
 
     # Use callbacks to share common setup or constraints between actions.
     def set_match_profile

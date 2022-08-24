@@ -1,36 +1,36 @@
 require "test_helper"
 
-class UsersControllerTest < ActionDispatch::IntegrationTest
+class UserProfilesControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @user = users(:one)
+    @user_profile = user_profiles(:one)
   end
 
   test "should get index" do
-    get users_url, as: :json
+    get user_profiles_url, as: :json
     assert_response :success
   end
 
-  test "should create user" do
-    assert_difference("User.count") do
-      post users_url, params: { user: { username: @user.username } }, as: :json
+  test "should create user_profile" do
+    assert_difference("UserProfile.count") do
+      post user_profiles_url, params: { use_profiler: { email: @user_profile.email } }, as: :json
     end
 
     assert_response :created
   end
 
-  test "should show user" do
-    get user_url(@user), as: :json
+  test "should show user_profile" do
+    get user_profile_url(@user_profile), as: :json
     assert_response :success
   end
 
   test "should update user" do
-    patch user_url(@user), params: { user: { username: @user.username } }, as: :json
+    patch user_profile_url(@user_profile), params: { user_profile: { email: @user_profile.email } }, as: :json
     assert_response :success
   end
 
-  test "should destroy user" do
-    assert_difference("User.count", -1) do
-      delete user_url(@user), as: :json
+  test "should destroy user_profile" do
+    assert_difference("UserProfile.count", -1) do
+      delete user_profile_url(@user_profile), as: :json
     end
 
     assert_response :no_content

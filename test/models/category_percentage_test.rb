@@ -1,6 +1,6 @@
 require "test_helper"
 
-class MatchAnswerTest < ActiveSupport::TestCase
+class CategoryPercentageTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end
