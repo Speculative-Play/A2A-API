@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_22_162244) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_25_215931) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -116,11 +116,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_22_162244) do
   create_table "user_profiles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "password_digest"
     t.boolean "admin", default: false
-    t.string "email"
     t.string "first_name", null: false
     t.string "last_name", null: false
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.index ["email"], name: "index_user_profiles_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_user_profiles_on_reset_password_token", unique: true
   end
 
   create_table "user_question_answers", force: :cascade do |t|

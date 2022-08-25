@@ -10,11 +10,13 @@ require 'faker'
 
 # Create UserProfiles
 10.times do 
+    @password = Faker::Internet.password
     UserProfile.create(
         first_name: Faker::Name.unique.first_name,
         last_name: Faker::Name.unique.last_name,
         email: Faker::Internet.email,
-        password_digest: Faker::Internet.password
+        password: @password,
+        password_confirmation: @password
     )
 end
 

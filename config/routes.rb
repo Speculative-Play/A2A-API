@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  devise_for :user_profiles
   namespace :api do
     
     namespace :v1 do
@@ -35,6 +36,7 @@ Rails.application.routes.draw do
       resources :questions
       resources :answers
 
+      root to: 'user_profiles#index'
       post '/login', to: 'sessions#create'
       delete '/logout', to: 'sessions#destroy'
       get '/logged_in', to: 'sessions#is_logged_in?'

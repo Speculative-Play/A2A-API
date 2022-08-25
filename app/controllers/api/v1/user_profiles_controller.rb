@@ -2,6 +2,7 @@ class Api::V1::UserProfilesController < ApplicationController
   before_action :set_user_profile, only: %i[ show edit update destroy ]
   before_action :require_user_profile, only: [:edit, :update]
   before_action :require_same_user_profile, only: [:edit, :update, :destroy]
+  before_action :authenticate_user_profile!
 
   # GET /user_profiles
   def index
@@ -52,10 +53,10 @@ class Api::V1::UserProfilesController < ApplicationController
   def update
     respond_to do |format|
       if @user_profile.update(user_profile_params)
-        format.html { redirect_to user_profile_url(@user_profile), notice: "UserProfile was successfully updated." }
+        # format.html { redirect_to user_profile_url(@user_profile), notice: "UserProfile was successfully updated." }
         format.json { render :show, status: :ok, location: @user_profile }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        # format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @user_profile.errors, status: :unprocessable_entity }
       end
     end
