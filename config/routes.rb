@@ -13,6 +13,7 @@ Rails.application.routes.draw do
           resources :starred_match_profiles
         end
         resources :user_question_answers
+        get '(/:id)/user_question_answers(/:id)', to: 'user_question_answers#get_individual_user_profile_user_question_answer'
       end
 
       resources :match_profiles do

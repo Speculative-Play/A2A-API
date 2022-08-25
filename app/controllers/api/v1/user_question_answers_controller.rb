@@ -19,6 +19,21 @@ class Api::V1::UserQuestionAnswersController < ApplicationController
     render json: @user_question_answer
   end
 
+  # GET /user_profile/:id/user_question_answer/:id
+  def get_individual_user_profile_user_question_answer
+    @user_question_answers = UserQuestionAnswer.where("user_profile_id = ?", params[:user_profile_id])
+    @@nth = params[:id]
+    @@limit = UserQuestionAnswer.where("user_profile_id = ?", params[:user_profile_id]).count()
+
+    if @@nth.to_i < @@limit
+      @nth_user = @user_question_answers.limit(@@nth).last
+
+      render json: @nth_user
+    else 
+      render json: "Error: User_Question_Answer Not Found"
+    end
+  end
+
   # POST /user_question_answers
   def create
     @user_question_answer = UserQuestionAnswer.new(user_question_answer_params)
