@@ -29,18 +29,18 @@ class Api::V1::UserProfilesController < ApplicationController
 
     # respond_to do |format|
       if @user_profile.save
-        session[:user_profile_id] = user_profile.id
+        session[:user_profile_id] = @user_profile.id
         render json: {
           status: :created,
-          user: @user
+          user_profile: @user_profile
         }
         # format.html { redirect_to user_profile_url(@user_profile), notice: "UserProfile was successfully created." }
         # format.json { render :show, status: :created, location: @user_profile }
       else
-        @user.save
+        @user_profile.save
         render json: {
           status: 500,
-          error: @user.errors.full_messages
+          error: @user_profile.errors.full_messages
         }
         # format.html { render :new, status: :unprocessable_entity }
         # format.json { render json: @user_profile.errors, status: :unprocessable_entity }
@@ -92,7 +92,7 @@ class Api::V1::UserProfilesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_profile_params
-      params.require(:user_profile).permit(:email, :password, :password_confirmation)
+      params.require(:user_profile).permit(:email, :password, :password_confirmation, :first_name, :last_name)
     end
 
     def require_same_user_profile
