@@ -16,12 +16,13 @@ Rails.application.routes.draw do
         get '(/:id)/user_question_answers(/:id)', to: 'user_question_answers#get_individual_user_profile_user_question_answer'
       end
 
-      resources :match_profiles do
+      resources :match_profiles, shallow: true do
         collection do
           get 'reorder_match_profiles'
           get 'sort_match_profiles_by_attribute'
         end
         resources :match_question_answers
+        get '(/:id)/match_question_answers(/:id)', to: 'match_question_answers#get_individual_match_profile_match_question_answer'
       end
 
       resources :matchmaking_categories, shallow: true do

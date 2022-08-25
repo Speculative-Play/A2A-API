@@ -19,6 +19,20 @@ class Api::V1::MatchQuestionAnswersController < ApplicationController
     render json: @match_question_answer
   end
 
+  def get_individual_match_profile_match_question_answer
+    @match_question_answers = MatchQuestionAnswer.where("match_profile_id = ?", params[:match_profile_id])
+    @@nth = params[:id]
+    @@limit = MatchQuestionAnswer.where("match_profile_id = ?", params[:match_profile_id]).count()
+
+    if @@nth.to_i < @@limit
+      @nth_match = @match_question_answers.limit(@@nth).last
+
+      render json: @nth_match
+    else 
+      render json: "Error: User_Question_Answer Not Found"
+    end
+  end
+
   # POST /match_question_answers
   def create
     @match_question_answer = MatchQuestionAnswer.new(match_question_answer_params)
