@@ -1,9 +1,9 @@
 Rails.application.routes.draw do
-  devise_for :user_profiles
+  
   namespace :api do
     
     namespace :v1 do
-
+      devise_for :user_profiles
       resources :sessions
       resources :user_profiles, only: [:create]
       resources :user_profiles, shallow: true do
@@ -40,7 +40,8 @@ Rails.application.routes.draw do
       post '/login', to: 'sessions#create'
       delete '/logout', to: 'sessions#destroy'
       get '/logged_in', to: 'sessions#is_logged_in?'
-      get 'signup', to: 'user_profiles#new', as: 'signup'
+      # get 'signup', to: 'user_profiles#new', as: 'signup'
+      post 'auth', to: 'user_profiles#create'
       get 'about', to: 'pages#index'
     end
 

@@ -2,7 +2,7 @@ class Api::V1::UserProfilesController < ApplicationController
   before_action :set_user_profile, only: %i[ show edit update destroy ]
   before_action :require_user_profile, only: [:edit, :update]
   before_action :require_same_user_profile, only: [:edit, :update, :destroy]
-  before_action :authenticate_user_profile!
+  before_action :authenticate_api_v1_user_profile!
 
   # GET /user_profiles
   def index
