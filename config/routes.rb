@@ -1,10 +1,10 @@
 Rails.application.routes.draw do
   namespace :api do
-
+    
     namespace :v1 do
 
       resources :sessions
-
+      resources :user_profiles, only: [:create]
       resources :user_profiles, shallow: true do
         collection do
           post 'update_piechart_percentages'
@@ -31,14 +31,13 @@ Rails.application.routes.draw do
         end
       end
 
+      post '/login', to: 'sessions#create'
+      delete '/logout', to: 'sessions#destroy'
+      get '/logged_in', to: 'sessions#is_logged_in?'
+      get 'signup', to: 'user_profiles#new', as: 'signup'
+      get 'about', to: 'pages#index'
     end
 
   end
-  # Defines the root path route ("/")
-  # root "homepage#index"
 
-  get 'signup', to: 'user_profiles#new', as: 'signup'
-  get 'login', to: 'sessions#new', as: 'login'
-  delete 'logout', to: 'sessions#destroy', as: 'logout'
-  get 'about', to: 'pages#index'
 end
