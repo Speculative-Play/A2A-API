@@ -3,8 +3,14 @@ class Api::V1::MatchQuestionAnswersController < ApplicationController
 
   # GET /match_question_answers
   def index
-    @match_question_answers = MatchQuestionAnswer.all
-
+    # IF match_profile_id is present THEN return only match_question_answers with matching match_profile_id
+    @match_question_answers = if params[:match_profile_id].present?
+      MatchQuestionAnswer.where("match_profile_id = ?", params[:match_profile_id])
+    # ELSE return ALL user_question_answers
+    else
+      MatchQuestionAnswer.all
+    end
+    
     render json: @match_question_answers
   end
 
