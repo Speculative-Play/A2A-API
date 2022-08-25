@@ -84,10 +84,10 @@ end
 # Create 1 entry per Question per MatchProfile = 50 * 10 = 500 entries
 for q in 1..50 do
     for m in 1..10 do
-        UserQuestionAnswer.create(
+        MatchQuestionAnswer.create(
             question_id: q,
             answer_id: q*5-Faker::Number.between(from: 0, to: 4),
-            user_profile_id: m
+            match_profile_id: m
         )
     end
 end
