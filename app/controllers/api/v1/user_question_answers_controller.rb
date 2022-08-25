@@ -3,7 +3,13 @@ class Api::V1::UserQuestionAnswersController < ApplicationController
 
   # GET /user_question_answers
   def index
-    @user_question_answers = UserQuestionAnswer.all
+    # IF user_profile_id is present THEN return only user_question_answers with that user_profile_id
+    @user_question_answers = if params[:user_profile_id].present?
+      UserQuestionAnswer.where("user_profile_id = ?", params[:user_profile_id])
+    # ELSE return ALL user_question_answers
+    else
+      UserQuestionAnswer.all
+    end
 
     render json: @user_question_answers
   end
