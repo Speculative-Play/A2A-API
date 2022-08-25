@@ -11,5 +11,8 @@ class UserProfile < ApplicationRecord
     has_many :category_percentages, dependent: :destroy
 
     has_secure_password
+    validates   :password,
+                length: { minimum: 6 },
+                if: -> { new_record? || !password.nil? }
     has_one_attached :image, dependent: :destroy
 end

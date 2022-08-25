@@ -1,9 +1,9 @@
 class ApplicationController < ActionController::API
-    # helper_method :current_user, :logged_in?
     include ActionController::Helpers
 
     def current_user_profile
         @current_user_profile ||= UserProfile.find(session[:user_profile_id]) if session[:user_profile_id] 
+        # @current_user_profile ||= UserProfile.find(1)
     end
 
     def logged_in?
@@ -22,6 +22,23 @@ class ApplicationController < ActionController::API
         if !logged_in?
             flash[:alert] = "You must be logged in to perform that action!"
             redirect_to login_path
+        end
+    end
+
+    def not_found
+        render json: { error: 'not_found' }
+    end
+    
+    def authorize_request
+        header = request.headers['Authorization']
+        header = header.split(' ').last if header
+        begin
+            @decoded = JsonWebToken.decode(header)
+            @current_user_profile = UserProfile.find(@decoded[:user_profile_id])
+        rescue ActiveRecord::RecordNotFound => e
+            render json: { errors: e.message }, status: :unauthorized
+        rescue JWT::DecodeError => e
+            render json: { errors: e.message }, status: :unauthorized
         end
     end
 

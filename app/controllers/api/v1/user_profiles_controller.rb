@@ -2,16 +2,18 @@ class Api::V1::UserProfilesController < ApplicationController
   before_action :set_user_profile, only: %i[ show edit update destroy ]
   before_action :require_user_profile, only: [:edit, :update]
   before_action :require_same_user_profile, only: [:edit, :update, :destroy]
+  before_action :authorize_request, except: :create
+  before_action :find_user_profile, except: %i[create index]
 
   # GET /user_profiles
   def index
     @user_profiles = UserProfile.all
-    render json: @user_profiles
+    render json: @user_profiles, status: :ok
   end
 
   # GET /user_profiles/1
   def show
-    render json: @user_profile
+    render json: @user_profile, status: :ok
   end
 
   # GET /user_profiles/new
@@ -27,16 +29,21 @@ class Api::V1::UserProfilesController < ApplicationController
   def create
     @user_profile = UserProfile.new(user_profile_params)
 
-    respond_to do |format|
+    # respond_to do |format|
       if @user_profile.save
-        session[:user_profile_id] = user_profile.id
-        format.html { redirect_to user_profile_url(@user_profile), notice: "UserProfile was successfully created." }
-        format.json { render :show, status: :created, location: @user_profile }
+        render json: @user, status: :created
+
+        # session[:user_profile_id] = user_profile.id
+        # format.html { redirect_to user_profile_url(@user_profile), notice: "UserProfile was successfully created." }
+        # format.json { render :show, status: :created, location: @user_profile }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @user_profile.errors, status: :unprocessable_entity }
+        render json: { errors: @user.errors.full_messages },
+        status: :unprocessable_entity
+
+        # format.html { render :new, status: :unprocessable_entity }
+        # format.json { render json: @user_profile.errors, status: :unprocessable_entity }
       end
-    end
+    # end
   end
 
   # PATCH/PUT /user_profiles/1 or /user_profliles/1.json
@@ -83,7 +90,8 @@ class Api::V1::UserProfilesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_profile_params
-      params.require(:user_profile).permit(:email)
+      # params.require(:user_profile).permit(:email)
+      params.permit!
     end
 
     def require_same_user_profile
@@ -96,5 +104,11 @@ class Api::V1::UserProfilesController < ApplicationController
     def pie_params
       params.permit!
       # params.permit(pie_percentages: [:cultureScore, :facialScore, :lifestyleScore, :kundaliScore, :locationScore])
+    end
+
+    def find_user_profile
+      @user_profile = UserProfile.find_by_username!(params[:email])
+      # rescue ApplicationRecord::RecordNotFound
+      #   render json: { errors: 'User not found' }, status: :not_found
     end
 end

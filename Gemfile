@@ -21,7 +21,11 @@ gem "puma", "~> 5.0"
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
 
+# Use Faker for factory data generation
 gem 'faker'
+
+# Use Json Web Token (JWT) for token based authentication
+gem 'jwt'
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "~> 3.1.7"

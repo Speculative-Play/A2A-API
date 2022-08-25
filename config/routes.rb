@@ -3,9 +3,13 @@ Rails.application.routes.draw do
 
     namespace :v1 do
 
-      resources :sessions
+      # resources :sessions
 
-      resources :user_profiles, shallow: true do
+      # resources :users, param: :_username
+      # post '/auth/login', to: 'authentication#login'
+      # get '/*a', to: 'application#not_found'
+      resources :user_profiles, param: :email, shallow: true do
+
         collection do
           post 'update_piechart_percentages'
         end
@@ -31,14 +35,17 @@ Rails.application.routes.draw do
         end
       end
 
+      # Defines the root path route ("/")
+      # root "homepage#index"
+
+      post '/auth/login', to: 'authentication#login'
+      get '/*a', to: 'application#not_found'
+      get 'signup', to: 'user_profiles#new', as: 'signup'
+      get 'login', to: 'sessions#new', as: 'login'
+      delete 'logout', to: 'sessions#destroy', as: 'logout'
+      get 'about', to: 'pages#index'
+      
+
     end
-
   end
-  # Defines the root path route ("/")
-  # root "homepage#index"
-
-  get 'signup', to: 'user_profiles#new', as: 'signup'
-  get 'login', to: 'sessions#new', as: 'login'
-  delete 'logout', to: 'sessions#destroy', as: 'logout'
-  get 'about', to: 'pages#index'
 end

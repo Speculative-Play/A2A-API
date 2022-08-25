@@ -3,13 +3,16 @@ class Api::V1::UserQuestionAnswersController < ApplicationController
 
   # GET /user_question_answers
   def index
-    @user_question_answers = UserQuestionAnswer.all
-
+    # @user_question_answers = UserQuestionAnswer.all
+    # @user_question_answers ||= current_user_profile.user_question_answer.find(session[:user_profile_id])
+    # @user_question_answers = UserQuestionAnswer.where("user_profile_id =?", current_user_profile)
+    @user_question_answers = UserQuestionAnswer.where("user_profile_id =?", 2)
     render json: @user_question_answers
   end
 
   # GET /user_question_answers/1
   def show
+    @user_question_answer = UserQuestionAnswer.find(params[:id])
     render json: @user_question_answer
   end
 
