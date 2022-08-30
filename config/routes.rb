@@ -3,7 +3,11 @@ Rails.application.routes.draw do
   namespace :api do
     
     namespace :v1 do
-      devise_for :user_profiles
+      devise_for :user_profiles, controllers: {
+        sessions: 'api/v1/user_profiles/sessions',
+        registrations: 'user_profiles/registrations',
+        confirmations: 'user_profiles/confirmations'
+      }
       resources :sessions
       resources :user_profiles, only: [:create]
       resources :user_profiles, shallow: true do

@@ -14,7 +14,7 @@ class Api::V1::SessionsController < ApplicationController
   # Creates session object that allows user_profile to be logged in persistently
   def create
     @user_profile = UserProfile.find_by(email: session_params[:email])
-    puts "user profile = ", @user_profile.id
+    # puts "user profile = ", @user_profile.id
     if @user_profile && @user_profile.authenticate(session_params[:password])
       # if user_profile.admin == 1
       #   redirect_to user_profiles_url, notice: "Logged in as ADMIN!"
