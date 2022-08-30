@@ -28,7 +28,7 @@ Rails.application.routes.draw do
       resources :matchmaking_categories, shallow: true do
         resources :category_percentages, shallow: true do
           resources :questions, shallow: true do
-            resources :answers
+            resources :answers, shallow: true
           end
         end
       end
