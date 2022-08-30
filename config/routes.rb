@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  devise_for :user_profiles,
+  controllers: {
+      sessions: 'api/v1/user_profiles/sessions',
+      registrations: 'api/v1/user_profiles/registrations'
+  }
   namespace :api do
     
     namespace :v1 do

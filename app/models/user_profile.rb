@@ -1,4 +1,8 @@
 class UserProfile < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable, :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
+  
     before_save { self.email = email.downcase }
     VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
     # could also use: 
@@ -10,6 +14,6 @@ class UserProfile < ApplicationRecord
     has_many :user_question_answers, dependent: :destroy
     has_many :category_percentages, dependent: :destroy
 
-    has_secure_password
+    # has_secure_password
     has_one_attached :image, dependent: :destroy
 end
