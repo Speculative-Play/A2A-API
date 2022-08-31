@@ -3,8 +3,8 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
 
   # GET /starred_match_profiles
   def index
-    @starred_match_profiles = StarredMatchProfile.all
-
+    # Returns all starred_match_profiles that share parent_account_id
+    @starred_match_profiles = StarredMatchProfile.where("parent_account_id = ?", params[:parent_account_id])
     render json: @starred_match_profiles
   end
 
