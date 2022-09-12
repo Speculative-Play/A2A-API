@@ -3,7 +3,12 @@ class Api::V1::CategoryPercentagesController < ApplicationController
 
   # GET /category_percentages
   def index
-    @category_percentages = CategoryPercentage.all
+    # @category_percentages = CategoryPercentage.all
+    @category_percentages = if params[:user_profile_id].present?
+      CategoryPercentage.where("user_profile_id = ?", params[:user_profile_id])
+    else
+      puts "invalid category_percentages"
+    end
 
     render json: @category_percentages
   end
