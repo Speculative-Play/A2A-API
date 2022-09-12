@@ -12,7 +12,7 @@ Rails.application.routes.draw do
         resources :parent_accounts, shallow: true do
           resources :starred_match_profiles
         end
-        resources :user_question_answers
+        resources :user_question_answers, shallow: true
         resources :category_percentages, shallow: true
         get '(/:id)/user_question_answers(/:id)', to: 'user_question_answers#get_individual_user_profile_user_question_answer'
       end
@@ -22,7 +22,7 @@ Rails.application.routes.draw do
           get 'reorder_match_profiles'
           get 'sort_match_profiles_by_attribute'
         end
-        resources :match_question_answers
+        resources :match_question_answers, shallow: true
         get '(/:id)/match_question_answers(/:id)', to: 'match_question_answers#get_individual_match_profile_match_question_answer'
       end
 
