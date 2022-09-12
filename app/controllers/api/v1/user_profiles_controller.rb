@@ -53,7 +53,10 @@ class Api::V1::UserProfilesController < ApplicationController
     # respond_to do |format|
       if @user_profile.update(user_profile_params)
         # format.html { redirect_to user_profile_url(@user_profile), notice: "UserProfile was successfully updated." }
-        format.json { render :show, status: :ok, location: @user_profile }
+        puts "user_profile = "
+        puts @user_profile
+        render :show, status: :ok
+        #, location: @user_profile
       else
         # format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @user_profile.errors, status: :unprocessable_entity }
@@ -64,12 +67,12 @@ class Api::V1::UserProfilesController < ApplicationController
   # DELETE /user_profiles/1 or /user_profiles/1.json
   def destroy
     @user_profile.destroy
-    session[:user_profile_id] = nil if @user_profile == current_user_profile
+    # session[:user_profile_id] = nil if @user_profile == current_user_profile
 
-    respond_to do |format|
-      format.html { redirect_to user_profiles_url, notice: "UserProfile was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    # respond_to do |format|
+    #   format.html { redirect_to user_profiles_url, notice: "UserProfile was successfully destroyed." }
+    #   format.json { head :no_content }
+    # end
   end
 
   # def update_piechart_percentages
@@ -92,7 +95,7 @@ class Api::V1::UserProfilesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_profile_params
-      params.require(:user_profile).permit(:email, :password, :password_confirmation, :first_name, :last_name)
+      params.require(:user_profile).permit(:email, :password_digest, :first_name, :last_name, :admin)
     end
 
     def require_same_user_profile

@@ -13,6 +13,7 @@ Rails.application.routes.draw do
           resources :starred_match_profiles
         end
         resources :user_question_answers
+        resources :category_percentages, shallow: true
         get '(/:id)/user_question_answers(/:id)', to: 'user_question_answers#get_individual_user_profile_user_question_answer'
       end
 
@@ -40,6 +41,7 @@ Rails.application.routes.draw do
       get '/logged_in', to: 'sessions#is_logged_in?'
       get 'signup', to: 'user_profiles#new', as: 'signup'
       get 'about', to: 'pages#index'
+      get '/compare_qa(:id)', to: 'application#compare_qa', as: :compare_qa
     end
 
   end

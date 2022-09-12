@@ -15,6 +15,7 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
 
   # POST /starred_match_profiles
   def create
+    # TODO: need to make this find a match_profile and link it to this
     @starred_match_profile = StarredMatchProfile.new(starred_match_profile_params)
 
     if @starred_match_profile.save
