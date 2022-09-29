@@ -40,10 +40,9 @@ Rails.application.routes.draw do
       post '/login', to: 'sessions#create'
       delete '/logout', to: 'sessions#destroy'
       get '/logged_in', to: 'sessions#is_logged_in?'
-      # get 'signup', to: 'user_profiles#new', as: 'signup'
+      get 'signup', to: 'user_profiles#new', as: 'signup'
       get 'about', to: 'pages#index'
       post 'signup', to: 'user_profiles#create', as: 'signup'
-      # get '/compare_qa(:id)', to: 'application#compare_qa', as: :compare_qa
     end
 
   end
