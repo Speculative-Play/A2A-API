@@ -14,7 +14,8 @@ Rails.application.routes.draw do
         end
         resources :user_question_answers, shallow: true
         resources :category_percentages, shallow: true
-        get '(/:id)/user_question_answers(/:id)', to: 'user_question_answers#get_individual_user_profile_user_question_answer'
+        put '(/:id)/category_percentages', to: 'category_percentages#update'
+        # get '(/:id)/user_question_answers(/:id)', to: 'user_question_answers#get_individual_user_profile_user_question_answer'
       end
 
       resources :match_profiles, shallow: true do
@@ -23,7 +24,7 @@ Rails.application.routes.draw do
           get 'sort_match_profiles_by_attribute'
         end
         resources :match_question_answers, shallow: true
-        get '(/:id)/match_question_answers(/:id)', to: 'match_question_answers#get_individual_match_profile_match_question_answer'
+        # get '(/:id)/match_question_answers(/:id)', to: 'match_question_answers#get_individual_match_profile_match_question_answer'
       end
 
       resources :matchmaking_categories, shallow: true do
