@@ -29,7 +29,7 @@ class Api::V1::UserProfilesController < ApplicationController
 
     # respond_to do |format|
       if @user_profile.save
-        session[:user_profile_id] = @user_profile.id
+        # session[:user_profile_id] = @user_profile.id
         render json: {
           status: :created,
           user_profile: @user_profile
