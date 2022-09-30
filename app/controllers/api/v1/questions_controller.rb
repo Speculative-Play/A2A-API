@@ -4,8 +4,7 @@ class Api::V1::QuestionsController < ApplicationController
   # GET /questions
   def index
     @questions = Question.all
-
-    render json: @questions
+    render json: @questions.sort_by {|prof| prof.matchmaking_category_id}.to_json(include: :answers)
   end
 
   # GET /questions/1
