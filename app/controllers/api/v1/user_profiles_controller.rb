@@ -11,6 +11,21 @@ class Api::V1::UserProfilesController < ApplicationController
 
   # GET /user_profiles/1
   def show
+  end
+
+  # POST /search-child
+  def search_child
+    email = params[:email]
+    @user_profile = UserProfile.where("email = ?", email)
+
+    # Might want some error / success message here
+    # if @user_profile.exists?
+    #   puts "found user"
+    #   puts @user_profile
+    # else 
+    #   puts "user not found"
+    #   puts @user_profile
+    # end
     render json: @user_profile
   end
 
