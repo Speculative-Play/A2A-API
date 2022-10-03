@@ -12,6 +12,17 @@ class Api::V1::QuestionsController < ApplicationController
     render json: @question
   end
 
+  # GET /questions/match_category/1
+  def questions_by_category
+    @questions = if params[:matchmaking_category_id].present?
+      Question.where("matchmaking_category_id = ?", params[:matchmaking_category_id])
+    else
+      puts "no questions found"
+    end
+
+    render json: @questions
+  end
+
   # POST /questions
   def create
     @question = Question.new(question_params)

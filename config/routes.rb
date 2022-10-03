@@ -37,6 +37,7 @@ Rails.application.routes.draw do
       resources :questions
       resources :answers
 
+      get '/questions/matchmaking_category(/:matchmaking_category_id)', to: 'questions#questions_by_category'
       post '/login', to: 'sessions#create'
       delete '/logout', to: 'sessions#destroy'
       get '/logged_in', to: 'sessions#is_logged_in?'
