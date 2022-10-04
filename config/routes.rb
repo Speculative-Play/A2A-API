@@ -37,7 +37,9 @@ Rails.application.routes.draw do
       resources :questions
       resources :answers
 
-      post '/search-child', to: 'user_profiles#search_child'
+      post '/signup_parent_accounts', to: 'parent_accounts#create'
+      post '/search-child', to: 'parent_accounts#search_child'
+      get '/view-child', to: 'parent_accounts#view_child'
       get '/questions/matchmaking_category(/:matchmaking_category_id)', to: 'questions#questions_by_category'
       post '/login', to: 'sessions#create'
       delete '/logout', to: 'sessions#destroy'
