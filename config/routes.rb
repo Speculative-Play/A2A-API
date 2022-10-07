@@ -37,6 +37,7 @@ Rails.application.routes.draw do
       resources :questions
       resources :answers
 
+      get '/user_profiles(/:user_profile_id)/get_user_questions_answers', to: 'user_question_answers#get_user_questions_answers'
       post '/signup_parent_accounts', to: 'parent_accounts#create'
       post '/search-child', to: 'parent_accounts#search_child'
       get '/view-child', to: 'parent_accounts#view_child'

@@ -34,6 +34,18 @@ class Api::V1::UserQuestionAnswersController < ApplicationController
     end
   end
 
+  # GET /user_question_answer/[user_profile_id]
+  def get_user_questions_answers
+    @user_question_answers = UserQuestionAnswer.where("user_profile_id = ?", params[:user_profile_id])
+
+    @questions = Question.joins(:user_question_answers).where("user_question_answers.user_profile_id" => params[:user_profile_id])
+
+    @answers = Answer.joins(:user_question_answers).where("user_question_answers.user_profile_id" => params[:user_profile_id])
+
+    render json: {all_data: {user_question_answers: @user_question_answers, questions: @questions, answers: @answers}}
+    format.json { render :json => @user_question_answers.to_json}
+  end
+
   # POST /user_question_answers
   def create
     @user_question_answer = UserQuestionAnswer.new(user_question_answer_params)
