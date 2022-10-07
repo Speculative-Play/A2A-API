@@ -21,10 +21,8 @@ class Api::V1::UserProfilesController < ApplicationController
     # Might want some error / success message here
     # if @user_profile.exists?
     #   puts "found user"
-    #   puts @user_profile
     # else 
     #   puts "user not found"
-    #   puts @user_profile
     # end
     render json: @user_profile
   end
@@ -68,8 +66,6 @@ class Api::V1::UserProfilesController < ApplicationController
     # respond_to do |format|
       if @user_profile.update(user_profile_params)
         # format.html { redirect_to user_profile_url(@user_profile), notice: "UserProfile was successfully updated." }
-        puts "user_profile = "
-        puts @user_profile
         render :show, status: :ok
         #, location: @user_profile
       else
@@ -110,7 +106,7 @@ class Api::V1::UserProfilesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_profile_params
-      params.require(:user_profile).permit(:email, :password_digest, :first_name, :last_name, :admin)
+      params.require(:user_profile).permit(:email, :password_digest, :first_name, :last_name, :admin, :image)
     end
 
     def require_same_user_profile

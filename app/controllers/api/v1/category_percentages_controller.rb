@@ -1,6 +1,7 @@
 class Api::V1::CategoryPercentagesController < ApplicationController
   before_action :set_category_percentage, only: %i[ show destroy ]
 
+
   # GET /category_percentages
   def index
     # @category_percentages = CategoryPercentage.all
@@ -31,34 +32,28 @@ class Api::V1::CategoryPercentagesController < ApplicationController
 
   # PATCH/PUT /category_percentages
   def update
-    # @category_percentage = if params[:user_profile_id].present?
-    #   # if params[:matchmaking_category_id].present?
-    #   if params.has_key?(:matchmaking_category_id)
-    #     puts "matchmaking cat id present!"
-    #     puts params[:matchmaking_category_id]
-    #     puts "did you see it?"
-    #   end
-      # puts "matchmaking_category_id present"
-      # puts "here are params:"
-      # puts @category_percentage.user_profile_id
-      # puts @category_percentage.id
-      # puts @category_percentage.matchmaking_category_id
-      # puts @category_percentage.category_percentage
-      # CategoryPercentage.where("category_percentage = ?", params[:category_percentage])
 
-      # CategoryPercentage.where("user_profile_id = ? AND matchmaking_category_id = ?", params[:user_profile_id], params[:matchmaking_category_id])
-      # puts "category perc = ", CategoryPercentage.where("user_profile_id = ? AND matchmaking_category_id = ?", params[:user_profile_id], params[:matchmaking_category_id])
+    # parse JSON and create variables
+    @json = JSON.parse(request.body.read)
+    @user_profile_id = params[:user_profile_id] # input user_profile_id
+    @input_category_id_array = []               # input matchmaking_category_ids
+    @input_category_percentage_array = []       # input category_percentages
 
-      if @category_percentage.update(category_percentage_params)
-        puts "success!"
-        render json: @category_percentage
-      else
-        puts "fail!"
-        render json: @category_percentage.errors, status: :unprocessable_entity
-      end
-    # else
-    #   puts "ERROR"
-    # end
+    @current_category_percentages = CategoryPercentage.where("user_profile_id = ?", @user_profile_id)
+
+    # collect and store the input values in arrays
+    @json['category_percentages_input'].each_with_index do |category, index|
+      @input_category_id_array[index] = category['matchmaking_category_id']
+      @input_category_percentage_array[index] = category['category_percentage']
+    end
+
+    # TODO: need to implement verification that total value of all category_percentages = 100%)
+
+    # update the records with the new values
+    @input_category_id_array.each_with_index do |array, index|
+      CategoryPercentage.update(@current_category_percentages[index].id, :category_percentage => @input_category_percentage_array[index])
+    end
+
   end
 
   # DELETE /category_percentages/1
