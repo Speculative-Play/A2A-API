@@ -7,6 +7,7 @@ class UserProfile < ApplicationRecord
 
     has_one :parent_account, dependent: :destroy
     has_many :starred_match_profiles, through: :parent_account, dependent: :destroy
+    has_many :favourited_match_profiles, dependent: :destroy
     has_many :user_question_answers, dependent: :destroy
     has_many :category_percentages, dependent: :destroy
 

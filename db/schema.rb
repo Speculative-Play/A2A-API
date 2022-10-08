@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_22_162244) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_08_161029) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -55,6 +55,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_22_162244) do
     t.datetime "updated_at", null: false
     t.index ["matchmaking_category_id"], name: "index_category_percentages_on_matchmaking_category_id"
     t.index ["user_profile_id"], name: "index_category_percentages_on_user_profile_id"
+  end
+
+  create_table "favourited_match_profiles", force: :cascade do |t|
+    t.integer "user_profile_id"
+    t.integer "match_profile_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["match_profile_id"], name: "index_favourited_match_profiles_on_match_profile_id"
+    t.index ["user_profile_id"], name: "index_favourited_match_profiles_on_user_profile_id"
   end
 
   create_table "match_profiles", force: :cascade do |t|
@@ -139,6 +148,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_22_162244) do
   add_foreign_key "answers", "questions"
   add_foreign_key "category_percentages", "matchmaking_categories"
   add_foreign_key "category_percentages", "user_profiles"
+  add_foreign_key "favourited_match_profiles", "match_profiles"
+  add_foreign_key "favourited_match_profiles", "user_profiles"
   add_foreign_key "match_question_answers", "answers"
   add_foreign_key "match_question_answers", "match_profiles"
   add_foreign_key "match_question_answers", "questions"
