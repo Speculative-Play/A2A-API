@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :favourited_match_profiles
   namespace :api do
     
     namespace :v1 do
@@ -37,6 +38,7 @@ Rails.application.routes.draw do
       resources :questions
       resources :answers
 
+      post 'starred_match_profiles(/:parent_account_id)', to: 'starred_match_profiles#create'
       get '/user_profiles(/:user_profile_id)/get_user_questions_answers', to: 'user_question_answers#get_user_questions_answers'
       post '/signup_parent_accounts', to: 'parent_accounts#create'
       post '/search-child', to: 'parent_accounts#search_child'

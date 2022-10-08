@@ -4,7 +4,9 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
   # GET /starred_match_profiles
   def index
     # Returns all starred_match_profiles that share parent_account_id
-    @starred_match_profiles = StarredMatchProfile.where("parent_account_id = ?", params[:parent_account_id])
+    @starred_match_profiles = if params[:parent_account_id].present?
+      StarredMatchProfile.where("parent_account_id = ?", params[:parent_account_id])
+    end
     render json: @starred_match_profiles
   end
 
@@ -13,13 +15,11 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
     render json: @starred_match_profile
   end
 
-  # POST /starred_match_profiles
+  # POST /starred_match_profiles/[parent_account_id]
   def create
-    # TODO: need to make this find a match_profile and link it to this
     @starred_match_profile = StarredMatchProfile.new(starred_match_profile_params)
-
     if @starred_match_profile.save
-      render json: @starred_match_profile, status: :created, location: @starred_match_profile
+      render json: @starred_match_profile, status: :created
     else
       render json: @starred_match_profile.errors, status: :unprocessable_entity
     end
@@ -47,6 +47,8 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def starred_match_profile_params
-      params.fetch(:starred_match_profile, {})
+      # params.fetch(:starred_match_profile, {})
+      params.require(:starred_match_profile).permit(:parent_account_id, :match_profile_id)
+
     end
 end
