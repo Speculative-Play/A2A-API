@@ -1,5 +1,5 @@
 class Api::V1::FavouritedMatchProfilesController < ApplicationController
-  before_action :set_favourited_match_profile, only: %i[ show update destroy ]
+  # before_action :set_favourited_match_profile, only: %i[ show update destroy ]
 
   # GET /favourited_match_profiles
   def index
@@ -18,7 +18,6 @@ class Api::V1::FavouritedMatchProfilesController < ApplicationController
   # POST /favourited_match_profiles
   def create
     @favourited_match_profile = FavouritedMatchProfile.new(favourited_match_profile_params)
-
     if @favourited_match_profile.save
       render json: @favourited_match_profile, status: :created, location: @favourited_match_profile
     else
@@ -35,9 +34,22 @@ class Api::V1::FavouritedMatchProfilesController < ApplicationController
     end
   end
 
-  # DELETE /favourited_match_profiles/1
+  # DELETE /favourited_match_profiles
   def destroy
+    puts "begin destroy"
+    @json = JSON.parse(request.body.read)
+    @match_profile_id = @json["favourited_match_profile"]["match_profile_id"]
+    @favourited_match_profile = FavouritedMatchProfile.where("user_profile_id = ? AND match_profile_id = ?", params[:user_profile_id], @match_profile_id)
+    puts "favourited_match_profile found = ", @favourited_match_profile
+
+    @id = @favourited_match_profile.ids
+    puts "id found = ", @id
+    @favourited_match_profile = FavouritedMatchProfile.where("id = ?", @id)
+    # if params[:user_profile_id].present?
+    puts "favourited_match_profile found = ", @favourited_match_profile
+    # end
     @favourited_match_profile.destroy
+    puts "end destroy"
   end
 
   private
@@ -48,6 +60,7 @@ class Api::V1::FavouritedMatchProfilesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def favourited_match_profile_params
-      params.fetch(:favourited_match_profile, {})
+      # params.fetch(:favourited_match_profile, {})
+      params.require(:favourited_match_profile).permit(:user_profile_id, :match_profile_id)
     end
 end
