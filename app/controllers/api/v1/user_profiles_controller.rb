@@ -50,13 +50,14 @@ class Api::V1::UserProfilesController < ApplicationController
         # format.html { redirect_to user_profile_url(@user_profile), notice: "UserProfile was successfully created." }
         # format.json { render :show, status: :created, location: @user_profile }
       else
-        @user_profile.save
-        render json: {
-          status: 500,
-          error: @user_profile.errors.full_messages
-        }
+        # @user_profile.save
+        # render json: {
+        #   status: 500,
+        #   error: @user_profile.errors.full_messages
+        # }
         # format.html { render :new, status: :unprocessable_entity }
         # format.json { render json: @user_profile.errors, status: :unprocessable_entity }
+        render 'new'
       end
     # end
   end
@@ -70,7 +71,8 @@ class Api::V1::UserProfilesController < ApplicationController
         #, location: @user_profile
       else
         # format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @user_profile.errors, status: :unprocessable_entity }
+        # format.json { render json: @user_profile.errors, status: :unprocessable_entity }
+        render json: @user_profile.errors, status: :unprocessable_entity
       end
     # end
   end
@@ -115,6 +117,19 @@ class Api::V1::UserProfilesController < ApplicationController
         redirect_to @user_profile
       end
     end
+
+    def authenticate_user_profile
+      unless logged_in?
+        flash[:danger] = "Please log in."
+        redirect_to login_url
+      end
+    end
+
+    def correct_user_profile
+      @user_profile = UserProfile.find(params[:id])
+      # redirect_to(root_url) unless current_user_profile?(@user_profile)
+    end
+
 
     def pie_params
       params.permit!

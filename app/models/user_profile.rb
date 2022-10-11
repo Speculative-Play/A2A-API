@@ -1,9 +1,13 @@
 class UserProfile < ApplicationRecord
+    attr_accessor :remember_token
     before_save { self.email = email.downcase }
     VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
     # could also use: 
     # validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
     validates :email, presence: true, uniqueness: { case_sensitive: false }, format: {with: VALID_EMAIL_REGEX}
+    # validates :first_name, presence: true
+    # validates :last_name, presence: true
+    validates :password_digest, presence: true
 
     has_one :parent_account, dependent: :destroy
     has_many :starred_match_profiles, through: :parent_account, dependent: :destroy
@@ -13,4 +17,33 @@ class UserProfile < ApplicationRecord
 
     has_secure_password
     has_one_attached :image, dependent: :destroy
+
+    class << self
+        # Return the hash value of the given string
+        def digest(string)
+            cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST : BCrypt::Engine.cost
+            BCrypt::Password.create(string, cost: cost)
+        end
+
+        # Return a random token
+        def generate_token
+            SecureRandom.urlsafe_base64
+        end
+    end
+
+    #Create a new token -> encrypt it -> stores the hash value in remember_digest in DB
+    def remember
+        self.remember_token = UserProfile.generate_token
+        update_attribute(:remember_digest, UserProfile.digest(remember_token))
+    end
+
+    # Check if the given token value matches the one stored in DB
+    def authenticated?(remember_token)
+        BCrypt::Password.new(remember_digest).is_password?(remember_token)
+    end
+
+    def forget
+        update_attribute(:remember_digest, nil)
+    end
+
 end

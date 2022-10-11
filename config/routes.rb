@@ -52,8 +52,8 @@ Rails.application.routes.draw do
       delete '/logout', to: 'sessions#destroy'
 
       post '/signup_parent_accounts', to: 'parent_accounts#create'
-      get 'signup', to: 'user_profiles#new', as: 'signup'
-      post 'signup', to: 'user_profiles#create', as: 'signup'
+      get 'signup', to: 'user_profiles#new'
+      post 'signup', to: 'user_profiles#create'
     end
 
   end

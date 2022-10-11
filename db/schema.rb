@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_08_161029) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_11_145925) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -130,6 +130,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_08_161029) do
     t.string "email"
     t.string "first_name", null: false
     t.string "last_name", null: false
+    t.string "remember_digest"
   end
 
   create_table "user_question_answers", force: :cascade do |t|
