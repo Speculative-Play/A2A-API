@@ -12,46 +12,44 @@ include ActionController::Cookies
   end
 
   def new
-    puts "inside sessions#new"
+    puts "inside Sessions > new"
   end
 
   # Creates session object that allows user_profile to be logged in persistently
   def create
+    puts "inside Sessions > create"
     @user_profile = UserProfile.find_by(email: params[:session][:email])
+    puts "inside Sessions > create > @user_profile found = ", @user_profile.email
     if @user_profile && @user_profile.authenticate(params[:session][:password_digest])
+      puts "inside Sessions > create > if user_profile.authenticate[session, password] == true"
+
       # if user_profile.admin == 1
       #   redirect_to user_profiles_url, notice: "Logged in as ADMIN!"
       # else
       log_in @user_profile
-      params[:session][:remember_me] == '1' ? remember(@user_profile) : forget(@user_profile)
+
+      # if params[:session][:remember_me] == '1'
+        puts "inside Sessions > create > if params[session, remember_me] == 1"
+
+        remember(@user_profile) 
+      # else 
+        # puts "inside Sessions > create > if params[session, remember_me] != 1"
+
+        # forget(@user_profile)
+      # end
       # session[:user_profile_id] = @user_profile.id
       render json: @user_profile
-      # puts "User successfully logged in"
-      # puts @user_profile.id
+
     else
       # render json: { 
       #   status: 401, 
       #   error: "Could not authenticate your account"
       # }
-      puts "user could not be logged in"
+      puts "inside Sessions > create > user could not be logged in"
       render :new
     end
-    puts "leaving sessions#create"
+    puts "leaving Sessions > create"
   end
-
-  # def logged_in
-  #   @current_user_profile = UserProfile.find(session[:user_profile_id]) if session[:user_profile_id]
-  #   if @current_user_profile
-  #     render json: {
-  #       logged_in: true,
-  #       user: UserProfileSerializer.new(@current_user_profile)
-  #     }
-  #   else
-  #     render json: {
-  #       logged_in: false
-  #     }
-  #   end
-  # end
 
   # PATCH/PUT /sessions/1
   # def update
@@ -63,11 +61,6 @@ include ActionController::Cookies
   # end
 
   def destroy
-    # session.delete :user_id
-    # render json: {
-    #   status: 200,
-    #   logged_out: true
-    # }
     log_out
     redirect_to root_url
   end
@@ -76,10 +69,10 @@ include ActionController::Cookies
 
     # Only allow a list of trusted parameters through.
     def session_params
-      puts "inside session_params method"
+      puts "inside Sessions > session_params method"
       # params.permit!
       params.require(:user_profile).permit(:email, :password_digest)
       # params.fetch(:session, {})
-      puts "leaving session_params"
+      puts "leaving Sessions > session_params"
     end
 end

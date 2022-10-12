@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :favourited_match_profiles
   namespace :api do
     
     namespace :v1 do
@@ -15,8 +14,9 @@ Rails.application.routes.draw do
         end
         resources :user_question_answers, shallow: true
         resources :category_percentages, shallow: true
+        resources :favourited_match_profiles, shallow: true
+
         put '(/:id)/category_percentages', to: 'category_percentages#update'
-        # get '(/:id)/user_question_answers(/:id)', to: 'user_question_answers#get_individual_user_profile_user_question_answer'
       end
 
       resources :match_profiles, shallow: true do
@@ -25,7 +25,6 @@ Rails.application.routes.draw do
           get 'sort_match_profiles_by_attribute'
         end
         resources :match_question_answers, shallow: true
-        # get '(/:id)/match_question_answers(/:id)', to: 'match_question_answers#get_individual_match_profile_match_question_answer'
       end
 
       resources :matchmaking_categories, shallow: true do
@@ -37,6 +36,9 @@ Rails.application.routes.draw do
       end
       resources :questions
       resources :answers
+
+      put 'user_profile/edit', to: 'user_profiles#update'
+
 
       # get 'about', to: 'pages#index'
       delete 'favourited_match_profiles(/:user_profile_id)', to: 'favourited_match_profiles#destroy'

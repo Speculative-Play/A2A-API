@@ -49,6 +49,5 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
     def starred_match_profile_params
       # params.fetch(:starred_match_profile, {})
       params.require(:starred_match_profile).permit(:parent_account_id, :match_profile_id)
-
     end
 end
