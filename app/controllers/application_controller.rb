@@ -1,12 +1,5 @@
 class ApplicationController < ActionController::API
-    # require_relative '../helpers/sessions_helper'
-
-    # helper_method :current_user_profile, :logged_in?
-    # helper_method :log_in, :log_out, :logged_in?, :remember, :forget, :authorize, :create_profile_path
     include ActionController::Helpers
-    # include SessionsHelper
-    # helpers :all
-    # include SessionsHelper
 
     def authorize
         redirect_to login_url, alert: "Not authorized" if current_user_profile.nil?
