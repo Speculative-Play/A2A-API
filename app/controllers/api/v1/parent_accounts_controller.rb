@@ -52,7 +52,7 @@ class Api::V1::ParentAccountsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def parent_account_params
       # params.fetch(:parent_account, {})
-      params.require(:parent_account).permit(:email, :password_digest, :user_profile_id)
+      params.require(:parent_account).permit(:email, :password, :user_profile_id)
 
     end
 end
