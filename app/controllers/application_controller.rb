@@ -9,8 +9,6 @@ class ApplicationController < ActionController::API
         redirect_to new_user_profile_path
     end
 
-
-
     def forget(user_profile)
         # puts "inside ApplicationController > forget(user_profile)"
         user_profile.forget
@@ -32,8 +30,6 @@ class ApplicationController < ActionController::API
 
     def logged_in?
         !current_user_profile.nil?
-        # puts "inside ApplicationController > logged_in?"
-        # !!current_user_profile
     end
 
     def remember(user_profile)
