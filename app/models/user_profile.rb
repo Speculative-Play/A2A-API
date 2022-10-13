@@ -7,7 +7,7 @@ class UserProfile < ApplicationRecord
     validates :email, presence: true, uniqueness: { case_sensitive: false }, format: {with: VALID_EMAIL_REGEX}
     # validates :first_name, presence: true
     # validates :last_name, presence: true
-    validates :password_digest, presence: true
+    # validates :password, presence: true
 
     has_one :parent_account, dependent: :destroy
     has_many :starred_match_profiles, through: :parent_account, dependent: :destroy
