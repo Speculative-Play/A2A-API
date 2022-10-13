@@ -97,7 +97,7 @@ class Api::V1::UserProfilesController < ApplicationController
   private
     def authenticate_user_profile
       puts "inside UserProfiles > authenticate_user_profile"
-      unless logged_in?
+      unless logged_in_user_profile?
         # flash[:danger] = "Please log in."
         # redirect_to login_url
         puts "inside UserProfiles > authenticate_user_profile > unless logged_in? ==  true"

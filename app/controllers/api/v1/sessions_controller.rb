@@ -24,7 +24,7 @@ include ActionController::Cookies
       puts "child account found"
       @user_profile = UserProfile.find_by(email: params[:session][:email])
       if @user_profile && @user_profile.authenticate(params[:session][:password])
-        log_in @user_profile
+        log_in_user_profile @user_profile
         remember(@user_profile) 
         render json: @user_profile
       else

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_11_145925) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_13_174929) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -97,6 +97,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_11_145925) do
     t.integer "user_profile_id"
     t.string "password_digest", null: false
     t.string "email", null: false
+    t.string "remember_digest"
     t.index ["user_profile_id"], name: "index_parent_accounts_on_user_profile_id"
   end
 

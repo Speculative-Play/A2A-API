@@ -1,5 +1,6 @@
 class Api::V1::ParentAccountsController < ApplicationController
-  before_action :set_parent_account, only: %i[ show update destroy ]
+  # before_action :set_parent_account, only: %i[ show update destroy ]
+  before_action :authenticate_parent_account
 
   # GET /parent_accounts
   def index
@@ -10,6 +11,7 @@ class Api::V1::ParentAccountsController < ApplicationController
 
   # GET /parent_accounts/1
   def show
+    @parent_account = current_parent_account
     render json: @parent_account
   end
 
@@ -44,15 +46,28 @@ class Api::V1::ParentAccountsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_parent_account
-      @parent_account = ParentAccount.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def parent_account_params
-      # params.fetch(:parent_account, {})
-      params.require(:parent_account).permit(:email, :password, :user_profile_id)
-
+  def authenticate_parent_account
+    puts "inside parent_account > authenticate_parent_account"
+    unless logged_in_parent_account?
+      # flash[:danger] = "Please log in."
+      # redirect_to login_url
+      puts "inside parent_account > authenticate_parent_account > unless logged_in? ==  true"
+      # redirect_to log_in
+    else
+      puts "inside parent_account > authenticate_parent_account > login successful!"
     end
+  end
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_parent_account
+    @parent_account = ParentAccount.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def parent_account_params
+    # params.fetch(:parent_account, {})
+    params.require(:parent_account).permit(:email, :password, :user_profile_id)
+
+  end
 end
