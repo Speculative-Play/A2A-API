@@ -1,5 +1,6 @@
 class Api::V1::SessionsController < ApplicationController
-include ActionController::Cookies
+  include ActionController::Cookies
+
   # GET /sessions
   def index
     @sessions = Session.all
@@ -17,11 +18,8 @@ include ActionController::Cookies
 
   # Creates session object that allows user_profile to be logged in persistently
   def create
-
-    @json = JSON.parse(request.body.read)
-    @account_type = @json["session"]["account_type"]
-    if @account_type == 1
-      puts "child account found"
+    @session_type = params[:session][:session_type]
+    if @session_type == 1
       @user_profile = UserProfile.find_by(email: params[:session][:email])
       if @user_profile && @user_profile.authenticate(params[:session][:password])
         log_in_user_profile @user_profile
@@ -31,17 +29,23 @@ include ActionController::Cookies
         # TODO: put error message here
         puts "user could not be authenticated"
       end
-    elsif @account_type == 2
-      puts "parent account found"
-      @parent_account = ParentAccount.find_by(email: params[:session[:email]])
-      puts "parent_account found = ", @parent_account
+    elsif @session_type == 2
+      @parent_account = ParentAccount.find_by(email: params[:session][:email])
+      if @parent_account = @parent_account.authenticate(params[:session][:password])
+        log_in_parent_account @parent_account
+        remember(@parent_account)
+        render json: @parent_account
+      else
+        # TODO: put error message here
+        puts "account could not be authenticated"
+      end
+      end
     else
       render json: { 
         status: 401, 
         error: "Could not authenticate your account"
       }
     end
-    # puts "leaving Sessions > create"
   end
 
   # PATCH/PUT /sessions/1
@@ -54,7 +58,12 @@ include ActionController::Cookies
   # end
 
   def destroy
-    log_out
+    if !current_parent_account.nil?
+      puts "parent account logout detected"
+    elsif !current_user_profile.nil?
+      puts "user profile logout detected"
+    end
+    # log_out
     puts "redirecting to root url now..."
     # redirect_to root_url
   end
@@ -65,7 +74,7 @@ include ActionController::Cookies
     def session_params
       # puts "inside Sessions > session_params method"
       # params.permit!
-      params.require(:user_profile).permit(:email, :password, :account_type)
+      params.require(:user_profile).permit(:email, :password, :session_type)
       # params.fetch(:session, {})
       # puts "leaving Sessions > session_params"
     end
