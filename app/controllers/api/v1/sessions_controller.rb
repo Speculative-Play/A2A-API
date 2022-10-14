@@ -39,7 +39,6 @@ class Api::V1::SessionsController < ApplicationController
         # TODO: put error message here
         puts "account could not be authenticated"
       end
-      end
     else
       render json: { 
         status: 401, 
