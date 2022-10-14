@@ -24,7 +24,12 @@ class Api::V1::SessionsController < ApplicationController
       if @user_profile && @user_profile.authenticate(params[:session][:password])
         log_in_user_profile @user_profile
         remember(@user_profile) 
-        render json: @user_profile
+        @session = Session.new(session_database_params)
+        if @session.save
+          render json: @user_profile
+        else
+          puts "session could not be saved"
+        end
       else
         # TODO: put error message here
         puts "user could not be authenticated"
@@ -34,7 +39,13 @@ class Api::V1::SessionsController < ApplicationController
       if @parent_account = @parent_account.authenticate(params[:session][:password])
         log_in_parent_account @parent_account
         remember(@parent_account)
-        render json: @parent_account
+        @session = Session.new(session_database_params)
+        if @session.save
+          render json: @parent_account
+        else
+          puts "session could not be saved"
+        end
+
       else
         # TODO: put error message here
         puts "account could not be authenticated"
@@ -57,10 +68,18 @@ class Api::V1::SessionsController < ApplicationController
   # end
 
   def destroy
+    puts "inside sessions_controller > destroy"
+    puts "user account detected = ", current_user_profile
+    @session_type = params[:session][:session_type]
+    puts "session type = ", @session_type
+
+    puts "parent account detected = ", current_parent_account
     if !current_parent_account.nil?
       puts "parent account logout detected"
+      log_out_parent_account
     elsif !current_user_profile.nil?
       puts "user profile logout detected"
+      log_out_user_profile
     end
     # log_out
     puts "redirecting to root url now..."
@@ -69,11 +88,15 @@ class Api::V1::SessionsController < ApplicationController
 
   private
 
+    def session_database_params
+      params.require(:session).permit(:session_type)
+    end
+
     # Only allow a list of trusted parameters through.
     def session_params
       # puts "inside Sessions > session_params method"
       # params.permit!
-      params.require(:user_profile).permit(:email, :password, :session_type)
+      params.permit(:email, :password, :session_type, :user_profile, :parent_account)
       # params.fetch(:session, {})
       # puts "leaving Sessions > session_params"
     end
