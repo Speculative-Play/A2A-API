@@ -24,6 +24,8 @@ class Api::V1::SessionsController < ApplicationController
       if @user_profile && @user_profile.authenticate(params[:session][:password])
         log_in_user_profile @user_profile
         remember(@user_profile) 
+        # TODO: Unpermitted parameters error here due to not permitting email and pw 
+        # => seems to work fine regardless but note for later to fix
         @session = Session.new(session_database_params)
         if @session.save
           render json: @user_profile
@@ -39,6 +41,8 @@ class Api::V1::SessionsController < ApplicationController
       if @parent_account = @parent_account.authenticate(params[:session][:password])
         log_in_parent_account @parent_account
         remember(@parent_account)
+        # TODO: Unpermitted parameters error here due to not permitting email and pw 
+        # => seems to work fine regardless but note for later to fix
         @session = Session.new(session_database_params)
         if @session.save
           render json: @parent_account
@@ -68,16 +72,27 @@ class Api::V1::SessionsController < ApplicationController
   # end
 
   def destroy
-    puts "inside sessions_controller > destroy"
-    puts "user account detected = ", current_user_profile
-    @session_type = params[:session][:session_type]
+    # puts "inside sessions_controller > destroy"
+    # puts "user account detected = ", current_user_profile
+    @session = Session.first
+    puts "session = ", @session
+    @session_type = @session[:session_type]
     puts "session type = ", @session_type
 
-    puts "parent account detected = ", current_parent_account
-    if !current_parent_account.nil?
+    # if @session_type == 1
+    # Session.first.destroy
+    # current_parent_account = nil
+    # current_user_profile = nil
+    # else
+
+
+    # puts "parent account detected = ", current_parent_account
+    # if !current_parent_account.nil?
+    if @session_type == 2
       puts "parent account logout detected"
       log_out_parent_account
-    elsif !current_user_profile.nil?
+    # elsif !current_user_profile.nil?
+    elsif @session_type == 1
       puts "user profile logout detected"
       log_out_user_profile
     end
@@ -94,10 +109,8 @@ class Api::V1::SessionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def session_params
-      # puts "inside Sessions > session_params method"
-      # params.permit!
-      params.permit(:email, :password, :session_type, :user_profile, :parent_account)
-      # params.fetch(:session, {})
+      # params.permit(:email, :password, :session_type, :user_profile, :parent_account)
+      params.fetch(:session, {})
       # puts "leaving Sessions > session_params"
     end
 end
