@@ -77,7 +77,7 @@ include ActionController::Cookies
 
   def destroy
     # puts "inside sessions_controller > destroy"
-    # puts "user account detected = ", current_user_profile
+    # puts "user account detected = ", @current_user_profile
     @session = Session.first
     puts "session = ", @session
     @session_type = @session[:session_type]

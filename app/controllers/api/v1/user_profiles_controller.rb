@@ -21,7 +21,7 @@ class Api::V1::UserProfilesController < ApplicationController
   # GET /user_profiles/1
   def show
     puts "inside user_profiles_controller > show"
-    @user_profile = current_user_profile
+    @user_profile = @current_user_profile
     render json: @user_profile
   end
 
@@ -71,9 +71,10 @@ class Api::V1::UserProfilesController < ApplicationController
     @user_profile = @current_user_profile
     puts "user profile id =",@user_profile
     if @user_profile.update(user_profile_params)
-      # puts "inside UserProfiles > update > if passed"
+      puts "inside UserProfiles > update > if passed"
 
-      render :show, status: :ok
+      show
+      # render 'show', status: :ok
     else
       # puts "inside UserProfiles > update > else taken"
 
@@ -96,10 +97,10 @@ class Api::V1::UserProfilesController < ApplicationController
       puts "inside UserProfiles > authenticate_user_profile"
       # logged_in_user_profile?
       # if !current_user_profile.nil?
-      unless logged_in_user_profile?
+      if logged_in_user_profile?
         # flash[:danger] = "Please log in."
         # redirect_to login_url
-        # puts "2nd logged_in_user_profile as=", @current_user_profile.id
+        puts "2nd logged_in_user_profile as=", @current_user_profile.id
 
         puts "!!! you are not logged in! please login to continue!"
         render json: 'You are not logged in! Please log in to continue.', status: :unprocessable_entity
@@ -115,17 +116,17 @@ class Api::V1::UserProfilesController < ApplicationController
       # redirect_to(root_url) unless current_user_profile?(@user_profile)
     end
 
-    def require_same_user_profile
-      if current_user_profile != @user_profile && !current_user_profile.admin?
-        # flash[:alert] = "You can only edit or delete your own account"
-        redirect_to @user_profile
-      end
-    end
+    # def require_same_user_profile
+    #   if current_user_profile != @user_profile && !current_user_profile.admin?
+    #     # flash[:alert] = "You can only edit or delete your own account"
+    #     redirect_to @user_profile
+    #   end
+    # end
 
     # Use callbacks to share common setup or constraints between actions.
-    def set_user_profile
-      @user_profile = UserProfile.find(params[:id])
-    end
+    # def set_user_profile
+    #   @user_profile = UserProfile.find(params[:id])
+    # end
 
     # Only allow a list of trusted parameters through.
     def user_profile_params

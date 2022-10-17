@@ -53,9 +53,9 @@ class ApplicationController < ActionController::API
     end
 
     def logged_in_user_profile?
-        puts "inside application_controller > logged_in_user_profile?"
-        !current_user_profile.nil?
-        # puts "back to logged_in_user_profile as id =", @current_user_profile.id
+        puts "inside application_controller > logged_in_user_profile? > return ="
+        puts "return", current_user_profile.nil?
+        puts "back to logged_in_user_profile as id =", @current_user_profile.id
         puts "leaving application_controller > logged_in_user_profile?"
     end
 
@@ -110,11 +110,11 @@ class ApplicationController < ActionController::API
 
     def current_user_profile
         puts "inside ApplicationController > current_user_profile"
-        # puts "user_profile_id =", user_profile_id
+        # puts "user_profile_id =", user_profile.id
         if (user_profile_id = session[:user_profile_id])
             @current_user_profile ||= UserProfile.find_by(id: user_profile_id)
             puts "inside ApplicationController > current_user_profile > if taken > user_profile_id == session[user_profile_id"
-            # puts "current_user_profile id = ", @current_user_profile.id
+            puts "current_user_profile id = ", @current_user_profile.id
         elsif (user_profile_id = cookies.signed(:user_profile_id))
             puts "inside ApplicationController > current_user_profile elsif taken"
 
