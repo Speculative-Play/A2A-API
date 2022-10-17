@@ -1,6 +1,5 @@
 class Api::V1::SessionsController < ApplicationController
-  include ActionController::Cookies
-
+include ActionController::Cookies
   # GET /sessions
   def index
     @sessions = Session.all
@@ -18,8 +17,10 @@ class Api::V1::SessionsController < ApplicationController
 
   # Creates session object that allows user_profile to be logged in persistently
   def create
+
     @session_type = params[:session][:session_type]
     if @session_type == 1
+      puts "child account found"
       @user_profile = UserProfile.find_by(email: params[:session][:email])
       if @user_profile && @user_profile.authenticate(params[:session][:password])
         log_in_user_profile @user_profile
@@ -60,6 +61,7 @@ class Api::V1::SessionsController < ApplicationController
         error: "Could not authenticate your account"
       }
     end
+    # puts "leaving Sessions > create"
   end
 
   # PATCH/PUT /sessions/1
@@ -109,8 +111,10 @@ class Api::V1::SessionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def session_params
-      # params.permit(:email, :password, :session_type, :user_profile, :parent_account)
-      params.fetch(:session, {})
+      puts "inside Sessions > session_params method"
+      params.permit!
+      # params.require(:user_profile).permit(:email, :password, :account_type)
+      # params.fetch(:session, {})
       # puts "leaving Sessions > session_params"
     end
 end
