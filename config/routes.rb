@@ -37,6 +37,8 @@ Rails.application.routes.draw do
       resources :questions
       resources :answers
 
+      get 'my_question_answers', to: 'user_question_answers#index'
+
       get 'user_profile', to: 'user_profiles#show'
       put 'user_profile/edit', to: 'user_profiles#update'
       get 'user_profile/get_user_questions_answers', to: 'user_question_answers#index'

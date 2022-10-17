@@ -1,5 +1,7 @@
 class Api::V1::UserQuestionAnswersController < ApplicationController
   before_action :set_user_question_answer, only: %i[ show update destroy ]
+  before_action :authenticate_user_profile
+
 
   # GET /user_question_answers
   def index
@@ -11,7 +13,7 @@ class Api::V1::UserQuestionAnswersController < ApplicationController
     # else
       # UserQuestionAnswer.all
     # end
-    @user_question_answers = UserQuestionAnswer.where("user_profile_id = ?", current_user_profile.id)
+    @user_question_answers = UserQuestionAnswer.where("user_profile_id = ?", @current_user_profile.id)
 
     render json: @user_question_answers
   end
@@ -82,5 +84,22 @@ class Api::V1::UserQuestionAnswersController < ApplicationController
     # Only allow a list of trusted parameters through.
     def user_question_answer_params
       params.fetch(:user_question_answer, {})
+    end
+
+    def authenticate_user_profile
+      puts "user_question_answers > authenticate_user_profile"
+      # if !current_user_profile.nil?
+      if logged_in_user_profile?
+        # flash[:danger] = "Please log in."
+        # redirect_to login_url
+        # puts "2nd logged_in_user_profile as=", @current_user_profile.id
+
+        puts "!!! you are not logged in! please login to continue!"
+        render json: 'You are not logged in! Please log in to continue.', status: :unprocessable_entity
+      else
+        puts "inside user_question_answers > authenticate_user_profile > login successful!"
+      end
+      puts "leaving user_question_answers > authenticate_user_profile"
+
     end
 end
