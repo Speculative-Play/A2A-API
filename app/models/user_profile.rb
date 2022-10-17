@@ -9,7 +9,7 @@ class UserProfile < ApplicationRecord
     # validates :last_name, presence: true
     # validates :password, presence: true
 
-    has_one :parent_account, dependent: :destroy
+    has_many :parent_account, dependent: :destroy
     has_many :starred_match_profiles, through: :parent_account, dependent: :destroy
     has_many :favourited_match_profiles, dependent: :destroy
     has_many :user_question_answers, dependent: :destroy
@@ -22,6 +22,7 @@ class UserProfile < ApplicationRecord
         # Return the hash value of the given string
         def digest(string)
             puts "inside user_profile model digest(string)"
+            puts "string = ", string
             cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST : BCrypt::Engine.cost
             BCrypt::Password.create(string, cost: cost)
         end
@@ -39,6 +40,7 @@ class UserProfile < ApplicationRecord
         puts "inside user_profile model remember"
 
         self.remember_token = UserProfile.generate_token
+        puts "self.remember_token = ", self.remember_token
         update_attribute(:remember_digest, UserProfile.digest(remember_token))
     end
 

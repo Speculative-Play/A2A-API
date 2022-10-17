@@ -52,7 +52,9 @@ class ApplicationController < ActionController::API
     end
 
     def logged_in_user_profile?
+        puts "inside application_controller > logged_in_user_profile?"
         !current_user_profile.nil?
+        puts "leaving application_controller > logged_in_user_profile?"
     end
 
     def remember(parent_account)
@@ -90,7 +92,7 @@ class ApplicationController < ActionController::API
     private
 
     def current_parent_account
-        # puts "inside ApplicationController > current_user_profile"
+        puts "inside ApplicationController > current_user_profile"
         if (parent_account_id = session[:parent_account_id])
             @current_parent_account ||= ParentAccount.find_by(id: parent_account_id)
         elsif (parent_account_id = cookies.signed(:parent_account_id))
@@ -105,11 +107,14 @@ class ApplicationController < ActionController::API
     end
 
     def current_user_profile
-        # puts "inside ApplicationController > current_user_profile"
+        puts "inside ApplicationController > current_user_profile"
+        # puts "user_profile_id =", user_profile_id
         if (user_profile_id = session[:user_profile_id])
             @current_user_profile ||= UserProfile.find_by(id: user_profile_id)
+            puts "inside ApplicationController > current_user_profile > if taken > user_profile_id == session[user_profile_id"
+            puts "current_user_profile = ", @current_user_profile.id
         elsif (user_profile_id = cookies.signed(:user_profile_id))
-            # puts "inside ApplicationController > current_user_profile elsif taken"
+            puts "inside ApplicationController > current_user_profile elsif taken"
 
             user_profile = UserProfile.find_by(id: user_profile_id)
             if user_profile && user_profile.authenticated?(cookies[:remember_token])
@@ -117,6 +122,7 @@ class ApplicationController < ActionController::API
                 @current_user_profile = user_profile
             end
         end
+        puts "leaving ApplicationController > current_user_profile"
     end
 
     helper_method :current_user_profile

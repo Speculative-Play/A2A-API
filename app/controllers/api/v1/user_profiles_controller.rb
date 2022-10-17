@@ -1,11 +1,5 @@
 class Api::V1::UserProfilesController < ApplicationController
-  # before_action :set_user_profile, only: %i[ index show edit update destroy ]
-  # before_action :require_user_profile, only: [:edit, :update, :destroy]
-  # before_action :require_same_user_profile, only: [:edit, :update, :destroy]
-  # include ActionController::Helpers
   before_action :authenticate_user_profile
-  # around_action :current_user_profile
-  # helper_method :current_user_profile
 
 
   # GET /user_profiles
@@ -19,6 +13,10 @@ class Api::V1::UserProfilesController < ApplicationController
       @user_profiles = UserProfile.all
       render json: @user_profiles
     # end
+  end
+
+  def profiles_root_placeholder
+    puts "inside user_profiles_controller > profiles_root_placeholder"
   end
 
   # GET /user_profiles/1
@@ -65,12 +63,16 @@ class Api::V1::UserProfilesController < ApplicationController
 
   # PATCH/PUT /user_profiles/1 or /user_profliles/1.json
   def update
+    puts "inside user_profiles_controller > update"
     @user_profile = current_user_profile
+    puts "user profile id =",@user_profile.id
     if @user_profile.update(user_profile_params)
       render :show, status: :ok
     else
       render json: @user_profile.errors, status: :unprocessable_entity
     end
+    puts "leaving user_profiles_controller > update"
+
   end
 
   # DELETE /user_profiles/1 or /user_profiles/1.json
@@ -82,29 +84,19 @@ class Api::V1::UserProfilesController < ApplicationController
     # session[:user_profile_id] = nil if @user_profile == current_user_profile
   end
 
-  # def update_piechart_percentages
-  #   Rails.logger.info 'hello from update_piechart_percentages'
-
-  #   respond_to do |format|
-  #     if @profile.update(pie_params[:pie_percentages])
-  #       format.json { redirect_to @profile, notice: 'Profile was successfully updated.' }
-  #     else
-  #       format.json { render json: @profile.errors, status: :unprocessable_entity }
-  #     end
-  #   end
-  # end 
-
   private
     def authenticate_user_profile
       puts "inside UserProfiles > authenticate_user_profile"
-      unless logged_in_user_profile?
+      if !logged_in_user_profile?
         # flash[:danger] = "Please log in."
         # redirect_to login_url
-        puts "inside UserProfiles > authenticate_user_profile > unless logged_in? ==  true"
-        # redirect_to log_in
-      else
-        puts "inside UserProfiles > authenticate_user_profile > login successful!"
+        puts "!!! you are not logged in! please login to continue!"
+        render json: 'You are not logged in! Please log in to continue.', status: :unprocessable_entity
+        # else
+      #   puts "inside UserProfiles > authenticate_user_profile > login successful!"
       end
+      puts "leaving UserProfiles > authenticate_user_profile"
+
     end
 
     def correct_user_profile

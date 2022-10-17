@@ -42,7 +42,6 @@ Rails.application.routes.draw do
       get 'user_profile/get_user_questions_answers', to: 'user_question_answers#index'
       delete 'user_profile/delete', to: 'user_profiles#destroy'
 
-
       # get 'about', to: 'pages#index'
       delete 'favourited_match_profiles(/:user_profile_id)', to: 'favourited_match_profiles#destroy'
       post 'favourited_match_profiles', to: 'favourited_match_profiles#create'
@@ -63,5 +62,6 @@ Rails.application.routes.draw do
     end
 
   end
+
 
 end

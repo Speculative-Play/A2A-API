@@ -4,5 +4,6 @@ class Api::V1::PagesController < ApplicationController
     end
 
     def about
+        puts "inside pages_controller > about"
     end
 end
