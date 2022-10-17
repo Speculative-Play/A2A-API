@@ -1,48 +1,49 @@
 class ApplicationController < ActionController::API
     include ActionController::Helpers
 
-    def authorize
-        redirect_to login_url, alert: "Not authorized" if current_user_profile.nil?
-    end
+    # def authorize
+    #     redirect_to login_url, alert: "Not authorized" if current_user_profile.nil?
+    # end
 
-    def create_profile_path
-        redirect_to new_user_profile_path
-    end
+    # def create_profile_path
+    #     redirect_to new_user_profile_path
+    # end
 
-    def forget(user_profile)
-        # puts "inside ApplicationController > forget(user_profile)"
-        user_profile.forget
+    def forget_current_user_profile(user_profile)
+        puts "inside ApplicationController > forget(user_profile)"
+        user_profile.forget_current_user_profile
         cookies.delete(:user_profile_id)
         cookies.delete(:remember_token)
     end
 
-    def forget(parent_account)
-        # puts "inside ApplicationController > forget(user_profile)"
+    def forget_current_parent_account(parent_account)
+        puts "inside ApplicationController > forget(user_profile)"
         parent_account.forget
         cookies.delete(:parent_account_id)
         cookies.delete(:remember_token)
     end
 
     def log_in_parent_account(parent_account)
-        # puts "inside ApplicationController > log_in_user_profile"
+        puts "inside ApplicationController > log_in_user_profile"
         session[:parent_account_id] = parent_account.id
-        # puts "session[:user_profile_id] = ", session[:user_profile_id]
+        puts "session[:user_profile_id] = ", session[:user_profile_id]
     end
 
     def log_in_user_profile(user_profile)
-        # puts "inside ApplicationController > log_in_user_profile"
+        puts "inside ApplicationController > log_in_user_profile"
         session[:user_profile_id] = user_profile.id
-        # puts "session[:user_profile_id] = ", session[:user_profile_id]
+        puts "session[:user_profile_id] = ", session[:user_profile_id]
     end
 
     def log_out_user_profile
-        forget(current_user_profile)
+        forget_current_user_profile(current_user_profile)
         session.delete(:user_profile_id)
+        # @current_user_profile.remember_digest = nil
         @current_user_profile = nil
     end
 
     def log_out_parent_account
-        forget(current_parent_account)
+        forget_current_parent_account(current_parent_account)
         session.delete(:parent_account_id)
         @current_parent_account = nil
     end
@@ -54,6 +55,7 @@ class ApplicationController < ActionController::API
     def logged_in_user_profile?
         puts "inside application_controller > logged_in_user_profile?"
         !current_user_profile.nil?
+        puts "logged_in_user_profile as=", @current_user_profile.id
         puts "leaving application_controller > logged_in_user_profile?"
     end
 

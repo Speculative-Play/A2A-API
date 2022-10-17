@@ -1,7 +1,6 @@
 class Api::V1::UserProfilesController < ApplicationController
   before_action :authenticate_user_profile
 
-
   # GET /user_profiles
   def index
     # puts "inside UserProfiles > index"
@@ -21,6 +20,7 @@ class Api::V1::UserProfilesController < ApplicationController
 
   # GET /user_profiles/1
   def show
+    puts "inside user_profiles_controller > show"
     @user_profile = current_user_profile
     render json: @user_profile
   end
@@ -87,13 +87,17 @@ class Api::V1::UserProfilesController < ApplicationController
   private
     def authenticate_user_profile
       puts "inside UserProfiles > authenticate_user_profile"
-      if !logged_in_user_profile?
+      # logged_in_user_profile?
+      # if !current_user_profile.nil?
+      unless logged_in_user_profile?
         # flash[:danger] = "Please log in."
         # redirect_to login_url
+        puts "2nd logged_in_user_profile as=", @current_user_profile.id
+
         puts "!!! you are not logged in! please login to continue!"
         render json: 'You are not logged in! Please log in to continue.', status: :unprocessable_entity
-        # else
-      #   puts "inside UserProfiles > authenticate_user_profile > login successful!"
+      else
+        puts "inside UserProfiles > authenticate_user_profile > login successful!"
       end
       puts "leaving UserProfiles > authenticate_user_profile"
 

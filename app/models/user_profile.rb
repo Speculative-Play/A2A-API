@@ -51,7 +51,7 @@ class UserProfile < ApplicationRecord
         BCrypt::Password.new(remember_digest).is_password?(remember_token)
     end
 
-    def forget
+    def forget_current_user_profile
         puts "inside user_profile model forget"
 
         update_attribute(:remember_digest, nil)
