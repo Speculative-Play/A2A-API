@@ -22,6 +22,7 @@ include ActionController::Cookies
     if @session_type == 1
       puts "child account found"
       @user_profile = UserProfile.find_by(email: params[:session][:email])
+      puts @user_profile
       if @user_profile && @user_profile.authenticate(params[:session][:password])
         log_in_user_profile @user_profile
         remember(@user_profile) 
@@ -35,6 +36,7 @@ include ActionController::Cookies
         end
       else
         # TODO: put error message here
+        render json: "user could not be authenticated"
         puts "user could not be authenticated"
       end
     elsif @session_type == 2
@@ -112,8 +114,7 @@ include ActionController::Cookies
     # Only allow a list of trusted parameters through.
     def session_params
       puts "inside Sessions > session_params method"
-      params.permit!
-      # params.require(:user_profile).permit(:email, :password, :account_type)
+      params.permit(:email, :password, :session_type, :user_profile, :parent_account)      # params.require(:user_profile).permit(:email, :password, :account_type)
       # params.fetch(:session, {})
       # puts "leaving Sessions > session_params"
     end

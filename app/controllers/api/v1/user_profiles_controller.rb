@@ -67,8 +67,9 @@ class Api::V1::UserProfilesController < ApplicationController
   # PATCH/PUT /user_profiles/1 or /user_profliles/1.json
   def update
     puts "inside user_profiles_controller > update"
-    @user_profile = current_user_profile
-    puts "user profile id =",@user_profile.id
+    puts "current user profile check =", @current_user_profile
+    @user_profile = @current_user_profile
+    puts "user profile id =",@user_profile
     if @user_profile.update(user_profile_params)
       # puts "inside UserProfiles > update > if passed"
 
@@ -84,7 +85,9 @@ class Api::V1::UserProfilesController < ApplicationController
 
   # DELETE /user_profiles/1 or /user_profiles/1.json
   def destroy
+    @user_profile = @current_user_profile
     @user_profile.destroy
+    render json: "user was deleted."
     # session[:user_profile_id] = nil if @user_profile == current_user_profile
   end
 
@@ -96,7 +99,7 @@ class Api::V1::UserProfilesController < ApplicationController
       unless logged_in_user_profile?
         # flash[:danger] = "Please log in."
         # redirect_to login_url
-        puts "2nd logged_in_user_profile as=", @current_user_profile.id
+        # puts "2nd logged_in_user_profile as=", @current_user_profile.id
 
         puts "!!! you are not logged in! please login to continue!"
         render json: 'You are not logged in! Please log in to continue.', status: :unprocessable_entity
@@ -126,7 +129,7 @@ class Api::V1::UserProfilesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_profile_params
-      params.require(:user_profile).permit(:email, :password_digest, :first_name, :last_name, :admin, :image)
+      params.require(:user_profile).permit(:email, :password, :first_name, :last_name, :admin, :image)
     end
 
     def pie_params
