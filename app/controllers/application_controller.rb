@@ -1,5 +1,7 @@
 class ApplicationController < ActionController::API
     include ActionController::Helpers
+    helper_method :current_user_profile
+    helper_method :forget
 
     # def authorize
     #     redirect_to login_url, alert: "Not authorized" if current_user_profile.nil?
@@ -9,15 +11,17 @@ class ApplicationController < ActionController::API
     #     redirect_to new_user_profile_path
     # end
 
-    def forget_current_user_profile(user_profile)
-        puts "inside ApplicationController > forget(user_profile)"
-        user_profile.forget_current_user_profile
+    def forget(user_profile)
+        puts "inside ApplicationController > forget_current_user_profile(user_profile)"
+        user_profile = @current_user_profile
+        user_profile.forget
         cookies.delete(:user_profile_id)
         cookies.delete(:remember_token)
     end
 
     def forget_current_parent_account(parent_account)
         puts "inside ApplicationController > forget(user_profile)"
+        parent_account = @current_parent_account
         parent_account.forget
         cookies.delete(:parent_account_id)
         cookies.delete(:remember_token)
@@ -36,7 +40,9 @@ class ApplicationController < ActionController::API
     end
 
     def log_out_user_profile
-        forget_current_user_profile(current_user_profile)
+        puts "inside ApplicationController > log_out_user_profile"
+
+        forget(current_user_profile)
         session.delete(:user_profile_id)
         # @current_user_profile.remember_digest = nil
         @current_user_profile = nil
@@ -127,5 +133,5 @@ class ApplicationController < ActionController::API
         puts "leaving ApplicationController > current_user_profile"
     end
 
-    # helper_method :current_user_profile
+
 end

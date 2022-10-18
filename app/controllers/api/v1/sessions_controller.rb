@@ -1,6 +1,7 @@
 class Api::V1::SessionsController < ApplicationController
 include ActionController::Cookies
-  # GET /sessions
+
+# GET /sessions
   def index
     @sessions = Session.all
     render json: @sessions

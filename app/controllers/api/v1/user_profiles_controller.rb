@@ -3,15 +3,8 @@ class Api::V1::UserProfilesController < ApplicationController
 
   # GET /user_profiles
   def index
-    # puts "inside UserProfiles > index"
-    # if authenticate_user_profile
-      # puts "inside UserProfiles > if authenticate_user_profile == true"
-      # render 'client_dashboard'
-    # else
-      # puts "inside UserProfiles > index > rendering index of all user_profiles"
-      @user_profiles = UserProfile.all
-      render json: @user_profiles
-    # end
+    @user_profiles = UserProfile.all
+    render json: @user_profiles
   end
 
   def profiles_root_placeholder
@@ -92,7 +85,7 @@ class Api::V1::UserProfilesController < ApplicationController
     # session[:user_profile_id] = nil if @user_profile == current_user_profile
   end
 
-  private
+  # private
     def authenticate_user_profile
       puts "inside UserProfiles > authenticate_user_profile"
       # logged_in_user_profile?
