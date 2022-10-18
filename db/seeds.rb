@@ -96,7 +96,7 @@ end
 for u in 1..10 do
     ParentAccount.create(
         user_profile_id: u,
-        password: Faker::Internet.password,
+        password: "password",
         email: Faker::Internet.email
     )
 end
