@@ -1,16 +1,10 @@
 class Api::V1::CategoryPercentagesController < ApplicationController
-  before_action :set_category_percentage, only: %i[ show destroy ]
-
+  # before_action :set_category_percentage, only: %i[ show destroy ]
+  before_action :authenticate_user_profile
 
   # GET /category_percentages
   def index
-    # @category_percentages = CategoryPercentage.all
-    @category_percentages = if params[:user_profile_id].present?
-      CategoryPercentage.where("user_profile_id = ?", params[:user_profile_id])
-    else
-      puts "invalid category_percentages"
-    end
-
+    @category_percentages = CategoryPercentage.where("user_profile_id = ?", @current_user_profile)
     render json: @category_percentages
   end
 
@@ -72,5 +66,11 @@ class Api::V1::CategoryPercentagesController < ApplicationController
       # params.fetch(:category_percentage, {})
       params.permit(:category_percentage, :matchmaking_category_id, :user_profile_id)
 
+    end
+
+    def authenticate_user_profile
+      if logged_in_user_profile?
+        render json: 'You are not logged in! Please log in to continue.', status: :unprocessable_entity
+      end
     end
 end
