@@ -6,17 +6,12 @@ Rails.application.routes.draw do
       resources :sessions
       resources :user_profiles, only: [:create]
       resources :user_profiles, shallow: true do
-        collection do
-          post 'update_piechart_percentages'
-        end
         resources :parent_accounts, shallow: true do
           resources :starred_match_profiles
         end
         resources :user_question_answers, shallow: true
         resources :category_percentages, shallow: true
         resources :favourited_match_profiles, shallow: true
-
-        put '(/:id)/category_percentages', to: 'category_percentages#update'
       end
 
       resources :match_profiles, shallow: true do
@@ -45,6 +40,7 @@ Rails.application.routes.draw do
       delete 'user_profile/delete', to: 'user_profiles#destroy'
 
       get 'category_percentages', to: 'category_percentages#index'
+      put 'category_percentages', to: 'category_percentages#update'
 
       # get 'about', to: 'pages#index'
       delete 'favourited_match_profiles(/:user_profile_id)', to: 'favourited_match_profiles#destroy'

@@ -29,11 +29,11 @@ class Api::V1::CategoryPercentagesController < ApplicationController
 
     # parse JSON and create variables
     @json = JSON.parse(request.body.read)
-    @user_profile_id = params[:user_profile_id] # input user_profile_id
+    # @user_profile_id = params[:user_profile_id] # input user_profile_id
     @input_category_id_array = []               # input matchmaking_category_ids
     @input_category_percentage_array = []       # input category_percentages
 
-    @current_category_percentages = CategoryPercentage.where("user_profile_id = ?", @user_profile_id)
+    @current_category_percentages = CategoryPercentage.where("user_profile_id = ?", @current_user_profile.id)
 
     # collect and store the input values in arrays
     @json['category_percentages_input'].each_with_index do |category, index|
@@ -48,6 +48,7 @@ class Api::V1::CategoryPercentagesController < ApplicationController
       CategoryPercentage.update(@current_category_percentages[index].id, :category_percentage => @input_category_percentage_array[index])
     end
 
+    index
   end
 
   # DELETE /category_percentages/1
