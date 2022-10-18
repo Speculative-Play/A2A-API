@@ -3,14 +3,6 @@ class ApplicationController < ActionController::API
     helper_method :current_user_profile
     helper_method :forget
 
-    # def authorize
-    #     redirect_to login_url, alert: "Not authorized" if current_user_profile.nil?
-    # end
-
-    # def create_profile_path
-    #     redirect_to new_user_profile_path
-    # end
-
     def forget(user_profile)
         puts "inside ApplicationController > forget_current_user_profile(user_profile)"
         user_profile = @current_user_profile
