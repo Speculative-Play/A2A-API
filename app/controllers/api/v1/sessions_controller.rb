@@ -29,11 +29,14 @@ include ActionController::Cookies
         remember(@user_profile) 
         # TODO: Unpermitted parameters error here due to not permitting email and pw 
         # => seems to work fine regardless but note for later to fix
-        @session = Session.new(session_database_params)
+        params = session_database_params.to_h
+        params[:account_id] = @user_profile.id
+        @session = Session.new(params)
         if @session.save
           render json: @user_profile
         else
           puts "session could not be saved"
+          render json: "session error: could not be saved"
         end
       else
         # TODO: put error message here
@@ -47,11 +50,14 @@ include ActionController::Cookies
         remember(@parent_account)
         # TODO: Unpermitted parameters error here due to not permitting email and pw 
         # => seems to work fine regardless but note for later to fix
-        @session = Session.new(session_database_params)
+        params = session_database_params.to_h
+        params[:account_id] = @parent_account.id
+        @session = Session.new(params)
         if @session.save
           render json: @parent_account
         else
           puts "session could not be saved"
+          render json: "session error: could not be saved"
         end
 
       else
@@ -79,10 +85,10 @@ include ActionController::Cookies
   def destroy
     # puts "inside sessions_controller > destroy"
     # puts "user account detected = ", @current_user_profile
-    @session = Session.first
-    puts "session = ", @session
-    @session_type = @session[:session_type]
-    puts "session type = ", @session_type
+    # @session = Session.where(a)
+    # puts "session = ", @session
+    # @session_type = @session[:session_type]
+    # puts "session type = ", @session_type
 
     # if @session_type == 1
     # Session.first.destroy
@@ -90,16 +96,29 @@ include ActionController::Cookies
     # current_user_profile = nil
     # else
 
-
+    user_profile = @current_user_profile
+    puts "current user profile = ", user_profile
+    if !current_user_profile.nil?
+      puts "user session detected"
+    elsif !@current_parent_account.nil?
+      puts "parent session detected"
+    else
+      puts "no session type detected"
+    end
     # puts "parent account detected = ", current_parent_account
     # if !current_parent_account.nil?
-    if @session_type == 2
+    if @session_type == 1
+      @session = Session.where("account_id = ? AND session_type = ?", @current_user_profile.id, 1)
+      
+      puts "user profile logout detected"
+      puts "user to be logged out = ", @session.id
+      @session.destroy
+      log_out_user_profile
+    # elsif !current_user_profile.nil?
+    elsif @session_type == 2
+
       puts "parent account logout detected"
       log_out_parent_account
-    # elsif !current_user_profile.nil?
-    elsif @session_type == 1
-      puts "user profile logout detected"
-      log_out_user_profile
     end
     # log_out
     puts "redirecting to root url now..."
@@ -109,13 +128,13 @@ include ActionController::Cookies
   private
 
     def session_database_params
-      params.require(:session).permit(:session_type)
+      params.require(:session).permit(:session_type, :account_id)
     end
 
     # Only allow a list of trusted parameters through.
     def session_params
       puts "inside Sessions > session_params method"
-      params.permit(:email, :password, :session_type, :user_profile, :parent_account)      # params.require(:user_profile).permit(:email, :password, :account_type)
+      params.permit(:email, :password, :session_type, :user_profile, :parent_account, :account_id)      # params.require(:user_profile).permit(:email, :password, :account_type)
       # params.fetch(:session, {})
       # puts "leaving Sessions > session_params"
     end
