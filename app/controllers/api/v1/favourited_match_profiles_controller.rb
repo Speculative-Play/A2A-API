@@ -3,11 +3,9 @@ class Api::V1::FavouritedMatchProfilesController < ApplicationController
 
   # GET /favourited_match_profiles
   def index
-    # Returns all starred_match_profiles that share parent_account_id
-    @favourited_match_profiles = if params[:user_profile_id].present?
-      FavouritedMatchProfile.where("user_profile_id = ?", params[:user_profile_id])
-    end
-    render json: @starred_match_profiles
+    # Returns all favourited_match_profiles that share current_user_profile's id
+    @favourited_match_profiles = FavouritedMatchProfile.where("user_profile_id = ?", @current_user_profile.id)
+    render json: @favourited_match_profiles
   end
 
   # GET /favourited_match_profiles/1

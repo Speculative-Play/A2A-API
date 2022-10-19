@@ -58,6 +58,7 @@ Rails.application.routes.draw do
       get '/view-child', to: 'parent_accounts#view_child'
 
       # Favourited Match Profiles
+      get 'favourites', to: 'favourited_match_profiles#index'
       post 'favourite', to: 'favourited_match_profiles#create'
       delete 'favourited_match_profiles(/:user_profile_id)', to: 'favourited_match_profiles#destroy'
 
