@@ -29,7 +29,6 @@ class Api::V1::CategoryPercentagesController < ApplicationController
 
     # parse JSON and create variables
     @json = JSON.parse(request.body.read)
-    # @user_profile_id = params[:user_profile_id] # input user_profile_id
     @input_category_id_array = []               # input matchmaking_category_ids
     @input_category_percentage_array = []       # input category_percentages
 

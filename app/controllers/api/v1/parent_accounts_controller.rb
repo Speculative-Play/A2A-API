@@ -15,10 +15,10 @@ class Api::V1::ParentAccountsController < ApplicationController
     render json: @parent_account
   end
 
-  # Requires parent authentication here, then can refer to current_parent_account variable
-  # def view_child
-  #   @user_profile
-  # end
+  def view_child
+    @user_profile = UserProfile.where("id = ?", @current_parent_account.user_profile_id)
+    render json: @user_profile
+  end
 
   # POST /parent_accounts
   def create
@@ -45,7 +45,7 @@ class Api::V1::ParentAccountsController < ApplicationController
     @parent_account.destroy
   end
 
-  private
+  # private
 
   def authenticate_parent_account
     puts "inside parent_account > authenticate_parent_account"
