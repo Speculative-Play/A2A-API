@@ -32,36 +32,47 @@ Rails.application.routes.draw do
       resources :questions
       resources :answers
 
-      get 'my_question_answers', to: 'user_question_answers#index'
+      # Custom Routes
 
-      get 'user_profile', to: 'user_profiles#show'
-      put 'user_profile/edit', to: 'user_profiles#update'
-      get 'user_profile/get_user_questions_answers', to: 'user_question_answers#index'
-      delete 'user_profile/delete', to: 'user_profiles#destroy'
-
-      get 'category_percentages', to: 'category_percentages#index'
-      put 'category_percentages', to: 'category_percentages#update'
-
+      # Pages
       # get 'about', to: 'pages#index'
-      delete 'favourited_match_profiles(/:user_profile_id)', to: 'favourited_match_profiles#destroy'
-      post 'favourited_match_profiles', to: 'favourited_match_profiles#create'
-      post 'starred_match_profiles', to: 'starred_match_profiles#create'
-      get '/user_profiles(/:user_profile_id)/get_user_questions_answers', to: 'user_question_answers#get_user_questions_answers'
-      post '/search-child', to: 'parent_accounts#search_child'
-      get '/view-child', to: 'parent_accounts#view_child'
-      get '/questions/matchmaking_category(/:matchmaking_category_id)', to: 'questions#questions_by_category'
-      
+
+      # Sessions
       get '/login', to: 'sessions#logged_in'
       post '/login', to: 'sessions#create'
       delete '/logout', to: 'sessions#destroy'
 
-      get 'signup_parent_account', to: 'parent_accounts#new'
-      post '/signup_parent_account', to: 'parent_accounts#create'
+      # User Profiles
       get 'signup', to: 'user_profiles#new'
       post 'signup', to: 'user_profiles#create'
+      get 'user_profile', to: 'user_profiles#show'
+      put 'user_profile/edit', to: 'user_profiles#update'
+      get 'user_profile/get_user_questions_answers', to: 'user_question_answers#index'
+      delete 'user_profile/delete', to: 'user_profiles#destroy'
+      get '/user_profiles(/:user_profile_id)/get_user_questions_answers', to: 'user_question_answers#get_user_questions_answers'
+
+      # Parent Accounts
+      get 'signup_parent_account', to: 'parent_accounts#new'
+      post '/signup_parent_account', to: 'parent_accounts#create'
+      post '/search-child', to: 'parent_accounts#search_child'
+      get '/view-child', to: 'parent_accounts#view_child'
+
+      # Favourited Match Profiles
+      delete 'favourited_match_profiles(/:user_profile_id)', to: 'favourited_match_profiles#destroy'
+      post 'favourited_match_profiles', to: 'favourited_match_profiles#create'
+
+      # Starred Match Profiles
+      post 'starred_match_profiles', to: 'starred_match_profiles#create'
+
+      # Questions
+      get '/questions/matchmaking_category(/:matchmaking_category_id)', to: 'questions#questions_by_category'
+
+      # Category Percentages
+      get 'category_percentages', to: 'category_percentages#index'
+      put 'category_percentages', to: 'category_percentages#update'
+
     end
 
   end
-
 
 end
