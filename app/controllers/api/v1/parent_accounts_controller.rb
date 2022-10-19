@@ -1,6 +1,6 @@
 class Api::V1::ParentAccountsController < ApplicationController
   # before_action :set_parent_account, only: %i[ show update destroy ]
-  before_action :authenticate_parent_account
+  before_action :authenticate_parent_account, except: :search_child
 
   # GET /parent_accounts
   def index
@@ -18,6 +18,17 @@ class Api::V1::ParentAccountsController < ApplicationController
   def view_child
     @user_profile = UserProfile.where("id = ?", @current_parent_account.user_profile_id)
     render json: @user_profile
+  end
+
+  def search_child
+    @json = JSON.parse(request.body.read)
+    @email = @json["email"]
+    puts @email
+    if @user_profile = UserProfile.find_by(email: @email)
+      render json: @user_profile
+    else
+      render json: "User profile not found. Please try another email address."
+    end
   end
 
   # POST /parent_accounts
