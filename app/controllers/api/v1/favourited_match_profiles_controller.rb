@@ -42,20 +42,9 @@ class Api::V1::FavouritedMatchProfilesController < ApplicationController
 
   # DELETE /favourited_match_profiles
   def destroy
-    puts "begin destroy"
-    @json = JSON.parse(request.body.read)
-    @match_profile_id = @json["favourited_match_profile"]["match_profile_id"]
-    @favourited_match_profile = FavouritedMatchProfile.where("user_profile_id = ? AND match_profile_id = ?", params[:user_profile_id], @match_profile_id)
-    puts "favourited_match_profile found = ", @favourited_match_profile
-
-    @id = @favourited_match_profile.ids
-    puts "id found = ", @id
-    @favourited_match_profile = FavouritedMatchProfile.where("id = ?", @id)
-    # if params[:user_profile_id].present?
-    puts "favourited_match_profile found = ", @favourited_match_profile
-    # end
-    @favourited_match_profile.destroy
-    puts "end destroy"
+    @favourited_match_profile = FavouritedMatchProfile.where("user_profile_id = ? AND match_profile_id = ?", @current_user_profile.id, favourited_match_profile_params[:match_profile_id])
+    @favourited_match_profile.destroy_all
+    index
   end
 
   private
