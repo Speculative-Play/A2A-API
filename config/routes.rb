@@ -45,7 +45,7 @@ Rails.application.routes.draw do
       # get 'about', to: 'pages#index'
       delete 'favourited_match_profiles(/:user_profile_id)', to: 'favourited_match_profiles#destroy'
       post 'favourited_match_profiles', to: 'favourited_match_profiles#create'
-      post 'starred_match_profiles(/:parent_account_id)', to: 'starred_match_profiles#create'
+      post 'starred_match_profiles', to: 'starred_match_profiles#create'
       get '/user_profiles(/:user_profile_id)/get_user_questions_answers', to: 'user_question_answers#get_user_questions_answers'
       post '/search-child', to: 'parent_accounts#search_child'
       get '/view-child', to: 'parent_accounts#view_child'
