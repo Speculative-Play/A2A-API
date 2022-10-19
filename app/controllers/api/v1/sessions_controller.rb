@@ -20,11 +20,14 @@ include ActionController::Cookies
   def create
 
     @session_type = params[:session][:session_type]
+    @session_email = params[:session][:email]
+    @session_password = params[:session][:password]
+
     if @session_type == 1
       puts "child account found"
-      @user_profile = UserProfile.find_by(email: params[:session][:email])
+      @user_profile = UserProfile.find_by(email: @session_email)
       puts @user_profile
-      if @user_profile && @user_profile.authenticate(params[:session][:password])
+      if @user_profile && @user_profile.authenticate(@session_password)
         log_in_user_profile @user_profile
         remember(@user_profile) 
         # TODO: Unpermitted parameters error here due to not permitting email and pw 
@@ -44,8 +47,10 @@ include ActionController::Cookies
         puts "user could not be authenticated"
       end
     elsif @session_type == 2
-      @parent_account = ParentAccount.find_by(email: params[:session][:email])
-      if @parent_account = @parent_account.authenticate(params[:session][:password])
+      puts "parent account found"
+      @parent_account = ParentAccount.find_by(email: @session_email)
+      puts @parent_account
+      if @parent_account = @parent_account.authenticate(@session_password)
         log_in_parent_account @parent_account
         remember(@parent_account)
         # TODO: Unpermitted parameters error here due to not permitting email and pw 
@@ -87,8 +92,8 @@ include ActionController::Cookies
     # puts "user account detected = ", @current_user_profile
     # @session = Session.where(a)
     # puts "session = ", @session
-    # @session_type = @session[:session_type]
-    # puts "session type = ", @session_type
+    @session_type = params[:session][:session_type]
+    puts "session type = ", @session_type
 
     # if @session_type == 1
     # Session.first.destroy
