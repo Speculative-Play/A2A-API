@@ -1,5 +1,4 @@
 class Api::V1::ParentAccountsController < ApplicationController
-  # before_action :set_parent_account, only: %i[ show update destroy ]
   before_action :authenticate_parent_account, except: :search_child
 
   # GET /parent_accounts

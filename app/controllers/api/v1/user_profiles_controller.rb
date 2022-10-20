@@ -93,15 +93,13 @@ class Api::V1::UserProfilesController < ApplicationController
       if logged_in_user_profile?
         # flash[:danger] = "Please log in."
         # redirect_to login_url
-        puts "2nd logged_in_user_profile as=", @current_user_profile.id
+        puts "logged_in_user_profile? == true"
 
-        puts "!!! you are not logged in! please login to continue!"
-        render json: 'You are not logged in! Please log in to continue.', status: :unprocessable_entity
       else
-        puts "inside UserProfiles > authenticate_user_profile > login successful!"
+        render json: 'You are not logged in! Please log in to continue.', status: :unprocessable_entity
+        puts "!!! you are not logged in! please login to continue!"
       end
       puts "leaving UserProfiles > authenticate_user_profile"
-
     end
 
     def correct_user_profile

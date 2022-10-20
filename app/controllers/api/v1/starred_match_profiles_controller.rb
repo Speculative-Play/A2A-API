@@ -1,5 +1,5 @@
 class Api::V1::StarredMatchProfilesController < ApplicationController
-  before_action :set_starred_match_profile, only: %i[ show update destroy ]
+  before_action :authenticate_parent_account
 
   # GET /starred_match_profiles
   def index
@@ -40,9 +40,12 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_starred_match_profile
-      @starred_match_profile = StarredMatchProfile.find(params[:id])
+    def authenticate_parent_account
+      if logged_in_parent_account?
+        puts "inside parent_account > authenticate_parent_account > logged in!"
+      else
+        puts "inside parent_account > authenticate_parent_account > login unsuccessful!"
+      end
     end
 
     # Only allow a list of trusted parameters through.
