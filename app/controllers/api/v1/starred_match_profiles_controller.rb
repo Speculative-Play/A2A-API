@@ -1,11 +1,11 @@
 class Api::V1::StarredMatchProfilesController < ApplicationController
-  before_action :authenticate_parent_account
+  before_action :authenticate_parent_profile
 
   # GET /starred_match_profiles
   def index
-    # Returns all starred_match_profiles that share parent_account_id
-    @starred_match_profiles = if params[:parent_account_id].present?
-      StarredMatchProfile.where("parent_account_id = ?", params[:parent_account_id])
+    # Returns all starred_match_profiles that share parent_profile_id
+    @starred_match_profiles = if params[:parent_profile_id].present?
+      StarredMatchProfile.where("parent_profile_id = ?", params[:parent_profile_id])
     end
     render json: @starred_match_profiles
   end
@@ -15,7 +15,7 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
     render json: @starred_match_profile
   end
 
-  # POST /starred_match_profiles/[parent_account_id]
+  # POST /starred_match_profiles/[parent_profile_id]
   def create
     @starred_match_profile = StarredMatchProfile.new(starred_match_profile_params)
     if @starred_match_profile.save
@@ -40,17 +40,17 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
   end
 
   private
-    def authenticate_parent_account
-      if logged_in_parent_account?
-        puts "inside parent_account > authenticate_parent_account > logged in!"
+    def authenticate_parent_profile
+      if logged_in_parent_profile?
+        puts "inside parent_profile > authenticate_parent_profile > logged in!"
       else
-        puts "inside parent_account > authenticate_parent_account > login unsuccessful!"
+        puts "inside parent_profile > authenticate_parent_profile > login unsuccessful!"
       end
     end
 
     # Only allow a list of trusted parameters through.
     def starred_match_profile_params
       # params.fetch(:starred_match_profile, {})
-      params.require(:starred_match_profile).permit(:parent_account_id, :match_profile_id)
+      params.require(:starred_match_profile).permit(:parent_profile_id, :match_profile_id)
     end
 end

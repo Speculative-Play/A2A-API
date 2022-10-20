@@ -1,6 +1,6 @@
 require "test_helper"
 
-class ParentAccountTest < ActiveSupport::TestCase
+class ParentProfileTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

@@ -1,4 +1,4 @@
-class ParentAccount < ApplicationRecord
+class ParentProfile < ApplicationRecord
     attr_accessor :remember_token
     before_save { self.email = email.downcase }
     VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
@@ -14,14 +14,14 @@ class ParentAccount < ApplicationRecord
     class << self
         # Return the hash value of the given string
         def digest(string)
-            puts "inside parent_account model digest(string)"
+            puts "inside parent_profile model digest(string)"
             cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST : BCrypt::Engine.cost
             BCrypt::Password.create(string, cost: cost)
         end
 
         # Return a random token
         def generate_token
-            puts "inside parent_account model generate_token"
+            puts "inside parent_profile model generate_token"
 
             SecureRandom.urlsafe_base64
         end
@@ -29,21 +29,21 @@ class ParentAccount < ApplicationRecord
 
     #Create a new token -> encrypt it -> stores the hash value in remember_digest in DB
     def remember
-        puts "inside parent_account model remember"
+        puts "inside parent_profile model remember"
 
-        self.remember_token = ParentAccount.generate_token
-        update_attribute(:remember_digest, ParentAccount.digest(remember_token))
+        self.remember_token = ParentProfile.generate_token
+        update_attribute(:remember_digest, ParentProfile.digest(remember_token))
     end
 
     # Check if the given token value matches the one stored in DB
     def authenticated?(remember_token)
-        puts "inside parent_account model authenticated?(remember_token)"
+        puts "inside parent_profile model authenticated?(remember_token)"
 
         BCrypt::Password.new(remember_digest).is_password?(remember_token)
     end
 
     def forget
-        puts "inside parent_account model forget"
+        puts "inside parent_profile model forget"
 
         update_attribute(:remember_digest, nil)
     end

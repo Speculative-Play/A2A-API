@@ -5,54 +5,89 @@ class ApplicationController < ActionController::API
     helper_method :current_user_profile
     helper_method :forget
 
-    def forget(user_profile)
-        user_profile = @current_user_profile
-        user_profile.forget
-        cookies.delete(:user_profile_id)
+    # def forget(user_profile)
+    #     user_profile = @current_user_profile
+    #     user_profile.forget
+    #     cookies.delete(:user_profile_id)
+    #     cookies.delete(:remember_token)
+    # end
+
+    # def forget(parent_profile)
+    #     parent_profile = @current_parent_profile
+    #     parent_profile.forget
+    #     cookies.delete(:parent_profile_id)
+    #     cookies.delete(:remember_token)
+    # end
+
+    def forget(account)
+        puts "inside application_controller > forget(account)"
+        # @account = @current_account
+        puts "forget acount = ", @account
+        if @account.account_type == 1
+            puts "forget > user account found"
+            @user_profile = UserProfile.where("id = ?", @account.user_profile_id).take
+            puts " user_profile = ", @user_profile
+            @user_profile.forget
+        elsif @account.account_type == 2
+            puts "forget > parent account found"
+            @parent_profile.forget
+        else
+            puts "forget > no account type found"
+        end
+        # account.forget
+        cookies.delete(:account_id)
         cookies.delete(:remember_token)
     end
 
-    def forget(parent_account)
-        parent_account = @current_parent_account
-        parent_account.forget
-        cookies.delete(:parent_account_id)
-        cookies.delete(:remember_token)
+    # def log_in(parent_profile)
+    #     session[:parent_profile_id] = parent_profile.id
+    # end
+
+    # def log_in(user_profile)
+    #     session[:user_profile_id] = user_profile.id
+    # end
+
+    def log_in(account)
+        session[:account_id] = account.id
     end
 
-    def log_in(parent_account)
-        session[:parent_account_id] = parent_account.id
-    end
-
-    def log_in(user_profile)
-        session[:user_profile_id] = user_profile.id
-    end
-
-    def log_out
+    def log_out_user_profile
         puts "inside application_controller > log_out (user_profile)"
-        forget(current_user_profile)
-        session.delete(:user_profile_id)
-        @user_profile = UserProfile.where("id = ?", @current_user_profile.id)
+        # forget(current_user_profile)
+        @current_account = Account.where("id = ?", session[:account_id]).take
+        puts "current_account = ", @current_account
+
+        @user_profile = UserProfile.where("id = ?", @current_account.user_profile_id).take
+
+        forget(current_account)
+        # session.delete(:account_id)
+        Session.where("account_id = ?", @current_account.id).destroy_all
+        Account.where("account_type = ? AND user_profile_id = ?", 1, @user_profile.id).destroy_all
         @user_profile.remember_digest = nil
         @user_profile.save
         @current_user_profile = nil
         reset_session
+        
         puts "leaving application_controller > log_out (user_profile)"
 
     end
 
-    def log_out
-        puts "inside application_controller > log_out (parent_account)"
+    def log_out_parent_profile
+        puts "inside application_controller > log_out (parent_profile)"
+        @current_account = Account.where("id = ?", session[:account_id]).take
+        @parent_profile = ParentProfile.where("id = ?", @current_account.parent_profile_id).take
 
-        forget(current_parent_account)
-        session.delete(:parent_account_id)
-        @current_parent_account = nil
-        puts "leaving application_controller > log_out (parent_account)"
+        # forget(current_parent_profile)
+        forget(current_account)
+        session.delete(:account_id)
+        @current_parent_profile = nil
+        puts "leaving application_controller > log_out (parent_profile)"
 
     end
 
-    def logged_in_parent_account?
-        puts "inside application_controller > logged_in_parent_account?"
-        !current_parent_account.nil?
+    def logged_in_parent_profile?
+        puts "inside application_controller > logged_in_parent_profile?"
+        !current_parent_profile.nil?
     end
 
     def logged_in_user_profile?
@@ -62,11 +97,11 @@ class ApplicationController < ActionController::API
         # puts "leaving application_controller > logged_in_user_profile?"
     end
 
-    def remember(parent_account)
+    def remember(parent_profile)
         puts "inside ApplicationController > remember(user_profile)"
-        parent_account.remember
-        cookies.permanent.signed[:parent_account_id] = parent_account.id
-        cookies.permanent[:remember_token] = parent_account.remember_token
+        parent_profile.remember
+        cookies.permanent.signed[:parent_profile_id] = parent_profile.id
+        cookies.permanent[:remember_token] = parent_profile.remember_token
     end
 
     def remember(user_profile)
@@ -83,21 +118,21 @@ class ApplicationController < ActionController::API
 
     # private
 
-    def current_parent_account
-        puts "inside ApplicationController > current_parent_account"
-        if (parent_account_id = session[:parent_account_id])
-            @current_parent_account ||= ParentAccount.find_by(id: parent_account_id)
-            puts "inside ApplicationController > current_parent_account > if taken"
-        elsif (parent_account_id = cookies.signed(:parent_account_id))
-            puts "inside ApplicationController > current_parent_account elsif taken"
+    def current_parent_profile
+        puts "inside ApplicationController > current_parent_profile"
+        if (parent_profile_id = session[:parent_profile_id])
+            @current_parent_profile ||= ParentProfile.find_by(id: parent_profile_id)
+            puts "inside ApplicationController > current_parent_profile > if taken"
+        elsif (parent_profile_id = cookies.signed(:parent_profile_id))
+            puts "inside ApplicationController > current_parent_profile elsif taken"
 
-            parent_account = ParentAccount.find_by(id: parent_account_id)
-            if parent_account && parent_account.authenticated?(cookies[:remember_token])
-                log_in_parent_account parent_account
-                @current_parent_account = parent_account
+            parent_profile = ParentProfile.find_by(id: parent_profile_id)
+            if parent_profile && parent_profile.authenticated?(cookies[:remember_token])
+                log_in_parent_profile parent_profile
+                @current_parent_profile = parent_profile
             end
         end
-        puts "leaving application_controller > current_parent_account"
+        puts "leaving application_controller > current_parent_profile"
     end
 
     def current_user_profile
@@ -120,6 +155,21 @@ class ApplicationController < ActionController::API
         end
         puts "leaving ApplicationController > current_user_profile"
     end
+
+    def current_account
+        puts "inside application_controller > current_account"
+        if (account_id = session[:account_id])
+            @account = Account.where("id = ?", account_id).take
+            if @account.account_type == 1
+                puts "inside application_controller > current_account > account_type = user"
+            elsif @account.account_type == 2
+                puts "inside application_controller > current_account > account_type = parent"
+            else
+                puts "inside application_controller > current_account > account_type = NONE"
+            end
+        end
+    end
+
 
 
 end

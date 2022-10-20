@@ -6,7 +6,7 @@ Rails.application.routes.draw do
       resources :sessions
       resources :user_profiles, only: [:create]
       resources :user_profiles, shallow: true do
-        resources :parent_accounts, shallow: true do
+        resources :parent_profiles, shallow: true do
           resources :starred_match_profiles
         end
         resources :user_question_answers, shallow: true
@@ -52,10 +52,10 @@ Rails.application.routes.draw do
       get '/user_profiles(/:user_profile_id)/get_user_questions_answers', to: 'user_question_answers#get_user_questions_answers'
 
       # Parent Accounts
-      get 'signup_parent_account', to: 'parent_accounts#new'
-      post '/signup_parent_account', to: 'parent_accounts#create'
-      post '/search-child', to: 'parent_accounts#search_child'
-      get '/view-child', to: 'parent_accounts#view_child'
+      get 'signup_parent_profile', to: 'parent_profiles#new'
+      post '/signup_parent_profile', to: 'parent_profiles#create'
+      post '/search-child', to: 'parent_profiles#search_child'
+      get '/view-child', to: 'parent_profiles#view_child'
 
       # Favourited Match Profiles
       get 'favourites', to: 'favourited_match_profiles#index'
