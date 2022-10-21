@@ -25,13 +25,6 @@ include ActionController::Cookies
     @session_email = params[:email]
     @session_password = params[:password]
 
-    if !session[:id].nil?
-      puts "there is already a user logged in"
-    else
-      puts "no other user logged in"
-      puts session[:id]
-    end
-
     if @session_type == 1
       puts "session#create > creating user account"
       puts "session[:email} = ", @session_email

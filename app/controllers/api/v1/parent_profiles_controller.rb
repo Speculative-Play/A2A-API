@@ -1,5 +1,5 @@
 class Api::V1::ParentProfilesController < ApplicationController
-  before_action :authenticate_parent_profile, except: :search_child
+  before_action :authenticate_parent_profile, except: [:search_child, :new, :create]
 
   # GET /parent_profiles
   def index
@@ -35,6 +35,8 @@ class Api::V1::ParentProfilesController < ApplicationController
     @parent_profile = ParentProfile.new(parent_profile_params)
 
     if @parent_profile.save
+      # redirect_to login_url
+      # redirect_to controller: 'sessions', action: 'login', session_type: 2, session_email: @parent_profile.email, session_password: parent_profile_params[:password]
       render json: @parent_profile, status: :created
     else
       render json: @parent_profile.errors.full_messages, status: :unprocessable_entity
@@ -77,7 +79,7 @@ class Api::V1::ParentProfilesController < ApplicationController
   # Only allow a list of trusted parameters through.
   def parent_profile_params
     # params.fetch(:parent_profile, {})
-    params.require(:parent_profile).permit(:email, :password, :user_profile_id)
+    params.permit(:email, :password, :user_profile_id)
 
   end
 end
