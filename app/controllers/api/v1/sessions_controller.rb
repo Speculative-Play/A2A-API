@@ -28,6 +28,7 @@ include ActionController::Cookies
     if @session_type == 1
       puts "session#create > creating user account"
       @user_profile = UserProfile.find_by(email: @session_email)
+      puts "user profile to login =", @user_profile
       @account = Account.create(:user_profile_id => @user_profile.id, account_type: 1)
       log_in @account
       remember @user_profile
@@ -46,64 +47,18 @@ include ActionController::Cookies
       @account = Account.create(:parent_profile_id => @parent_profile.id, account_type: 2)
       log_in @account
       remember @parent_profile
+      params = session_database_params.to_h
+      params[:account_id] = @account.id
+      @session = Session.new(params)
+      if @session.save
+        render json: @parent_profile
+      else
+        puts "session could not be saved"
+        render json: "session error: could not be saved"
+      end
     else
       puts "could not determine session type"
     end
-
-    # render json: "end test"
-
-    # if @session_type == 1
-    #   puts "child account found"
-    #   @user_profile = UserProfile.find_by(email: @session_email)
-    #   puts @user_profile
-    #   if @user_profile && @user_profile.authenticate(@session_password)
-    #     log_in @user_profile
-    #     remember(@user_profile) 
-    #     # TODO: Unpermitted parameters error here due to not permitting email and pw 
-    #     # => seems to work fine regardless but note for later to fix
-    #     params = session_database_params.to_h
-    #     params[:account_id] = @user_profile.id
-    #     @session = Session.new(params)
-    #     if @session.save
-    #       render json: @user_profile
-    #     else
-    #       puts "session could not be saved"
-    #       render json: "session error: could not be saved"
-    #     end
-    #   else
-    #     # TODO: put error message here
-    #     render json: "user could not be authenticated"
-    #     # puts "user could not be authenticated"
-    #   end
-    # elsif @session_type == 2
-    #   puts "parent account found"
-    #   @parent_profile = ParentProfile.find_by(email: @session_email)
-    #   puts @parent_profile
-    #   if @parent_profile = @parent_profile.authenticate(@session_password)
-    #     log_in @parent_profile
-    #     remember(@parent_profile)
-    #     # TODO: Unpermitted parameters error here due to not permitting email and pw 
-    #     # => seems to work fine regardless but note for later to fix
-    #     params = session_database_params.to_h
-    #     params[:account_id] = @parent_profile.id
-    #     @session = Session.new(params)
-    #     if @session.save
-    #       render json: @parent_profile
-    #     else
-    #       # puts "session could not be saved"
-    #       render json: "session error: could not be saved"
-    #     end
-
-    #   else
-    #     # TODO: put error message here
-    #     render json: "parent account could not be authenticated"
-    #   end
-    # else
-    #   render json: { 
-    #     status: 401, 
-    #     error: "Could not authenticate your account"
-    #   }
-    # end
     puts "leaving Sessions > create"
   end
 
@@ -125,6 +80,7 @@ include ActionController::Cookies
         log_out_user_profile
       elsif @session.session_type == 2
         puts "parent log out detected"
+        log_out_parent_profile
       else
         puts "log out session type not determined"
       end

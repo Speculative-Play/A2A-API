@@ -30,6 +30,7 @@ class ApplicationController < ActionController::API
             @user_profile.forget
         elsif @account.account_type == 2
             puts "forget > parent account found"
+            @parent_profile = ParentProfile.where("id = ?", @account.parent_profile_id).take
             @parent_profile.forget
         else
             puts "forget > no account type found"
@@ -55,34 +56,40 @@ class ApplicationController < ActionController::API
         puts "inside application_controller > log_out (user_profile)"
         # forget(current_user_profile)
         @current_account = Account.where("id = ?", session[:account_id]).take
-        puts "current_account = ", @current_account
-
+        # puts "current_account = ", @current_account
         @user_profile = UserProfile.where("id = ?", @current_account.user_profile_id).take
 
         forget(current_account)
-        # session.delete(:account_id)
+        @accounts_to_remove = Account.where("user_profile_id = ?", @user_profile.id)
+        puts "accounts to remove = ", @accounts_to_remove
+        @accounts_to_remove.destroy_all
         Session.where("account_id = ?", @current_account.id).destroy_all
-        Account.where("account_type = ? AND user_profile_id = ?", 1, @user_profile.id).destroy_all
+        @sessions_to_remove = Session.where("account_id = ?", @current_account.id)
+        @sessions_to_remove.destroy_all
+        # Account.where("account_type = ? AND user_profile_id = ?", 1, @user_profile.id).destroy_all
         @user_profile.remember_digest = nil
         @user_profile.save
         @current_user_profile = nil
         reset_session
-        
         puts "leaving application_controller > log_out (user_profile)"
-
     end
 
     def log_out_parent_profile
         puts "inside application_controller > log_out (parent_profile)"
         @current_account = Account.where("id = ?", session[:account_id]).take
         @parent_profile = ParentProfile.where("id = ?", @current_account.parent_profile_id).take
-
-        # forget(current_parent_profile)
         forget(current_account)
-        session.delete(:account_id)
+        @accounts_to_remove = Account.where("parent_profile_id = ?", @parent_profile.id)
+        puts "accounts to remove = ", @accounts_to_remove
+        @accounts_to_remove.destroy_all
+        @sessions_to_remove = Session.where("account_id = ?", @current_account.id)
+        @sessions_to_remove.destroy_all
+        # TODO WHAT IS UP WITH THIS MISUSE OF ROW VALUE ERROR?!
+        Session.where("account_id = ?", @accounts_to_remove.ids).destroy_all
+        Account.where("account_type = ? AND parent_profile_id = ?", 2, @parent_profile.id).destroy_all
         @current_parent_profile = nil
+        reset_session
         puts "leaving application_controller > log_out (parent_profile)"
-
     end
 
     def logged_in_parent_profile?
@@ -137,9 +144,6 @@ class ApplicationController < ActionController::API
 
     def current_user_profile
         puts "inside ApplicationController > current_user_profile"
-        # @current_user_profile_test ||= UserProfile.find_by_remember_token(cookies[:remember_token])
-        # puts "current user profile token test = ", @current_user_profile_test
-        # puts "user_profile_id =", user_profile.id
         if (user_profile_id = session[:user_profile_id])
             @current_user_profile ||= UserProfile.find_by(id: user_profile_id)
             puts "inside ApplicationController > current_user_profile > if taken > user_profile_id == session[user_profile_id"
