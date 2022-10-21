@@ -5,20 +5,6 @@ class ApplicationController < ActionController::API
     helper_method :current_user_profile
     helper_method :forget
 
-    # def forget(user_profile)
-    #     user_profile = @current_user_profile
-    #     user_profile.forget
-    #     cookies.delete(:user_profile_id)
-    #     cookies.delete(:remember_token)
-    # end
-
-    # def forget(parent_profile)
-    #     parent_profile = @current_parent_profile
-    #     parent_profile.forget
-    #     cookies.delete(:parent_profile_id)
-    #     cookies.delete(:remember_token)
-    # end
-
     def forget(account)
         puts "inside application_controller > forget(account)"
         # @account = @current_account
@@ -39,14 +25,6 @@ class ApplicationController < ActionController::API
         cookies.delete(:account_id)
         cookies.delete(:remember_token)
     end
-
-    # def log_in(parent_profile)
-    #     session[:parent_profile_id] = parent_profile.id
-    # end
-
-    # def log_in(user_profile)
-    #     session[:user_profile_id] = user_profile.id
-    # end
 
     def log_in(account)
         session[:account_id] = account.id
