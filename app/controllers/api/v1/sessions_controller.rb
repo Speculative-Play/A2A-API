@@ -25,11 +25,23 @@ include ActionController::Cookies
     @session_email = params[:email]
     @session_password = params[:password]
 
+    if !session[:id].nil?
+      puts "there is already a user logged in"
+    else
+      puts "no other user logged in"
+      puts session[:id]
+    end
+
     if @session_type == 1
       puts "session#create > creating user account"
-      @user_profile = UserProfile.find_by(email: @session_email)
-      puts "user profile to login =", @user_profile
-      @account = Account.create(:user_profile_id => @user_profile.id, account_type: 1)
+      puts "session[:email} = ", @session_email
+      @user_profile = UserProfile.where(email: @session_email).take
+      puts "user profile to login =", @user_profile.id
+      if Account.exists?(user_profile_id: @user_profile.id)
+        @account = Account.where(user_profile_id: @user_profile.id).take
+      else
+        @account = Account.create(:user_profile_id => @user_profile.id, account_type: 1)
+      end
       log_in @account
       remember @user_profile
       params = session_database_params.to_h
@@ -43,8 +55,12 @@ include ActionController::Cookies
       end
     elsif @session_type == 2
       puts "session#create > creating parent account"
-      @parent_profile = ParentProfile.find_by(email: @session_email)
-      @account = Account.create(:parent_profile_id => @parent_profile.id, account_type: 2)
+      @parent_profile = ParentProfile.where(email: @session_email).take
+      if Account.where(:parent_profile_id, @parent_profile.id).present?
+        @account = Account.where(:parent_profile_id, @parent_profile.id)
+      else
+        @account = Account.create(:parent_profile_id => @parent_profile.id, account_type: 2)
+      end
       log_in @account
       remember @parent_profile
       params = session_database_params.to_h
@@ -74,6 +90,7 @@ include ActionController::Cookies
   def destroy
 
     @session = Session.where("account_id = ?", session[:account_id]).take
+    puts "curent session = ", @session.id
     if !@session.nil?
       if @session.session_type == 1
         puts "child log out detected"
