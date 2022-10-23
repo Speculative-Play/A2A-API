@@ -2,6 +2,7 @@ class ApplicationController < ActionController::API
     include ActionController::Helpers
     include ActionController::Cookies
 
+
     helper_method :current_user_profile
     helper_method :forget
 
@@ -91,11 +92,6 @@ class ApplicationController < ActionController::API
         cookies.permanent.signed[:user_profile_id] = user_profile.id
         cookies.permanent[:remember_token] = user_profile.remember_token
     end
-
-    # API endpoint for 'api/v1/match' that returns to user their matchmaking category_percentages and top 10 match_profiles via matching algorithm
-    # def match
-        
-    # end
 
     # private
 

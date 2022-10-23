@@ -128,4 +128,13 @@ class Api::V1::UserProfilesController < ApplicationController
       params.permit!
       # params.permit(pie_percentages: [:cultureScore, :facialScore, :lifestyleScore, :kundaliScore, :locationScore])
     end
+
+  # API endpoint for 'api/v1/match' that returns to user their matchmaking category_percentages and top 10 match_profiles via matching algorithm
+  def match
+
+    @user_question_answers = UserQuestionAnswer.where(user_profile_id: @current_account.user_profile_id)
+    @match_question_answers = MatchQuestionAnswer.where(match_profile_id: 1)
+    render json: {all_questions: {user_question_answers: @user_question_answers, match_question_answers: @match_question_answers}}
+        
+  end
 end

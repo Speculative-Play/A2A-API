@@ -1,4 +1,4 @@
 class Account < ApplicationRecord
-    has_one :user_profile
-    has_one :parent_profile
+    belongs_to :user_profile,   optional: true
+    belongs_to :parent_profile, optional: true
 end

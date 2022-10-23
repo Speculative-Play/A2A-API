@@ -15,17 +15,19 @@ include ActionController::Cookies
 
   def new
     puts "inside Sessions > new"
+    # see login form
   end
 
   # Creates session object that allows user_profile to be logged in persistently
   def create
+    # post the form
 
     puts "inside session_controller > create"
     @session_type = params[:session_type]
     @session_email = params[:email]
     @session_password = params[:password]
 
-    if @session_type == 1
+    if @session_type == 1 # user
       puts "session#create > creating user account"
       puts "session[:email} = ", @session_email
       @user_profile = UserProfile.where(email: @session_email).take
@@ -46,7 +48,7 @@ include ActionController::Cookies
         puts "session could not be saved"
         render json: "session error: could not be saved"
       end
-    elsif @session_type == 2
+    elsif @session_type == 2 # parent
       puts "session#create > creating parent account"
       @parent_profile = ParentProfile.where(email: @session_email).take
       if Account.where(:parent_profile_id, @parent_profile.id).present?

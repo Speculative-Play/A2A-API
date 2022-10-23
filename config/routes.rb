@@ -50,6 +50,8 @@ Rails.application.routes.draw do
       get 'user_profile/get_user_questions_answers', to: 'user_question_answers#index'
       delete 'user_profile/delete', to: 'user_profiles#destroy'
       get '/user_profiles(/:user_profile_id)/get_user_questions_answers', to: 'user_question_answers#get_user_questions_answers'
+      post '/match', to: 'user_profiles#match'
+
 
       # Parent Accounts
       get 'signup_parent_profile', to: 'parent_profiles#new'
