@@ -16,8 +16,11 @@ include ActionController::Cookies
       puts "inside sessions_controller > create > passed authentication if"
       log_in account
       params[:session][:remember_me] = 1
-      # redirect_to account
-      render json: "your account was authenticated"
+      @user_profile = account.user_profile
+      @current_user_profile = @user_profile
+      puts "current user = ", @user_profile.id
+      render json: @user_profile
+      # render json: "your account was authenticated"
       # redirect_to account
     else
       render 'new'

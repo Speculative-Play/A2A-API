@@ -67,29 +67,29 @@ class ApplicationController < ActionController::API
     #     puts "leaving application_controller > log_out (parent_profile)"
     # end
 
-    def logged_in_parent_profile?
-        puts "inside application_controller > logged_in_parent_profile?"
-        !current_parent_profile.nil?
-    end
+    # def logged_in_parent_profile?
+    #     puts "inside application_controller > logged_in_parent_profile?"
+    #     !current_parent_profile.nil?
+    # end
 
-    def logged_in_user_profile?
-        puts "inside application_controller > logged_in_user_profile?"
-        current_user_profile.nil?
-    end
+    # def logged_in_user_profile?
+    #     puts "inside application_controller > logged_in_user_profile?"
+    #     current_user_profile.nil?
+    # end
 
-    def remember(parent_profile)
-        puts "inside ApplicationController > remember(user_profile)"
-        parent_profile.remember
-        cookies.permanent.signed[:parent_profile_id] = parent_profile.id
-        cookies.permanent[:remember_token] = parent_profile.remember_token
-    end
+    # def remember(parent_profile)
+    #     puts "inside ApplicationController > remember(user_profile)"
+    #     parent_profile.remember
+    #     cookies.permanent.signed[:parent_profile_id] = parent_profile.id
+    #     cookies.permanent[:remember_token] = parent_profile.remember_token
+    # end
 
-    def remember(user_profile)
-        puts "inside ApplicationController > remember(user_profile)"
-        user_profile.remember
-        cookies.permanent.signed[:user_profile_id] = user_profile.id
-        cookies.permanent[:remember_token] = user_profile.remember_token
-    end
+    # def remember(user_profile)
+    #     puts "inside ApplicationController > remember(user_profile)"
+    #     user_profile.remember
+    #     cookies.permanent.signed[:user_profile_id] = user_profile.id
+    #     cookies.permanent[:remember_token] = user_profile.remember_token
+    # end
 
     # private
 
@@ -111,8 +111,9 @@ class ApplicationController < ActionController::API
     end
 
     def current_user_profile
-        @current_user_profile = current_account
-    #     puts "inside ApplicationController > current_user_profile"
+        puts "inside ApplicationController > current_user_profile"
+
+        @current_user_profile = current_account.user_profile
     #     if (user_profile_id = session[:user_profile_id])
     #         @current_user_profile ||= UserProfile.find_by(id: user_profile_id)
     #         puts "inside ApplicationController > current_user_profile > if taken > user_profile_id == session[user_profile_id"

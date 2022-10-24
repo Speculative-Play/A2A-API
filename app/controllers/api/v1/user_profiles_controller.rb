@@ -1,5 +1,5 @@
 class Api::V1::UserProfilesController < ApplicationController
-  before_action :authenticate_user_profile
+  # before_action :authenticate_user_profile
 
   # GET /user_profiles
   def index
@@ -14,9 +14,11 @@ class Api::V1::UserProfilesController < ApplicationController
   # GET /user_profiles/1
   def show
     puts "inside user_profiles_controller > show"
-    # @user_profile = @current_user_profile
-    puts "current user = ", @current_user_profile
-    render json: @current_user_profile
+    current_account
+    # puts "current account inside userprofiles controller = ", current_account
+    @user_profile = @current_account.user_profile
+    # puts "current user = ", @current_user_profile
+    render json: @user_profile
   end
 
   # POST /search-child
@@ -87,21 +89,21 @@ class Api::V1::UserProfilesController < ApplicationController
   end
 
   # private
-    def authenticate_user_profile
-      puts "inside UserProfiles > authenticate_user_profile"
-      # logged_in_user_profile?
-      # if !current_user_profile.nil?
-      if logged_in_user_profile?
-        # flash[:danger] = "Please log in."
-        # redirect_to login_url
-        puts "logged_in_user_profile? == true"
+    # def authenticate_user_profile
+    #   puts "inside UserProfiles > authenticate_user_profile"
+    #   # logged_in_user_profile?
+    #   # if !current_user_profile.nil?
+    #   if logged_in_user_profile?
+    #     # flash[:danger] = "Please log in."
+    #     # redirect_to login_url
+    #     puts "logged_in_user_profile? == true"
 
-      else
-        render json: 'You are not logged in! Please log in to continue.', status: :unprocessable_entity
-        puts "!!! you are not logged in! please login to continue!"
-      end
-      puts "leaving UserProfiles > authenticate_user_profile"
-    end
+    #   else
+    #     render json: 'You are not logged in! Please log in to continue.', status: :unprocessable_entity
+    #     puts "!!! you are not logged in! please login to continue!"
+    #   end
+    #   puts "leaving UserProfiles > authenticate_user_profile"
+    # end
 
     def correct_user_profile
       @user_profile = UserProfile.find(params[:id])

@@ -12,7 +12,7 @@ module SessionsHelper
     def current_account
         if (account_id = session[:account_id])
             puts "session[:account_id] = ", account_id
-            @current_account = Account.find_by(id: account_id)
+            @current_account ||= Account.find_by(id: account_id)
             puts "current account id = ", @current_account.id
             if !@current_account.user_profile.nil?
                 @current_user_profile = @current_account.user_profile
@@ -21,7 +21,7 @@ module SessionsHelper
                 puts "is a parent profile!!"
             end
         elsif (account_id = cookies.signed[:account_id])
-            account = UserProfile.find_by(id: account_id)
+            account = Account.find_by(id: account_id)
             if account && account.authenticated?(cookies[:remember_token])
                 log_in account
                 @current_account = account
