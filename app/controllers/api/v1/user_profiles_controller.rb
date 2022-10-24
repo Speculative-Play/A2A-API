@@ -14,8 +14,9 @@ class Api::V1::UserProfilesController < ApplicationController
   # GET /user_profiles/1
   def show
     puts "inside user_profiles_controller > show"
-    @user_profile = @current_user_profile
-    render json: @user_profile
+    # @user_profile = @current_user_profile
+    puts "current user = ", @current_user_profile
+    render json: @current_user_profile
   end
 
   # POST /search-child

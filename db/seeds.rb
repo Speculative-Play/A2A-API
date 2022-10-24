@@ -13,8 +13,6 @@ require 'faker'
     UserProfile.create(
         first_name: Faker::Name.unique.first_name,
         last_name: Faker::Name.unique.last_name,
-        email: Faker::Internet.email,
-        password: "password"
     )
 end
 
@@ -95,7 +93,21 @@ end
 # Create ParentProfiles
 for u in 1..10 do
     ParentProfile.create(
+        user_profile_id: u
+    )
+end
+
+for u in 1..10 do
+    Account.create(
         user_profile_id: u,
+        password: "password",
+        email: Faker::Internet.email
+    )
+end
+
+for u in 1..10 do
+    Account.create(
+        parent_profile_id: u,
         password: "password",
         email: Faker::Internet.email
     )

@@ -1,6 +1,4 @@
-class UserProfile < ApplicationRecord
-    attr_accessor :remember_token
-    
+class UserProfile < ApplicationRecord    
     has_one  :account
     has_many :parent_profiles, dependent: :destroy
     has_many :starred_match_profiles, through: :parent_profile, dependent: :destroy
@@ -8,18 +6,9 @@ class UserProfile < ApplicationRecord
     has_many :user_question_answers, dependent: :destroy
     has_many :category_percentages, dependent: :destroy
 
-    has_secure_password
     has_one_attached :image, dependent: :destroy    
     
-    before_save { self.email = email.downcase }
 
-    VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
-    # could also use: 
-    # validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
-    validates :email, presence: true, uniqueness: { case_sensitive: false }, format: {with: VALID_EMAIL_REGEX}
-    # validates :first_name, presence: true
-    # validates :last_name, presence: true
-    validates :password_digest, presence: true
     
     class << self
         # Return the hash value of the given string

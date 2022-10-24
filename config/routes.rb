@@ -3,6 +3,7 @@ Rails.application.routes.draw do
     
     namespace :v1 do
 
+      resources :accounts
       resources :sessions
       resources :user_profiles, only: [:create]
       resources :user_profiles, shallow: true do
@@ -37,14 +38,16 @@ Rails.application.routes.draw do
       # Pages
       # get 'about', to: 'pages#index'
 
+      # Accounts
+      get  '/signup',  to: 'accounts#new'
+      post '/signup',  to: 'accounts#create'
+
       # Sessions
-      get '/login', to: 'sessions#logged_in'
-      post '/login', to: 'sessions#create'
-      delete '/logout', to: 'sessions#destroy'
+      get    '/login',   to: 'sessions#new'
+      post   '/login',   to: 'sessions#create'
+      delete '/logout',  to: 'sessions#destroy'
 
       # User Profiles
-      get 'signup', to: 'user_profiles#new'
-      post 'signup', to: 'user_profiles#create'
       get 'user_profile', to: 'user_profiles#show'
       put 'user_profile/edit', to: 'user_profiles#update'
       get 'user_profile/get_user_questions_answers', to: 'user_question_answers#index'

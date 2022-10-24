@@ -1,70 +1,51 @@
 module SessionsHelper
-    # def log_in_user_profile(user_profile)
-    #     puts "inside SessionHelper > log_in"
-    #     session[:user_profile_id] = user_profile.id
-    # end
 
-    # def current_user_profile
-    #     puts "inside SessionsHelper > current_user_profile"
-    #     # @current_user_profile ||= UserProfile.find(session[:user_profile_id]) if session[:user_profile_id] 
-    #     if (user_profile_id = session[:user_profile_id])
-    #         @current_user_profile ||= UserProfile.find_by(id: user_profile_id)
-    #         puts "first SessionsHelper > current_user_profile if passed"
-    #         puts "current_user_profile = ", @current_user_profile.id
-    #     elsif (user_profile_id = cookies.signed(:user_profile_id))
-    #         user_profile = UserProfile.find_by(id: user_profile_id)
-    #         if user_profile && user_profile.authenticated?(cookies[:remember_token])
-    #             log_in_user_profile user_profile
-    #             @current_user_profile = user_profile
-    #         end
-    #     end
-    #     puts "leaving SessionsHelper > current_user_profile"
-    # end
+    def current_acount?(account)
+        account == current_account
+    end
 
-    # def logged_in?
-    #     puts "inside SessionHelper > logged_in?"
-    #     !current_user_profile.nil?
-    # end
+    def log_in(account)
+        puts "inside session_helper > log_in"
+        session[:account_id] = account.id
+    end
 
-    # def log_out
-    #     puts "inside SessionHelper > log_out"
-    #     session.delete(:user_profile_id)
-    #     @current_user_profile = nil
-    # end
+    def current_account
+        if (account_id = session[:account_id])
+            puts "session[:account_id] = ", account_id
+            @current_account = Account.find_by(id: account_id)
+            puts "current account id = ", @current_account.id
+            if !@current_account.user_profile.nil?
+                @current_user_profile = @current_account.user_profile
+                puts "current user = ", @current_user_profile.id
+            elsif !@current_account.parent_profile.nil?
+                puts "is a parent profile!!"
+            end
+        elsif (account_id = cookies.signed[:account_id])
+            account = UserProfile.find_by(id: account_id)
+            if account && account.authenticated?(cookies[:remember_token])
+                log_in account
+                @current_account = account
+            end
+        end    
+    end
 
-    # def current_user_profile?(user_profile)
-    #     puts "inside SessionHelper > current_user_profile?"
-    #     user_profile = current_user_profile
-    # end
+    # Make the account's session permanent
+    def remember(account)
+        account.remember
+        cookies.permanent.signed[:account_id] = account.id
+        cookies.permanent[:remember_token] = account.remember_token
+    end
 
-    # # Make the user_profile's session permanent
-    # def remember(user_profile)
-    #     puts "inside SessionHelper > remember(user_profile)"
+    # Delete the permanent session
+    def forget(account)
+        account.forget
+        cookies.delete(:account_id)
+        cookies.delete(:remember_token)
+    end
 
-    #     user_profile.remember
-    #     cookies.permanent.signed[:user_profile_id] = user_profile.id
-    #     cookies.permanent[:remember_token] = user_profile.remember_token
-    # end
-
-    # # Delete the permanent session
-    # def forget(user_profile)
-    #     puts "inside SessionHelper > forget(user_profile)"
-
-    #     user_profile.forget
-    #     cookies.delete(:auser_profile_id)
-    #     cookies.delete(:remember_token)
-    # end
-
-    # def log_out
-    #     puts "inside SessionHelper > log_out"
-
-    #     forget(current_user_profile)
-    #     session.delete(:user_profile_id)
-    #     @current_user_profile = nil
-    # end
-
-    # def current_user_profile?(user_profile)
-    #     puts "inside SessionsHelper > current_user_profile?(user_profile)"
-    #     user_profile == current_user_profile
-    # end
+    def log_out
+        forget(current_account)
+        session.delete(:account_id)
+        @current_account = nil
+    end
 end
