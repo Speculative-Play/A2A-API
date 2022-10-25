@@ -8,8 +8,19 @@ class ApplicationController < ActionController::API
     end
 
     def current_user_profile
-        # current_account
-        @current_user_profile = UserProfile.find_by(id: @current_account.user_profile)
+        if current_account.nil?
+            puts "must log in first"
+        else
+            @current_user_profile = UserProfile.find_by(id: @current_account.user_profile)
+        end
+    end
+
+    def current_parent_profile
+        if current_account.nil?
+            puts "must log in first"
+        else
+            @current_parent_profile = ParentProfile.find_by(id: @current_account.parent_profile)
+        end
     end
 
     private
