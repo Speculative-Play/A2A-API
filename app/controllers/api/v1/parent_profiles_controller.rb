@@ -1,24 +1,16 @@
 class Api::V1::ParentProfilesController < ApplicationController
-  before_action :authenticate_parent_profile, except: [:search_child, :new, :create]
+  before_action :current_account, expect: :search_child
 
-  # GET /parent_profiles
-  # def index
-  #   @parent_profiles = ParentProfile.all
-  #   render json: @parent_profiles
-  # end
-
-  # GET /parent_profiles/1
-  # def show
-  #   current_account
-  #   @parent_profile = @current_account.parent_profile
-  #   render json: @parent_profile
-  # end
-
+  # GET / view-child
   def view_child
-    current_account
-    @parent = @current_account.parent_profile
-    @user_profile = UserProfile.find_by(id: @parent.user_profile_id)
-    render json: @user_profile
+    if !current_parent_profile.nil?
+      @parent = @current_account.parent_profile
+      @user_profile = UserProfile.find_by(id: @parent.user_profile_id)
+      # render json of user_profile biodata here
+      render json: "user_profile biodata here"
+    else
+      render json: "must be logged in as parent"
+    end
   end
 
   def search_child
