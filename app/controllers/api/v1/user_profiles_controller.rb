@@ -15,9 +15,7 @@ class Api::V1::UserProfilesController < ApplicationController
   def show
     puts "inside user_profiles_controller > show"
     current_account
-    # puts "current account inside userprofiles controller = ", current_account
     @user_profile = @current_account.user_profile
-    # puts "current user = ", @current_user_profile
     render json: @user_profile
   end
 

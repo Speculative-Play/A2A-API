@@ -2,20 +2,22 @@ class Api::V1::ParentProfilesController < ApplicationController
   before_action :authenticate_parent_profile, except: [:search_child, :new, :create]
 
   # GET /parent_profiles
-  def index
-    @parent_profiles = ParentProfile.all
-
-    render json: @parent_profiles
-  end
+  # def index
+  #   @parent_profiles = ParentProfile.all
+  #   render json: @parent_profiles
+  # end
 
   # GET /parent_profiles/1
-  def show
-    @parent_profile = current_parent_profile
-    render json: @parent_profile
-  end
+  # def show
+  #   current_account
+  #   @parent_profile = @current_account.parent_profile
+  #   render json: @parent_profile
+  # end
 
   def view_child
-    @user_profile = UserProfile.where("id = ?", @current_parent_profile.user_profile_id)
+    current_account
+    @parent = @current_account.parent_profile
+    @user_profile = UserProfile.find_by(id: @parent.user_profile_id)
     render json: @user_profile
   end
 

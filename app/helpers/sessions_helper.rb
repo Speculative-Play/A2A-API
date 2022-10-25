@@ -10,6 +10,8 @@ module SessionsHelper
     end
 
     def current_account
+        puts "inside sessions_helper > current_account"
+
         if (account_id = session[:account_id])
             puts "session[:account_id] = ", account_id
             @current_account ||= Account.find_by(id: account_id)
@@ -26,11 +28,14 @@ module SessionsHelper
                 log_in account
                 @current_account = account
             end
-        end    
+        end  
+        puts "leaving sessions_helper > current_account"  
     end
 
     # Make the account's session permanent
     def remember(account)
+        puts "inside sessions_helper > remember(account)"
+
         account.remember
         cookies.permanent.signed[:account_id] = account.id
         cookies.permanent[:remember_token] = account.remember_token
@@ -38,12 +43,16 @@ module SessionsHelper
 
     # Delete the permanent session
     def forget(account)
+        puts "inside sessions_helper > forget(account)"
+        # puts "account = ", account.id
         account.forget
         cookies.delete(:account_id)
         cookies.delete(:remember_token)
     end
 
     def log_out
+        puts "inside sessions_helper > log_out"
+
         forget(current_account)
         session.delete(:account_id)
         @current_account = nil
