@@ -1,7 +1,7 @@
 class ParentProfile < ApplicationRecord
-    has_one  :account
-    belongs_to :user_profile, class_name: "UserProfile", foreign_key: "user_profile_id"
-    has_many :starred_match_profiles, dependent: :destroy
+    belongs_to :user_profile,           class_name: "UserProfile", foreign_key: "user_profile_id"
+    has_one  :account,                  dependent: :destroy
+    has_many :starred_match_profiles,   dependent: :destroy
 
     class << self
         # Return the hash value of the given string
