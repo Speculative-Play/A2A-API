@@ -16,26 +16,14 @@ include ActionController::Cookies
       session[:account_id] = account.id
       puts "inside sessions_controller > create > passed authentication if"
       log_in account
-      # params[:session][:remember_me] = 1
-      # remember account
-      @user_profile = account.user_profile
-      # @current_user_profile = @user_profile
-      # puts "current user = ", @user_profile.id
 
-      # check if a user is already logged in
-      # if Session.find_by(account_id: account.id).nil?
-      #   # if a user is already logged in, then log out first before logging in new user
-      #   puts "someone is already logged in!"
-      # end
-
-      # @session = Session.new(account_id: account.id)
-      # if @session.save
-      #   puts "session was saved to db successfully"
+      if !current_user_profile.nil?
+        @user_profile = account.user_profile
         render json: @user_profile
-      # else
-      #   puts "session could not be saved"
-      #   render json: "session error: could not be saved"
-      # end
+      elsif !current_parent_profile.nil?
+        @parent_profile = account.parent_profile
+        render json: @parent_profile
+      end
       
     else
       render 'new'
