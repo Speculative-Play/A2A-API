@@ -29,28 +29,32 @@ class Api::V1::CategoryPercentagesController < ApplicationController
 
   # PATCH/PUT /category_percentages
   def update
+    if !current_user_profile.nil?
 
-    # parse JSON and create variables
-    @json = JSON.parse(request.body.read)
-    @input_category_id_array = []               # input matchmaking_category_ids
-    @input_category_percentage_array = []       # input category_percentages
+      # parse JSON and create variables
+      @json = JSON.parse(request.body.read)
+      @input_category_id_array = []               # input matchmaking_category_ids
+      @input_category_percentage_array = []       # input category_percentages
 
-    @current_category_percentages = CategoryPercentage.where("user_profile_id = ?", @current_user_profile.id)
+      @current_category_percentages = CategoryPercentage.where("user_profile_id = ?", @current_user_profile.id)
 
-    # collect and store the input values in arrays
-    @json['category_percentages_input'].each_with_index do |category, index|
-      @input_category_id_array[index] = category['matchmaking_category_id']
-      @input_category_percentage_array[index] = category['category_percentage']
+      # collect and store the input values in arrays
+      @json['category_percentages_input'].each_with_index do |category, index|
+        @input_category_id_array[index] = category['matchmaking_category_id']
+        @input_category_percentage_array[index] = category['category_percentage']
+      end
+
+      # TODO: do we need to implement verification that total value of all category_percentages = 100%)? Or done on frontend?
+
+      # update the records with the new values
+      @input_category_id_array.each_with_index do |array, index|
+        CategoryPercentage.update(@current_category_percentages[index].id, :category_percentage => @input_category_percentage_array[index])
+      end
+
+      index
+    else
+      render json: "must be logged in as user"
     end
-
-    # TODO: need to implement verification that total value of all category_percentages = 100%)
-
-    # update the records with the new values
-    @input_category_id_array.each_with_index do |array, index|
-      CategoryPercentage.update(@current_category_percentages[index].id, :category_percentage => @input_category_percentage_array[index])
-    end
-
-    index
   end
 
   # DELETE /category_percentages/1
