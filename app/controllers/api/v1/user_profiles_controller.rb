@@ -1,5 +1,5 @@
 class Api::V1::UserProfilesController < ApplicationController
-  # before_action :authenticate_user_profile
+  before_action :current_account
 
   # GET /user_profiles
   def index
@@ -14,10 +14,12 @@ class Api::V1::UserProfilesController < ApplicationController
   # GET /user_profiles/1
   def show
     puts "inside user_profiles_controller > show"
-    current_account
-    puts "current_account = ", @current_account
-    @user_profile = @current_account.user_profile
-    render json: @user_profile
+    if !current_user_profile.nil?
+      @user_profile = @current_account.user_profile
+      render json: @user_profile
+    else
+      render json: "must login first"
+    end
   end
 
   # POST /search-child
