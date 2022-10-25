@@ -1,28 +1,28 @@
 class Api::V1::AccountsController < ApplicationController
-    # before_action :
 
-    def new
-      # display account signup form here
-      @acount = Account.new
-    end
-  
-    # POST /accounts
-    def create
-      # receive signup form here
-      @account = Account.new(account_params)
-  
-      if @account.save
-        if account_params[:account_type] == "user"
-          redirect_to controller: :user_profiles, action: :new 
-        elsif account_params[:account_type] == "parent"
-          redirect_to controller: :parent_profiles, action: :new 
-        else
-          puts "neither type of account created"
-        end
+  # GET /signup
+  def new
+    # display account signup form here
+    @acount = Account.new
+  end
+
+  # POST /signup
+  def create
+    # receive signup form here
+    @account = Account.new(account_params)
+
+    if @account.save
+      if account_params[:account_type] == "user"
+        redirect_to controller: :user_profiles, action: :new 
+      elsif account_params[:account_type] == "parent"
+        redirect_to controller: :parent_profiles, action: :new 
       else
-        render json: @account.errors, status: :unprocessable_entity
+        puts "neither type of account created"
       end
+    else
+      render json: @account.errors, status: :unprocessable_entity
     end
+  end
   
     private
   
