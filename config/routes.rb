@@ -42,7 +42,7 @@ Rails.application.routes.draw do
 
 
       # Parent Accounts
-      get 'signup_parent_profile', to: 'parent_profiles#new'
+      get 'signup-parent', to: 'parent_profiles#new'
       post '/signup_parent_profile', to: 'parent_profiles#create'
       post '/search-child', to: 'parent_profiles#search_child'
       get '/view-child', to: 'parent_profiles#view_child'

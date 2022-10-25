@@ -24,6 +24,12 @@ class Api::V1::ParentProfilesController < ApplicationController
     end
   end
 
+  # GET /signup-parent
+  def new
+    render json: "parent_profile signup form"
+    @user_profile = UserProfile.new
+  end
+
   # POST /parent_profiles
   def create
     @parent_profile = ParentProfile.new(parent_profile_params)

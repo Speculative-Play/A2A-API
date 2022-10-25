@@ -15,7 +15,7 @@ class Api::V1::AccountsController < ApplicationController
         if account_params[:account_type] == "user"
           redirect_to controller: :user_profiles, action: :new 
         elsif account_params[:account_type] == "parent"
-          puts "account created > parent profile to be created"
+          redirect_to controller: :parent_profiles, action: :new 
         else
           puts "neither type of account created"
         end

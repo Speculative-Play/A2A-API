@@ -28,7 +28,7 @@ class Api::V1::UserProfilesController < ApplicationController
     render json: @user_profile
   end
 
-  # GET /user_profiles/new
+  # GET /signup-user
   def new
     render json: "user_profile signup form"
     @user_profile = UserProfile.new
