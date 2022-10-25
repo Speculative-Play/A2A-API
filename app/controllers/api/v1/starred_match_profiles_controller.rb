@@ -23,11 +23,15 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
 
   # POST /starred_match_profiles
   def create
-    @starred_match_profile = StarredMatchProfile.new(starred_match_profile_params)
-    if @starred_match_profile.save
-      render json: @starred_match_profile, status: :created
+    if !current_parent_profile.nil?
+      @starred_match_profile = StarredMatchProfile.new(starred_match_profile_params)
+      if @starred_match_profile.save
+        render json: @starred_match_profile, status: :created
+      else
+        render json: @starred_match_profile.errors, status: :unprocessable_entity
+      end
     else
-      render json: @starred_match_profile.errors, status: :unprocessable_entity
+      render json: "must be logged in as parent!"
     end
   end
 
