@@ -25,7 +25,14 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
   def create
     if !current_parent_profile.nil?
       @starred_match_profile = StarredMatchProfile.new(starred_match_profile_params)
-      if @starred_match_profile.save
+      @starred_match_profile.parent_profile_id = @current_parent_profile.id
+      
+      # If favourited_match_profile is already starred, render it
+      if StarredMatchProfile.where("parent_profile_id = ? AND match_profile_id = ?", @starred_match_profile.parent_profile_id, @starred_match_profile.match_profile_id).exists?
+        @starred_match_profile = StarredMatchProfile.where("parent_profile_id = ? AND match_profile_id = ?", @favourited_match_profile.parent_profile_id, @favourited_match_profile.match_profile_id)
+        render json: @favourited_match_profile
+      # else if starred_match_profile can be created, save it
+      elsif @starred_match_profile.save
         render json: @starred_match_profile, status: :created
       else
         render json: @starred_match_profile.errors, status: :unprocessable_entity

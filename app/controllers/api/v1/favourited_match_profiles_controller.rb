@@ -19,7 +19,7 @@ class Api::V1::FavouritedMatchProfilesController < ApplicationController
       @favourited_match_profile = FavouritedMatchProfile.new(favourited_match_profile_params)
       @favourited_match_profile.user_profile_id = @current_user_profile.id
 
-      # If match_profile is already starred, render it
+      # If favourited_match_profile is already starred, render it
       if FavouritedMatchProfile.where("user_profile_id = ? AND match_profile_id = ?", @favourited_match_profile.user_profile_id, @favourited_match_profile.match_profile_id).exists?
         @favourited_match_profile = FavouritedMatchProfile.where("user_profile_id = ? AND match_profile_id = ?", @favourited_match_profile.user_profile_id, @favourited_match_profile.match_profile_id)
         render json: @favourited_match_profile
