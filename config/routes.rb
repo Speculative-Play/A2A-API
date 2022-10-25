@@ -68,10 +68,14 @@ Rails.application.routes.draw do
       delete 'favourite', to: 'favourited_match_profiles#destroy'
 
       # Starred Match Profiles
+      get 'starred_match_profiles', to: 'starred_match_profiles#index'
       post 'starred_match_profiles', to: 'starred_match_profiles#create'
 
       # Questions
       get '/questions/matchmaking_category(/:matchmaking_category_id)', to: 'questions#questions_by_category'
+
+      # Answers
+      get 'my_question_answers', to: 'user_question_answers#index'
 
       # Category Percentages
       get 'category_percentages', to: 'category_percentages#index'
