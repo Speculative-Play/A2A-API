@@ -15,6 +15,7 @@ class Api::V1::UserProfilesController < ApplicationController
   def show
     puts "inside user_profiles_controller > show"
     current_account
+    puts "current_account = ", @current_account
     @user_profile = @current_account.user_profile
     render json: @user_profile
   end
@@ -60,8 +61,9 @@ class Api::V1::UserProfilesController < ApplicationController
 
   # PATCH/PUT /user_profiles/1 or /user_profliles/1.json
   def update
-    puts "inside user_profiles_controller > update"
-    puts "current user profile check =", @current_user_profile
+    # puts "inside user_profiles_controller > update"
+    # puts "current user profile check =", @current_user_profile
+    current_user_profile
     @user_profile = @current_user_profile
     puts "user profile id =",@user_profile
     if @user_profile.update(user_profile_params)
@@ -122,7 +124,7 @@ class Api::V1::UserProfilesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_profile_params
-      params.require(:user_profile).permit(:email, :password, :first_name, :last_name, :admin, :image)
+      params.require(:user_profile).permit(:first_name, :last_name, :admin, :image)
     end
 
     def pie_params

@@ -13,10 +13,11 @@ include ActionController::Cookies
     puts "inside Sessions_controller > create"
     account = Account.find_by(email: params[:session][:email].downcase)
     if account && account.authenticate(params[:session][:password])
+      session[:account_id] = account.id
       puts "inside sessions_controller > create > passed authentication if"
       log_in account
       # params[:session][:remember_me] = 1
-      remember account
+      # remember account
       @user_profile = account.user_profile
       # @current_user_profile = @user_profile
       # puts "current user = ", @user_profile.id
@@ -53,6 +54,7 @@ include ActionController::Cookies
     # end
     puts "inside sessions_controller > destroy > now will log_out"
     log_out
+    render json: "now logged out"
     # redirect_to root_url
   end
 
