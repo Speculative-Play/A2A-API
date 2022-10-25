@@ -1,5 +1,5 @@
 class Api::V1::FavouritedMatchProfilesController < ApplicationController
-  before_action :authenticate_user_profile
+  before_action :current_account
 
   # GET /favourited_match_profiles
   def index
@@ -15,19 +15,23 @@ class Api::V1::FavouritedMatchProfilesController < ApplicationController
 
   # POST /favourited_match_profiles
   def create
-    @favourited_match_profile = FavouritedMatchProfile.new(favourited_match_profile_params)
-    @favourited_match_profile.user_profile_id = @current_user_profile.id
+    if !current_user_profile.nil?
+      @favourited_match_profile = FavouritedMatchProfile.new(favourited_match_profile_params)
+      @favourited_match_profile.user_profile_id = @current_user_profile.id
 
-    # If match_profile is already starred, render it
-    if FavouritedMatchProfile.where("user_profile_id = ? AND match_profile_id = ?", @favourited_match_profile.user_profile_id, @favourited_match_profile.match_profile_id).exists?
-      @favourited_match_profile = FavouritedMatchProfile.where("user_profile_id = ? AND match_profile_id = ?", @favourited_match_profile.user_profile_id, @favourited_match_profile.match_profile_id)
-      render json: @favourited_match_profile
-    # else if starred_match_profile can be created, save it
-    elsif @favourited_match_profile.save
-      render json: @favourited_match_profile, status: :created
-    # else render errors
+      # If match_profile is already starred, render it
+      if FavouritedMatchProfile.where("user_profile_id = ? AND match_profile_id = ?", @favourited_match_profile.user_profile_id, @favourited_match_profile.match_profile_id).exists?
+        @favourited_match_profile = FavouritedMatchProfile.where("user_profile_id = ? AND match_profile_id = ?", @favourited_match_profile.user_profile_id, @favourited_match_profile.match_profile_id)
+        render json: @favourited_match_profile
+      # else if starred_match_profile can be created, save it
+      elsif @favourited_match_profile.save
+        render json: @favourited_match_profile, status: :created
+      # else render errors
+      else
+        render json: @favourited_match_profile.errors, status: :unprocessable_entity
+      end
     else
-      render json: @favourited_match_profile.errors, status: :unprocessable_entity
+      render json: "must be logged in"
     end
   end
 
