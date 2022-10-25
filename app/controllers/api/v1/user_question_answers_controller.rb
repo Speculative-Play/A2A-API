@@ -1,21 +1,14 @@
 class Api::V1::UserQuestionAnswersController < ApplicationController
-  before_action :set_user_question_answer, only: %i[ show update destroy ]
-  before_action :authenticate_user_profile
+  before_action :current_account
 
 
   # GET /user_question_answers
   def index
-    # IF user_profile_id is present THEN return only user_question_answers with matching user_profile_id
-    # @user_question_answers = if params[:user_profile_id].present?
-    #   UserQuestionAnswer.where("user_profile_id = ?", params[:user_profile_id])
+    @user_question_answers = UserQuestionAnswer.where(user_profile_id: @current_account.user_profile)
+    @questions = Question.joins(:user_question_answers).where("user_question_answers.user_profile_id" => @current_account.user_profile)
+    @answers = Answer.joins(:user_question_answers).where("user_question_answers.user_profile_id" => @current_account.user_profile)
 
-    # ELSE return ALL user_question_answers
-    # else
-      # UserQuestionAnswer.all
-    # end
-    @user_question_answers = UserQuestionAnswer.where("user_profile_id = ?", @current_user_profile.id)
-
-    render json: @user_question_answers
+    render json: {all_data: {user_question_answers: @user_question_answers, questions: @questions, answers: @answers}}
   end
 
   # GET /user_question_answers/1
@@ -36,18 +29,6 @@ class Api::V1::UserQuestionAnswersController < ApplicationController
     else 
       render json: "Error: User_Question_Answer Not Found"
     end
-  end
-
-  # GET /user_question_answer/[user_profile_id]
-  def get_user_questions_answers
-    @user_question_answers = UserQuestionAnswer.where("user_profile_id = ?", params[:user_profile_id])
-
-    @questions = Question.joins(:user_question_answers).where("user_question_answers.user_profile_id" => params[:user_profile_id])
-
-    @answers = Answer.joins(:user_question_answers).where("user_question_answers.user_profile_id" => params[:user_profile_id])
-
-    render json: {all_data: {user_question_answers: @user_question_answers, questions: @questions, answers: @answers}}
-    format.json { render :json => @user_question_answers.to_json}
   end
 
   # POST /user_question_answers
@@ -76,30 +57,9 @@ class Api::V1::UserQuestionAnswersController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_user_question_answer
-      @user_question_answer = UserQuestionAnswer.find(params[:id])
-    end
+  # Only allow a list of trusted parameters through.
+  def user_question_answer_params
+    params.fetch(:user_question_answer, {})
+  end
 
-    # Only allow a list of trusted parameters through.
-    def user_question_answer_params
-      params.fetch(:user_question_answer, {})
-    end
-
-    def authenticate_user_profile
-      puts "user_question_answers > authenticate_user_profile"
-      # if !current_user_profile.nil?
-      if logged_in_user_profile?
-        # flash[:danger] = "Please log in."
-        # redirect_to login_url
-        # puts "2nd logged_in_user_profile as=", @current_user_profile.id
-
-        puts "!!! you are not logged in! please login to continue!"
-        render json: 'You are not logged in! Please log in to continue.', status: :unprocessable_entity
-      else
-        puts "inside user_question_answers > authenticate_user_profile > login successful!"
-      end
-      puts "leaving user_question_answers > authenticate_user_profile"
-
-    end
 end
