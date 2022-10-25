@@ -65,7 +65,7 @@ Rails.application.routes.draw do
       # Favourited Match Profiles
       get 'favourites', to: 'favourited_match_profiles#index'
       post 'favourite', to: 'favourited_match_profiles#create'
-      delete 'favourite', to: 'favourited_match_profiles#destroy'
+      delete 'remove-favourite', to: 'favourited_match_profiles#destroy'
 
       # Starred Match Profiles
       get 'starred_match_profiles', to: 'starred_match_profiles#index'

@@ -1,32 +1,34 @@
 class Api::V1::FavouritedMatchProfilesController < ApplicationController
   before_action :current_account
 
-  # GET /favourited_match_profiles
+  # GET /favourites
   def index
     # Returns all favourited_match_profiles that share current_user_profile's id
-    @favourited_match_profiles = FavouritedMatchProfile.where("user_profile_id = ?", @current_user_profile.id)
-    render json: @favourited_match_profiles
+    if !current_user_profile.nil?
+      @favourited_match_profiles = FavouritedMatchProfile.where(user_profile_id: @current_user_profile.id)
+      render json: @favourited_match_profiles
+    else
+      render json: "must be logged in as user"
+    end
   end
 
-  # GET /favourited_match_profiles/1
+  # GET /favourite/1
   def show
     render json: @favourited_match_profile
   end
 
-  # POST /favourited_match_profiles
+  # POST /favourite
   def create
     if !current_user_profile.nil?
       @favourited_match_profile = FavouritedMatchProfile.new(favourited_match_profile_params)
       @favourited_match_profile.user_profile_id = @current_user_profile.id
 
-      # If favourited_match_profile is already starred, render it
+      # If favourited_match_profile is already starred, only render index
       if FavouritedMatchProfile.where("user_profile_id = ? AND match_profile_id = ?", @favourited_match_profile.user_profile_id, @favourited_match_profile.match_profile_id).exists?
-        @favourited_match_profile = FavouritedMatchProfile.where("user_profile_id = ? AND match_profile_id = ?", @favourited_match_profile.user_profile_id, @favourited_match_profile.match_profile_id)
-        render json: @favourited_match_profile
-      # else if starred_match_profile can be created, save it
+        index
+      # else if starred_match_profile can be created, save it and render index
       elsif @favourited_match_profile.save
-        render json: @favourited_match_profile, status: :created
-      # else render errors
+        index
       else
         render json: @favourited_match_profile.errors, status: :unprocessable_entity
       end
@@ -46,9 +48,13 @@ class Api::V1::FavouritedMatchProfilesController < ApplicationController
 
   # DELETE /favourited_match_profiles
   def destroy
-    @favourited_match_profile = FavouritedMatchProfile.where("user_profile_id = ? AND match_profile_id = ?", @current_user_profile.id, favourited_match_profile_params[:match_profile_id])
-    @favourited_match_profile.destroy_all
-    index
+    if !current_user_profile.nil?
+      @favourited_match_profile = FavouritedMatchProfile.find_by("user_profile_id = ? AND match_profile_id = ?", @current_user_profile.id, favourited_match_profile_params[:match_profile_id])
+      @favourited_match_profile.destroy
+      index
+    else
+      render json: "must be logged in as user to do that."
+    end
   end
 
   private
