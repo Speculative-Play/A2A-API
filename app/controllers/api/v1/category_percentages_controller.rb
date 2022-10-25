@@ -1,11 +1,14 @@
 class Api::V1::CategoryPercentagesController < ApplicationController
-  # before_action :set_category_percentage, only: %i[ show destroy ]
-  before_action :authenticate_user_profile
+  before_action :current_account
 
   # GET /category_percentages
   def index
-    @category_percentages = CategoryPercentage.where("user_profile_id = ?", @current_user_profile)
-    render json: @category_percentages
+    if !current_user_profile.nil?
+      @category_percentages = CategoryPercentage.where(user_profile_id: @current_user_profile)
+      render json: @category_percentages
+    else
+      render json: "must be logged in as user"
+    end
   end
 
   # GET /category_percentages/1
@@ -56,21 +59,10 @@ class Api::V1::CategoryPercentagesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_category_percentage
-      @category_percentage = CategoryPercentage.find(params[:id])
-    end
+  # Only allow a list of trusted parameters through.
+  def category_percentage_params
+    # params.fetch(:category_percentage, {})
+    params.permit(:category_percentage, :matchmaking_category_id, :user_profile_id)
 
-    # Only allow a list of trusted parameters through.
-    def category_percentage_params
-      # params.fetch(:category_percentage, {})
-      params.permit(:category_percentage, :matchmaking_category_id, :user_profile_id)
-
-    end
-
-    def authenticate_user_profile
-      if logged_in_user_profile?
-        render json: 'You are not logged in! Please log in to continue.', status: :unprocessable_entity
-      end
-    end
+  end
 end
