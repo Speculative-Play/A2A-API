@@ -33,6 +33,7 @@ Rails.application.routes.draw do
 
       # User Profiles
       get 'signup-user', to: 'user_profiles#new'
+      post 'signup-user', to: 'user_profiles#create'
       get 'user_profile', to: 'user_profiles#show'
       put 'user_profile/edit', to: 'user_profiles#update'
       get 'user_profile/get_user_questions_answers', to: 'user_question_answers#index'
@@ -43,7 +44,7 @@ Rails.application.routes.draw do
 
       # Parent Accounts
       get 'signup-parent', to: 'parent_profiles#new'
-      post '/signup_parent_profile', to: 'parent_profiles#create'
+      post 'signup-parent', to: 'parent_profiles#create'
       post '/search-child', to: 'parent_profiles#search_child'
       get '/view-child', to: 'parent_profiles#view_child'
 
