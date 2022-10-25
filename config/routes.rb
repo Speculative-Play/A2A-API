@@ -32,6 +32,7 @@ Rails.application.routes.draw do
       delete '/logout',  to: 'sessions#destroy'
 
       # User Profiles
+      get 'signup-user', to: 'user_profiles#new'
       get 'user_profile', to: 'user_profiles#show'
       put 'user_profile/edit', to: 'user_profiles#update'
       get 'user_profile/get_user_questions_answers', to: 'user_question_answers#index'

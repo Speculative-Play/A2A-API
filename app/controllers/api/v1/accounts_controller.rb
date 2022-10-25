@@ -1,26 +1,26 @@
 class Api::V1::AccountsController < ApplicationController
-    before_action :authenticate_author
-  
-    # GET /accounts/1
-    def show
-      # render json: @account
-      @account = Account.find(params[:id])
-    end
+    # before_action :
 
     def new
+      # display account signup form here
       @acount = Account.new
     end
   
     # POST /accounts
     def create
+      # receive signup form here
       @account = Account.new(account_params)
   
       if @account.save
-        redirect_to @account
-        # render json: @account, status: :created, location: @account
+        if account_params[:account_type] == "user"
+          redirect_to controller: :user_profiles, action: :new 
+        elsif account_params[:account_type] == "parent"
+          puts "account created > parent profile to be created"
+        else
+          puts "neither type of account created"
+        end
       else
-        render 'new'
-        # render json: @account.errors, status: :unprocessable_entity
+        render json: @account.errors, status: :unprocessable_entity
       end
     end
   
@@ -28,13 +28,13 @@ class Api::V1::AccountsController < ApplicationController
   
       # Only allow a list of trusted parameters through.
       def account_params
-        params.require(:account).permit(:email, :password)
+        params.require(:account).permit(:email, :password, :account_type)
       end
 
-      def authenticate_account
-        flash[:danger] = "Please log in."
-        redirect_to login_url
-      end
+      # def authenticate_account
+      #   flash[:danger] = "Please log in."
+      #   redirect_to login_url
+      # end
 
       def correct_account
         @account = Account.find(params[:id])
