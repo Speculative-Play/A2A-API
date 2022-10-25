@@ -5,33 +5,17 @@ Rails.application.routes.draw do
 
       resources :accounts
       resources :sessions
-      resources :user_profiles, only: [:create]
-      resources :user_profiles, shallow: true do
-        resources :parent_profiles, shallow: true do
-          resources :starred_match_profiles
-        end
-        resources :user_question_answers, shallow: true
-        resources :category_percentages, shallow: true
-        resources :favourited_match_profiles, shallow: true
-      end
-
-      resources :match_profiles, shallow: true do
-        collection do
-          get 'reorder_match_profiles'
-          get 'sort_match_profiles_by_attribute'
-        end
-        resources :match_question_answers, shallow: true
-      end
-
-      resources :matchmaking_categories, shallow: true do
-        resources :category_percentages, shallow: true do
-          resources :questions, shallow: true do
-            resources :answers, shallow: true
-          end
-        end
-      end
+      resources :user_profiles
+      resources :parent_profiles
+      resources :match_profiles
       resources :questions
       resources :answers
+      resources :user_question_answers
+      resources :match_question_answers
+      resources :matchmaking_categories
+      resources :category_percentages
+      resources :favourited_match_profiles
+      resources :starred_match_profiles
 
       # Custom Routes
 
@@ -70,6 +54,8 @@ Rails.application.routes.draw do
       # Starred Match Profiles
       get 'starred_match_profiles', to: 'starred_match_profiles#index'
       post 'starred_match_profiles', to: 'starred_match_profiles#create'
+      # get 'reorder_match_profiles'
+      # get 'sort_match_profiles_by_attribute'
 
       # Questions
       get '/questions/matchmaking_category(/:matchmaking_category_id)', to: 'questions#questions_by_category'
