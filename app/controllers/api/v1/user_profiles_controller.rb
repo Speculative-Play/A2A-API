@@ -1,12 +1,6 @@
 class Api::V1::UserProfilesController < ApplicationController
   before_action :current_account
 
-  # GET /user_profiles
-  def index
-    @user_profiles = UserProfile.all
-    render json: @user_profiles
-  end
-
   def profiles_root_placeholder
     puts "inside user_profiles_controller > profiles_root_placeholder"
   end
@@ -18,7 +12,7 @@ class Api::V1::UserProfilesController < ApplicationController
       @user_profile = @current_account.user_profile
       render json: @user_profile
     else
-      render json: "must login first"
+      return head(:unauthorized)
     end
   end
 
@@ -30,6 +24,7 @@ class Api::V1::UserProfilesController < ApplicationController
 
   # GET /signup-user
   def new
+    return true
   end
 
   # POST /user_profiles or /user_profiles.json
@@ -45,7 +40,7 @@ class Api::V1::UserProfilesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /user_profiles/1 or /user_profliles/1.json
+  # PATCH/PUT /user_profile
   def update
     # puts "inside user_profiles_controller > update"
     # puts "current user profile check =", @current_user_profile
@@ -53,20 +48,14 @@ class Api::V1::UserProfilesController < ApplicationController
       @user_profile = @current_user_profile
       puts "user profile id =",@user_profile
       if @user_profile.update(user_profile_params)
-        puts "inside UserProfiles > update > if passed"
-
         show
-        # render 'show', status: :ok
       else
-        # puts "inside UserProfiles > update > else taken"
-
         render json: @user_profile.errors, status: :unprocessable_entity
       end
     else
-      render json: "must be logged in to do that"
+      return head(:unauthorized)
     end
     puts "leaving user_profiles_controller > update"
-
   end
 
   # DELETE /user_profiles/1 or /user_profiles/1.json
@@ -75,15 +64,10 @@ class Api::V1::UserProfilesController < ApplicationController
       @user_profile = @current_user_profile
       @user_profile.destroy
       log_out
-      render json: "user deleted"
+      return true
     else
-      render json: "must be logged in to do that."
+      return head(:unauthorized)
     end
-  end
-
-  def correct_user_profile
-    @user_profile = UserProfile.find(params[:id])
-    # redirect_to(root_url) unless current_user_profile?(@user_profile)
   end
 
   # Only allow a list of trusted parameters through.
