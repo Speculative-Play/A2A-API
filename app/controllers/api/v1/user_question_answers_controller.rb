@@ -4,11 +4,15 @@ class Api::V1::UserQuestionAnswersController < ApplicationController
 
   # GET /user_question_answers
   def index
-    @user_question_answers = UserQuestionAnswer.where(user_profile_id: @current_account.user_profile)
-    @questions = Question.joins(:user_question_answers).where("user_question_answers.user_profile_id" => @current_account.user_profile)
-    @answers = Answer.joins(:user_question_answers).where("user_question_answers.user_profile_id" => @current_account.user_profile)
+    if !current_user_profile.nil?
+      @user_question_answers = UserQuestionAnswer.where(user_profile_id: @current_account.user_profile)
+      @questions = Question.joins(:user_question_answers).where("user_question_answers.user_profile_id" => @current_account.user_profile)
+      @answers = Answer.joins(:user_question_answers).where("user_question_answers.user_profile_id" => @current_account.user_profile)
 
-    render json: {all_data: {user_question_answers: @user_question_answers, questions: @questions, answers: @answers}}
+      render json: {all_data: {user_question_answers: @user_question_answers, questions: @questions, answers: @answers}}
+    else
+      render json: "must be logged in to do that"
+    end
   end
 
   # GET /user_question_answers/1
