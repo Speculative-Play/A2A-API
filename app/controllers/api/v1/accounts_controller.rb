@@ -3,6 +3,7 @@ class Api::V1::AccountsController < ApplicationController
   # GET /signup
   def new
     # display account signup form here
+    return true
   end
 
   # POST /signup

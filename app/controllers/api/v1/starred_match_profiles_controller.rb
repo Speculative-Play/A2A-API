@@ -12,7 +12,7 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
       @starred_match_profiles = StarredMatchProfile.where(parent_profile_id: @current_parent_profile)
       render json: @starred_match_profiles
     else
-      render json: "must be logged in to do that."
+      return head(:unauthorized)
     end
   end
 
@@ -38,7 +38,7 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
         render json: @starred_match_profile.errors, status: :unprocessable_entity
       end
     else
-      render json: "must be logged in as parent!"
+      return head(:unauthorized)
     end
   end
 

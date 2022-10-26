@@ -7,7 +7,7 @@ class Api::V1::CategoryPercentagesController < ApplicationController
       @category_percentages = CategoryPercentage.where(user_profile_id: @current_user_profile)
       render json: @category_percentages
     else
-      render json: "must be logged in as user"
+      return head(:unauthorized)
     end
   end
 
@@ -53,7 +53,7 @@ class Api::V1::CategoryPercentagesController < ApplicationController
 
       index
     else
-      render json: "must be logged in as user"
+      return head(:unauthorized)
     end
   end
 

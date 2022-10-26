@@ -7,9 +7,8 @@ class Api::V1::ParentProfilesController < ApplicationController
       @parent = @current_account.parent_profile
       @user_profile = UserProfile.find_by(id: @parent.user_profile_id)
       # render json of user_profile biodata here
-      render json: "user_profile biodata here"
     else
-      render json: "must be logged in as parent"
+      return head(:unauthorized)
     end
   end
 

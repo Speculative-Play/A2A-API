@@ -11,7 +11,7 @@ class Api::V1::UserQuestionAnswersController < ApplicationController
 
       render json: {all_data: {user_question_answers: @user_question_answers, questions: @questions, answers: @answers}}
     else
-      render json: "must be logged in to do that"
+      return head(:unauthorized)
     end
   end
 
@@ -31,7 +31,8 @@ class Api::V1::UserQuestionAnswersController < ApplicationController
 
       render json: @nth_user
     else 
-      render json: "Error: User_Question_Answer Not Found"
+      # is this what should be returned?
+      return false
     end
   end
 

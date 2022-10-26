@@ -41,10 +41,8 @@ include ActionController::Cookies
     if !current_account.nil?
       puts "inside sessions_controller > destroy > now will log_out"
       log_out
-      render json: "now logged out"
-    else
-      render json: "already logged out"
     end
+    return true
     # redirect_to root_url
   end
 

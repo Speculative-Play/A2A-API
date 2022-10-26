@@ -8,7 +8,7 @@ class Api::V1::FavouritedMatchProfilesController < ApplicationController
       @favourited_match_profiles = FavouritedMatchProfile.where(user_profile_id: @current_user_profile.id)
       render json: @favourited_match_profiles
     else
-      render json: "must be logged in as user"
+      return head(:unauthorized)
     end
   end
 
@@ -33,7 +33,7 @@ class Api::V1::FavouritedMatchProfilesController < ApplicationController
         render json: @favourited_match_profile.errors, status: :unprocessable_entity
       end
     else
-      render json: "must be logged in"
+      return head(:unauthorized)
     end
   end
 
@@ -53,7 +53,7 @@ class Api::V1::FavouritedMatchProfilesController < ApplicationController
       @favourited_match_profile.destroy
       index
     else
-      render json: "must be logged in as user to do that."
+      return head(:unauthorized)
     end
   end
 
