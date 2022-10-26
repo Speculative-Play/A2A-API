@@ -5,7 +5,6 @@ include ActionController::Cookies
   def new
     puts "inside Sessions > new"
     # see login form
-    render json: "login form goes here."
   end
 
   # Creates session object that allows user_profile to be logged in persistently
