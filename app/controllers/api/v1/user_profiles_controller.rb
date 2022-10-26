@@ -70,10 +70,14 @@ class Api::V1::UserProfilesController < ApplicationController
 
   # DELETE /user_profiles/1 or /user_profiles/1.json
   def destroy
-    @user_profile = @current_user_profile
-    @user_profile.destroy
-    render json: "user was deleted."
-    # session[:user_profile_id] = nil if @user_profile == current_user_profile
+    if !current_user_profile.nil?
+      @user_profile = @current_user_profile
+      @user_profile.destroy
+      log_out
+      render json: "user deleted"
+    else
+      render json: "must be logged in to do that."
+    end
   end
 
   def correct_user_profile
