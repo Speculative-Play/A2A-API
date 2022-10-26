@@ -30,8 +30,6 @@ class Api::V1::UserProfilesController < ApplicationController
 
   # GET /signup-user
   def new
-    render json: "user_profile signup form"
-    @user_profile = UserProfile.new
   end
 
   # POST /user_profiles or /user_profiles.json
