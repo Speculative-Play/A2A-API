@@ -82,10 +82,35 @@ class Api::V1::UserProfilesController < ApplicationController
 
   # API endpoint for 'api/v1/match' that returns to user their matchmaking category_percentages and top 10 match_profiles via matching algorithm
   def match
+    # @matches = MatchProfile.find(:all)
+    @matches = Hash.new
+    MatchProfile.find_each do |m|
+      puts "loop id =", m.id
+      value = compare_user_to_match(m.id)
+      @matches[m.first_name] = value
+    end
+    
+    render json: Hash[@matches.sort_by{|k,v| v}.reverse]
+  end
 
+  def compare_user_to_match(id)
+    # puts "compare_user_to_match"
+
+    @match_question_answers = MatchQuestionAnswer.where(match_profile_id: id)
     @user_question_answers = UserQuestionAnswer.where(user_profile_id: @current_account.user_profile_id)
-    @match_question_answers = MatchQuestionAnswer.where(match_profile_id: 1)
-    render json: {all_questions: {user_question_answers: @user_question_answers, match_question_answers: @match_question_answers}}    
+
+    similarity = 0
+    @user_question_answers.each do |qa|
+      @match_question_answers.each do |ma|
+        if qa.question_id == ma.question_id
+          if qa.answer_id == ma.answer_id
+            similarity = similarity + 1
+          end
+        end
+      end
+    end
+    puts "similairty = ",similarity
+    return similarity
   end
 
 end
