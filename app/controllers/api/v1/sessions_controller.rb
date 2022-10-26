@@ -5,6 +5,7 @@ include ActionController::Cookies
   def new
     puts "inside Sessions > new"
     # see login form
+    render json: "login form goes here."
   end
 
   # Creates session object that allows user_profile to be logged in persistently
@@ -12,37 +13,38 @@ include ActionController::Cookies
     # post the form
     puts "inside Sessions_controller > create"
     account = Account.find_by(email: params[:session][:email].downcase)
-    if account && account.authenticate(params[:session][:password])
-      session[:account_id] = account.id
-      puts "inside sessions_controller > create > passed authentication if"
-      log_in account
+    puts "account = nil?", account.nil?
+    if !account.nil?
+      if account && account.authenticate(params[:session][:password])
+        session[:account_id] = account.id
+        puts "inside sessions_controller > create > passed authentication if"
+        log_in account
 
-      if !current_user_profile.nil?
-        @user_profile = account.user_profile
-        render json: @user_profile
-      elsif !current_parent_profile.nil?
-        @parent_profile = account.parent_profile
-        render json: @parent_profile
-      end
+        if !current_user_profile.nil?
+          @user_profile = account.user_profile
+          render json: @user_profile
+        elsif !current_parent_profile.nil?
+          @parent_profile = account.parent_profile
+          render json: @parent_profile
+        end
       
+      else
+        new
+      end
     else
-      render 'new'
+      new
     end
   end
 
   def destroy
     puts "inside sessions_controller > destroy"
-
-    # current_account
-
-    # puts "current_account = ", @current_account
-    # session = if Session.find_by(account_id: @current_account.id)
-    #   session.destroy
-    #   puts "destroyed a session"
-    # end
-    puts "inside sessions_controller > destroy > now will log_out"
-    log_out
-    render json: "now logged out"
+    if !current_account.nil?
+      puts "inside sessions_controller > destroy > now will log_out"
+      log_out
+      render json: "now logged out"
+    else
+      render json: "already logged out"
+    end
     # redirect_to root_url
   end
 
