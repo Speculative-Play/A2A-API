@@ -12,7 +12,7 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
       @starred_match_profiles = StarredMatchProfile.where(parent_profile_id: @current_parent_profile)
       render json: @starred_match_profiles
     else
-      render json: "must login"
+      render json: "must be logged in to do that."
     end
   end
 
