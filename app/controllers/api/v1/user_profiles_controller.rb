@@ -51,18 +51,21 @@ class Api::V1::UserProfilesController < ApplicationController
   def update
     # puts "inside user_profiles_controller > update"
     # puts "current user profile check =", @current_user_profile
-    current_user_profile
-    @user_profile = @current_user_profile
-    puts "user profile id =",@user_profile
-    if @user_profile.update(user_profile_params)
-      puts "inside UserProfiles > update > if passed"
+    if !current_user_profile.nil?
+      @user_profile = @current_user_profile
+      puts "user profile id =",@user_profile
+      if @user_profile.update(user_profile_params)
+        puts "inside UserProfiles > update > if passed"
 
-      show
-      # render 'show', status: :ok
+        show
+        # render 'show', status: :ok
+      else
+        # puts "inside UserProfiles > update > else taken"
+
+        render json: @user_profile.errors, status: :unprocessable_entity
+      end
     else
-      # puts "inside UserProfiles > update > else taken"
-
-      render json: @user_profile.errors, status: :unprocessable_entity
+      render json: "must be logged in to do that"
     end
     puts "leaving user_profiles_controller > update"
 
