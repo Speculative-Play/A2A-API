@@ -69,16 +69,18 @@ class Api::V1::UserProfilesController < ApplicationController
 
   # API endpoint for 'api/v1/match' that returns to user their matchmaking category_percentages and top 10 match_profiles via matching algorithm
   def match
-    # @matches = Hash.new
-    # MatchProfile.find_each do |m|
-    #   puts "loop id =", m.id
-    #   value = compare_user_to_match(m.id)
-    #   @matches[m.first_name] = value
-    # end
+    @matches = Hash.new
+    MatchProfile.find_each do |m|
+      puts "loop id =", m.id
+      # value = compare_user_to_match(m.id)
+      value = similarity_value(m.id)
+      @matches[m.id] = value
+    end
 
-    join_test
-    
-    # render json: Hash[@matches.sort_by{|k,v| v}.reverse]
+    # join_test
+    @results = Hash[@matches.sort_by{|k,v| v}.reverse]
+    # names
+    render json: {matches: {scores: @results}}
   end
 
   def similarity_value(id)
@@ -92,16 +94,33 @@ class Api::V1::UserProfilesController < ApplicationController
     @user_question_answers.each do |user_a|
       @match_question_answers.each do |match_a|
         if user_a.question_id == match_a.question_id
-          if user_a.answer_id == match_a.answer_id
-            similarity = similarity + 1
-          else
-
+          # check for question_type
+          question = Question.find_by(id: user_a.question_id)
+          # zero-one question type
+          if question.question_type == "zero-one"
+            puts "found a zero-one"
+            if user_a.answer_id == match_a.answer_id
+              similarity = similarity + 1
+            end
+          # range question type
+          elsif question.question_type == "range"
+            puts "found a range"
+            similarity = similarity + range_question_score(question.id, user_a.answer_id, match_a.answer_id)
           end
+
         end
       end
     end
     puts "similairty = ",similarity
     return similarity
+  end
+
+  def range_question_score(q_id, u_a_id, m_a_id)
+    answers = Answer.where(question_id: q_id)
+    t = answers.count
+    d = (u_a_id - m_a_id).abs
+    points = (t.to_f - d.to_f) / t.to_f
+    return points
   end
 
   def join_test
