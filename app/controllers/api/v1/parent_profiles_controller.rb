@@ -24,12 +24,6 @@ class Api::V1::ParentProfilesController < ApplicationController
     end
   end
 
-  # GET /signup-parent
-  def new
-    render json: "parent_profile signup form"
-    @user_profile = UserProfile.new
-  end
-
   # POST /parent_profiles
   def create
     if search_child == true
@@ -44,31 +38,30 @@ class Api::V1::ParentProfilesController < ApplicationController
       render json: "could not locate child profile"
     end
   end
-      
-    
-    # @parent_profile.user_profile_id = child_profile.id
 
-    # if @parent_profile.save
-    #   # redirect_to login_url
-    #   # redirect_to controller: 'sessions', action: 'login', session_type: 2, session_email: @parent_profile.email, session_password: parent_profile_params[:password]
-    #   render json: @parent_profile, status: :created
-    # else
-    #   render json: @parent_profile.errors.full_messages, status: :unprocessable_entity
-    # end
-  # end
-
-  # PATCH/PUT /parent_profiles/1
+  # PATCH/PUT /parent_profile
   def update
-    if @parent_profile.update(parent_profile_params)
-      render json: @parent_profile
+    if !current_parent_profile.nil?
+        if @parent_profile.update(parent_profile_params)
+        render json: @parent_profile
+      else
+        render json: @parent_profile.errors.full_messages, status: :unprocessable_entity
+      end
     else
-      render json: @parent_profile.errors.full_messages, status: :unprocessable_entity
+      return head(:unauthorized)
     end
   end
 
-  # DELETE /parent_profiles/1
+  # DELETE /parent_profile
   def destroy
-    @parent_profile.destroy
+    if !current_parent_profile.nil?
+      @parent_profile = @current_parent_profile
+      @parent_profile.destroy
+      log_out
+      return true
+    else
+      return head(:unauthorized)
+    end
   end
 
   # Only allow a list of trusted parameters through.
