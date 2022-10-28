@@ -45,27 +45,29 @@ class Api::V1::UserProfilesController < ApplicationController
     puts "leaving user_profiles_controller > update"
   end
 
-  # DELETE /user_profile
-  def destroy
+  # PUT /user_profile/avatar
+  def set_avatar
+    puts "inside set_avatar"
     if !current_user_profile.nil?
-      @user_profile = @current_user_profile
-      @user_profile.destroy
-      log_out
-      return true
+      @current_user = @current_user_profile
+      @current_user.avatar.attach(params[:avatar])
+      render json: @current_user.avatar
     else
       return head(:unauthorized)
     end
   end
 
-  # Only allow a list of trusted parameters through.
-  def user_profile_params
-    params.require(:user_profile).permit(:first_name, :last_name, :admin, :image)
-  end
-
-  def pie_params
-    params.permit!
-    # params.permit(pie_percentages: [:cultureScore, :facialScore, :lifestyleScore, :kundaliScore, :locationScore])
-  end
+  # DELETE /user_profile
+  # def destroy
+  #   if !current_user_profile.nil?
+  #     @user_profile = @current_user_profile
+  #     @user_profile.destroy
+  #     log_out
+  #     return true
+  #   else
+  #     return head(:unauthorized)
+  #   end
+  # end
 
   # API endpoint for 'api/v1/match' that returns to user their matchmaking category_percentages and top 10 match_profiles via matching algorithm
   def match
@@ -135,5 +137,16 @@ class Api::V1::UserProfilesController < ApplicationController
   # def similarity_value(question_similarity, total_mutual_questions)
 
   # end
+
+  private
+    # Only allow a list of trusted parameters through.
+    def user_profile_params
+      params.require(:user_profile).permit(:first_name, :last_name, :admin, :avatar)
+    end
+  
+    def pie_params
+      params.permit!
+      # params.permit(pie_percentages: [:cultureScore, :facialScore, :lifestyleScore, :kundaliScore, :locationScore])
+    end
 
 end

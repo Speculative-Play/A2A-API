@@ -106,7 +106,7 @@ class Api::V1::MatchProfilesController < ApplicationController
     # Only allow a list of trusted parameters through.
     def match_profile_params
       # params.fetch(:match_profile, {})
-      params.require(:match_profile).permit(:first_name, :last_name)
+      params.require(:match_profile).permit(:first_name, :last_name, :avatar)
 
     end
 end

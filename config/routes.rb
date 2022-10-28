@@ -25,6 +25,7 @@ Rails.application.routes.draw do
       # Accounts
       get  '/signup',  to: 'accounts#new'
       post '/signup',  to: 'accounts#create'
+      delete 'delete-account', to: "accounts#destroy"
 
       # Sessions
       get    '/login',   to: 'sessions#new'
@@ -40,6 +41,7 @@ Rails.application.routes.draw do
       get 'user_profile/get_user_questions_answers', to: 'user_question_answers#index'
       get '/user_profiles(/:user_profile_id)/get_user_questions_answers', to: 'user_question_answers#get_user_questions_answers'
       post '/match', to: 'user_profiles#match'
+      post '/user_profile/avatar', to: "user_profiles#set_avatar"
 
 
       # Parent Accounts
@@ -49,13 +51,14 @@ Rails.application.routes.draw do
       get '/view-child', to: 'parent_profiles#view_child'
 
       # Favourited Match Profiles
-      get 'favourites', to: 'favourited_match_profiles#index'
-      post 'favourite', to: 'favourited_match_profiles#create'
-      delete 'remove-favourite', to: 'favourited_match_profiles#destroy'
+      get 'favourited_match_profiles', to: 'favourited_match_profiles#index'
+      post 'favourited_match_profiles', to: 'favourited_match_profiles#create'
+      delete 'favourited_match_profiles/delete', to: 'favourited_match_profiles#destroy'
 
       # Starred Match Profiles
       get 'starred_match_profiles', to: 'starred_match_profiles#index'
       post 'starred_match_profiles', to: 'starred_match_profiles#create'
+      delete 'starred_match_profiles/delete', to: 'starred_match_profiles#destroy'
       # get 'reorder_match_profiles'
       # get 'sort_match_profiles_by_attribute'
 

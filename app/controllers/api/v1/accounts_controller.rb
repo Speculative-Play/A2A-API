@@ -1,4 +1,6 @@
 class Api::V1::AccountsController < ApplicationController
+  before_action :current_account, only: :destroy
+
 
   # GET /signup
   def new
@@ -23,6 +25,24 @@ class Api::V1::AccountsController < ApplicationController
       render json: @account.errors, status: :unprocessable_entity
     end
   end
+
+  # DELETE /delete-account
+  def destroy
+    if !current_user_profile.nil?
+      @user_profile = @current_user_profile
+      @user_profile.destroy
+      log_out
+      return true
+    elsif !current_parent_profile.nil?
+      @parent_profile = @current_parent_profile
+      @parent_profile.destroy
+      log_out
+      return true
+    else
+      return head(:unauthorized)
+    end
+  end
+
   
     private
   

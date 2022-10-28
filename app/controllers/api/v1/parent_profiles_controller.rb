@@ -53,16 +53,16 @@ class Api::V1::ParentProfilesController < ApplicationController
   end
 
   # DELETE /parent_profile
-  def destroy
-    if !current_parent_profile.nil?
-      @parent_profile = @current_parent_profile
-      @parent_profile.destroy
-      log_out
-      return true
-    else
-      return head(:unauthorized)
-    end
-  end
+  # def destroy
+  #   if !current_parent_profile.nil?
+  #     @parent_profile = @current_parent_profile
+  #     @parent_profile.destroy
+  #     log_out
+  #     return true
+  #   else
+  #     return head(:unauthorized)
+  #   end
+  # end
 
   # Only allow a list of trusted parameters through.
   def parent_profile_params
