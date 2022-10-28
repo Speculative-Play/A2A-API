@@ -9,7 +9,7 @@ class ApplicationController < ActionController::API
 
     def current_user_profile
         if current_account.nil?
-            return head(:unauthorized)
+            return
         else
             @current_user_profile = UserProfile.find_by(id: @current_account.user_profile)
         end
@@ -17,7 +17,7 @@ class ApplicationController < ActionController::API
 
     def current_parent_profile
         if current_account.nil?
-            return head(:unauthorized)
+            return
         else
             @current_parent_profile = ParentProfile.find_by(id: @current_account.parent_profile)
         end
