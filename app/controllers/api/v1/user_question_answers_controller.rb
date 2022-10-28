@@ -1,7 +1,6 @@
 class Api::V1::UserQuestionAnswersController < ApplicationController
   before_action :current_account
 
-
   # GET /my_question_answers
   def index
     if !current_user_profile.nil?

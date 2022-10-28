@@ -41,7 +41,8 @@ include ActionController::Cookies
       puts "inside sessions_controller > destroy > now will log_out"
       log_out
     end
-    return true
+    # return true
+    render :nothing => true, :status => 204 and return
     # redirect_to root_url
   end
 
