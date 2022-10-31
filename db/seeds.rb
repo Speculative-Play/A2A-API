@@ -17,7 +17,7 @@ require 'faker'
 end
 
 # Create MatchProfiles
-10.times do 
+50.times do 
     MatchProfile.create(
         first_name: Faker::Name.unique.first_name,
         last_name: Faker::Name.unique.last_name
@@ -32,14 +32,26 @@ end
     )
 end
 
-# Create CategoryPercentages
+# Create CategoryPercentages for Users
 # Create 1 entry per MatchmakingCategory per UserProfile = 50 entries
-for n in 1..10 do
+for u in 1..10 do
     for a in 1..5 do
         CategoryPercentage.create(
             category_percentage: 20,
             matchmaking_category_id: a,
-            user_profile_id: n
+            user_profile_id: u
+        )
+    end
+end
+
+# Create CategoryPercentages for Parents
+# Create 1 entry per MatchmakingCategory per ParentProfile = 50 entries
+for p in 1..10 do
+    for a in 1..5 do
+        CategoryPercentage.create(
+            category_percentage: 20,
+            matchmaking_category_id: a,
+            parent_profile_id: p
         )
     end
 end
@@ -79,9 +91,9 @@ for q in 1..50 do
 end
 
 # Create MatchQuestionAnswers
-# Create 1 entry per Question per MatchProfile = 50 * 10 = 500 entries
+# Create 1 entry per Question per MatchProfile = 50 * 50 = 2500 entries
 for q in 1..50 do
-    for m in 1..10 do
+    for m in 1..50 do
         MatchQuestionAnswer.create(
             question_id: q,
             answer_id: q*5-Faker::Number.between(from: 0, to: 4),
@@ -97,6 +109,7 @@ for u in 1..10 do
     )
 end
 
+# Create Accounts for UserProfiles
 for u in 1..10 do
     Account.create(
         user_profile_id: u,
@@ -105,6 +118,7 @@ for u in 1..10 do
     )
 end
 
+# Create Accounts for ParentProfiles
 for u in 1..10 do
     Account.create(
         parent_profile_id: u,
@@ -119,7 +133,18 @@ for p in 1..10 do
     5.times do
         StarredMatchProfile.create(
             parent_profile_id: p,
-            match_profile_id: Faker::Number.between(from: 1, to: 10)
+            match_profile_id: Faker::Number.between(from: 1, to: 50)
+        ) 
+    end
+end
+
+# Create FavouritedMatchProfiles
+# Create 5 entries per UserProfile = 50 entries
+for u in 1..10 do
+    5.times do
+        FavouritedMatchProfile.create(
+            user_profile_id: u,
+            match_profile_id: Faker::Number.between(from: 1, to: 50)
         ) 
     end
 end
