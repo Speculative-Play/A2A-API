@@ -24,6 +24,53 @@ end
     )
 end
 
+# Create ParentProfiles
+for u in 1..10 do
+    ParentProfile.create(
+        user_profile_id: u
+    )
+end
+
+# Create Accounts for UserProfiles
+for u in 1..10 do
+    Account.create(
+        user_profile_id: u,
+        password: "password",
+        email: Faker::Internet.email
+    )
+end
+
+# Create Accounts for ParentProfiles
+for u in 1..10 do
+    Account.create(
+        parent_profile_id: u,
+        password: "password",
+        email: Faker::Internet.email
+    )
+end
+
+# Create StarredMatchProfiles
+# Create 5 entries per ParentProfile = 50 entries
+for p in 1..10 do
+    5.times do
+        StarredMatchProfile.create(
+            parent_profile_id: p,
+            match_profile_id: Faker::Number.between(from: 1, to: 50)
+        ) 
+    end
+end
+
+# Create FavouritedMatchProfiles
+# Create 5 entries per UserProfile = 50 entries
+for u in 1..10 do
+    5.times do
+        FavouritedMatchProfile.create(
+            user_profile_id: u,
+            match_profile_id: Faker::Number.between(from: 1, to: 50)
+        ) 
+    end
+end
+
 # Create MatchmakingCategories
 5.times do
     MatchmakingCategory.create(
@@ -99,52 +146,5 @@ for q in 1..50 do
             answer_id: q*5-Faker::Number.between(from: 0, to: 4),
             match_profile_id: m
         )
-    end
-end
-
-# Create ParentProfiles
-for u in 1..10 do
-    ParentProfile.create(
-        user_profile_id: u
-    )
-end
-
-# Create Accounts for UserProfiles
-for u in 1..10 do
-    Account.create(
-        user_profile_id: u,
-        password: "password",
-        email: Faker::Internet.email
-    )
-end
-
-# Create Accounts for ParentProfiles
-for u in 1..10 do
-    Account.create(
-        parent_profile_id: u,
-        password: "password",
-        email: Faker::Internet.email
-    )
-end
-
-# Create StarredMatchProfiles
-# Create 5 entries per ParentProfile = 50 entries
-for p in 1..10 do
-    5.times do
-        StarredMatchProfile.create(
-            parent_profile_id: p,
-            match_profile_id: Faker::Number.between(from: 1, to: 50)
-        ) 
-    end
-end
-
-# Create FavouritedMatchProfiles
-# Create 5 entries per UserProfile = 50 entries
-for u in 1..10 do
-    5.times do
-        FavouritedMatchProfile.create(
-            user_profile_id: u,
-            match_profile_id: Faker::Number.between(from: 1, to: 50)
-        ) 
     end
 end
