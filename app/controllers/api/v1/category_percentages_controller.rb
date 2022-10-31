@@ -15,20 +15,22 @@ class Api::V1::CategoryPercentagesController < ApplicationController
   end
 
   # GET /category_percentages/1
-  def show
-    render json: @category_percentage
-  end
+  # def show
+  #   render json: @category_percentage
+  # end
 
   # POST /category_percentages
-  def create
-    @category_percentage = CategoryPercentage.new(category_percentage_params)
+  # def create
+  #   if !current_user_profile.nil?
 
-    if @category_percentage.save
-      render json: @category_percentage, status: :created, location: @category_percentage
-    else
-      render json: @category_percentage.errors, status: :unprocessable_entity
-    end
-  end
+  #   @category_percentage = CategoryPercentage.new(category_percentage_params)
+
+  #   if @category_percentage.save
+  #     render json: @category_percentage, status: :created, location: @category_percentage
+  #   else
+  #     render json: @category_percentage.errors, status: :unprocessable_entity
+  #   end
+  # end
 
   # PATCH/PUT /category_percentages
   def update
@@ -40,20 +42,16 @@ class Api::V1::CategoryPercentagesController < ApplicationController
       return head(:unauthorized)
     end
 
-
     # parse JSON and create variables
     @json = JSON.parse(request.body.read)
     @input_category_id_array = []               # input matchmaking_category_ids
     @input_category_percentage_array = []       # input category_percentages
-
 
     # collect and store the input values in arrays
     @json['category_percentages'].each_with_index do |category, index|
       @input_category_id_array[index] = category['matchmaking_category_id']
       @input_category_percentage_array[index] = category['category_percentage']
     end
-
-    # TODO: do we need to implement verification that total value of all category_percentages = 100%)? Or done on frontend?
 
     # update the records with the new values
     @input_category_id_array.each_with_index do |array, index|
