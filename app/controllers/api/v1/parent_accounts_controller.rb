@@ -13,14 +13,19 @@ class Api::V1::ParentAccountsController < ApplicationController
     render json: @parent_account
   end
 
+  # Requires parent authentication here, then can refer to current_parent_account variable
+  # def view_child
+  #   @user_profile
+  # end
+
   # POST /parent_accounts
   def create
     @parent_account = ParentAccount.new(parent_account_params)
 
     if @parent_account.save
-      render json: @parent_account, status: :created, location: @parent_account
+      render json: @parent_account, status: :created
     else
-      render json: @parent_account.errors, status: :unprocessable_entity
+      render json: @parent_account.errors.full_messages, status: :unprocessable_entity
     end
   end
 
@@ -29,7 +34,7 @@ class Api::V1::ParentAccountsController < ApplicationController
     if @parent_account.update(parent_account_params)
       render json: @parent_account
     else
-      render json: @parent_account.errors, status: :unprocessable_entity
+      render json: @parent_account.errors.full_messages, status: :unprocessable_entity
     end
   end
 
@@ -46,6 +51,8 @@ class Api::V1::ParentAccountsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def parent_account_params
-      params.fetch(:parent_account, {})
+      # params.fetch(:parent_account, {})
+      params.require(:parent_account).permit(:email, :password_digest, :user_profile_id)
+
     end
 end

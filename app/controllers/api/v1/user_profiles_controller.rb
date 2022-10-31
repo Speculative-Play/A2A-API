@@ -1,7 +1,7 @@
 class Api::V1::UserProfilesController < ApplicationController
   before_action :set_user_profile, only: %i[ show edit update destroy ]
-  before_action :require_user_profile, only: [:edit, :update]
-  before_action :require_same_user_profile, only: [:edit, :update, :destroy]
+  # before_action :require_user_profile, only: [:edit, :update]
+  # before_action :require_same_user_profile, only: [:edit, :update, :destroy]
 
   # GET /user_profiles
   def index
@@ -11,6 +11,19 @@ class Api::V1::UserProfilesController < ApplicationController
 
   # GET /user_profiles/1
   def show
+  end
+
+  # POST /search-child
+  def search_child
+    email = params[:email]
+    @user_profile = UserProfile.where("email = ?", email)
+
+    # Might want some error / success message here
+    # if @user_profile.exists?
+    #   puts "found user"
+    # else 
+    #   puts "user not found"
+    # end
     render json: @user_profile
   end
 
@@ -29,18 +42,18 @@ class Api::V1::UserProfilesController < ApplicationController
 
     # respond_to do |format|
       if @user_profile.save
-        session[:user_profile_id] = user_profile.id
+        # session[:user_profile_id] = @user_profile.id
         render json: {
           status: :created,
-          user: @user
+          user_profile: @user_profile
         }
         # format.html { redirect_to user_profile_url(@user_profile), notice: "UserProfile was successfully created." }
         # format.json { render :show, status: :created, location: @user_profile }
       else
-        @user.save
+        @user_profile.save
         render json: {
           status: 500,
-          error: @user.errors.full_messages
+          error: @user_profile.errors.full_messages
         }
         # format.html { render :new, status: :unprocessable_entity }
         # format.json { render json: @user_profile.errors, status: :unprocessable_entity }
@@ -50,26 +63,27 @@ class Api::V1::UserProfilesController < ApplicationController
 
   # PATCH/PUT /user_profiles/1 or /user_profliles/1.json
   def update
-    respond_to do |format|
+    # respond_to do |format|
       if @user_profile.update(user_profile_params)
-        format.html { redirect_to user_profile_url(@user_profile), notice: "UserProfile was successfully updated." }
-        format.json { render :show, status: :ok, location: @user_profile }
+        # format.html { redirect_to user_profile_url(@user_profile), notice: "UserProfile was successfully updated." }
+        render :show, status: :ok
+        #, location: @user_profile
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        # format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @user_profile.errors, status: :unprocessable_entity }
       end
-    end
+    # end
   end
 
   # DELETE /user_profiles/1 or /user_profiles/1.json
   def destroy
     @user_profile.destroy
-    session[:user_profile_id] = nil if @user_profile == current_user_profile
+    # session[:user_profile_id] = nil if @user_profile == current_user_profile
 
-    respond_to do |format|
-      format.html { redirect_to user_profiles_url, notice: "UserProfile was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    # respond_to do |format|
+    #   format.html { redirect_to user_profiles_url, notice: "UserProfile was successfully destroyed." }
+    #   format.json { head :no_content }
+    # end
   end
 
   # def update_piechart_percentages
@@ -92,12 +106,12 @@ class Api::V1::UserProfilesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_profile_params
-      params.require(:user_profile).permit(:email, :password, :password_confirmation)
+      params.require(:user_profile).permit(:email, :password_digest, :first_name, :last_name, :admin, :image)
     end
 
     def require_same_user_profile
       if current_user_profile != @user_profile && !current_user_profile.admin?
-        flash[:alert] = "You can only edit or delete your own account"
+        # flash[:alert] = "You can only edit or delete your own account"
         redirect_to @user_profile
       end
     end

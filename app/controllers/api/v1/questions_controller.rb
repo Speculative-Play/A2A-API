@@ -4,13 +4,23 @@ class Api::V1::QuestionsController < ApplicationController
   # GET /questions
   def index
     @questions = Question.all
-
-    render json: @questions
+    render json: @questions.sort_by {|prof| prof.matchmaking_category_id}.to_json(include: :answers)
   end
 
   # GET /questions/1
   def show
     render json: @question
+  end
+
+  # GET /questions/match_category/1
+  def questions_by_category
+    @questions = if params[:matchmaking_category_id].present?
+      Question.where("matchmaking_category_id = ?", params[:matchmaking_category_id])
+    else
+      puts "no questions found"
+    end
+
+    render json: @questions
   end
 
   # POST /questions
