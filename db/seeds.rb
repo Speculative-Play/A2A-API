@@ -13,8 +13,6 @@ require 'faker'
     UserProfile.create(
         first_name: Faker::Name.unique.first_name,
         last_name: Faker::Name.unique.last_name,
-        email: Faker::Internet.email,
-        password_digest: Faker::Internet.password
     )
 end
 
@@ -92,21 +90,35 @@ for q in 1..50 do
     end
 end
 
-# Create ParentAccounts
+# Create ParentProfiles
 for u in 1..10 do
-    ParentAccount.create(
+    ParentProfile.create(
+        user_profile_id: u
+    )
+end
+
+for u in 1..10 do
+    Account.create(
         user_profile_id: u,
-        password_digest: Faker::Internet.password,
+        password: "password",
+        email: Faker::Internet.email
+    )
+end
+
+for u in 1..10 do
+    Account.create(
+        parent_profile_id: u,
+        password: "password",
         email: Faker::Internet.email
     )
 end
 
 # Create StarredMatchProfiles
-# Create 5 entries per ParentAccount = 50 entries
+# Create 5 entries per ParentProfile = 50 entries
 for p in 1..10 do
     5.times do
         StarredMatchProfile.create(
-            parent_account_id: p,
+            parent_profile_id: p,
             match_profile_id: Faker::Number.between(from: 1, to: 10)
         ) 
     end

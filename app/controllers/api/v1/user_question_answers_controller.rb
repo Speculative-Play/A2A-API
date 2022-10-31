@@ -1,17 +1,31 @@
 class Api::V1::UserQuestionAnswersController < ApplicationController
-  before_action :set_user_question_answer, only: %i[ show update destroy ]
+  before_action :current_account
 
-  # GET /user_question_answers
+  # GET /my_question_answers
   def index
-    # IF user_profile_id is present THEN return only user_question_answers with matching user_profile_id
-    @user_question_answers = if params[:user_profile_id].present?
-      UserQuestionAnswer.where("user_profile_id = ?", params[:user_profile_id])
-    # ELSE return ALL user_question_answers
+    if !current_user_profile.nil?
+      @categories_arr = Hash.new
+      MatchmakingCategory.find_each do |match_cat|
+        @questions = Question.where(matchmaking_category_id: match_cat.id)
+        questions_arr = Hash.new
+        @questions.each do |q|
+          @answers = Answer.where(question_id: q.id)
+          answers_arr = Hash.new
+          @answers.each do |a|
+            if UserQuestionAnswer.where("question_id = ? AND answer_id = ? AND user_profile_id = ?", q.id, a.id, current_user_profile.id).present?
+              answers_arr[a.answer_text] = [1]
+            else
+              answers_arr[a.answer_text] = [0]
+            end
+          end
+          questions_arr[q.question_text] = [answers_arr]
+        end
+        @categories_arr[match_cat.category_name] = [questions_arr]
+      end
+      render json: {user_question_answers: @categories_arr}
     else
-      UserQuestionAnswer.all
+      return head(:unauthorized)
     end
-
-    render json: @user_question_answers
   end
 
   # GET /user_question_answers/1
@@ -30,20 +44,9 @@ class Api::V1::UserQuestionAnswersController < ApplicationController
 
       render json: @nth_user
     else 
-      render json: "Error: User_Question_Answer Not Found"
+      # is this what should be returned?
+      return false
     end
-  end
-
-  # GET /user_question_answer/[user_profile_id]
-  def get_user_questions_answers
-    @user_question_answers = UserQuestionAnswer.where("user_profile_id = ?", params[:user_profile_id])
-
-    @questions = Question.joins(:user_question_answers).where("user_question_answers.user_profile_id" => params[:user_profile_id])
-
-    @answers = Answer.joins(:user_question_answers).where("user_question_answers.user_profile_id" => params[:user_profile_id])
-
-    render json: {all_data: {user_question_answers: @user_question_answers, questions: @questions, answers: @answers}}
-    format.json { render :json => @user_question_answers.to_json}
   end
 
   # POST /user_question_answers
@@ -72,13 +75,9 @@ class Api::V1::UserQuestionAnswersController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_user_question_answer
-      @user_question_answer = UserQuestionAnswer.find(params[:id])
-    end
+  # Only allow a list of trusted parameters through.
+  def user_question_answer_params
+    params.fetch(:user_question_answer, {})
+  end
 
-    # Only allow a list of trusted parameters through.
-    def user_question_answer_params
-      params.fetch(:user_question_answer, {})
-    end
 end

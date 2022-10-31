@@ -10,7 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_08_161029) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_28_144852) do
+  create_table "accounts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_profile_id"
+    t.integer "parent_profile_id"
+    t.integer "account_type"
+    t.string "email"
+    t.string "password_digest"
+    t.string "remember_digest"
+    t.index ["parent_profile_id"], name: "index_accounts_on_parent_profile_id"
+    t.index ["user_profile_id"], name: "index_accounts_on_user_profile_id"
+  end
+
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -91,13 +104,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_08_161029) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "parent_accounts", force: :cascade do |t|
+  create_table "parent_profiles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_profile_id"
-    t.string "password_digest", null: false
-    t.string "email", null: false
-    t.index ["user_profile_id"], name: "index_parent_accounts_on_user_profile_id"
+    t.index ["user_profile_id"], name: "index_parent_profiles_on_user_profile_id"
   end
 
   create_table "questions", force: :cascade do |t|
@@ -105,29 +116,30 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_08_161029) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "matchmaking_category_id"
+    t.string "question_type"
     t.index ["matchmaking_category_id"], name: "index_questions_on_matchmaking_category_id"
   end
 
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "session_type"
+    t.integer "account_id"
   end
 
   create_table "starred_match_profiles", force: :cascade do |t|
-    t.integer "parent_account_id"
+    t.integer "parent_profile_id"
     t.integer "match_profile_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["match_profile_id"], name: "index_starred_match_profiles_on_match_profile_id"
-    t.index ["parent_account_id"], name: "index_starred_match_profiles_on_parent_account_id"
+    t.index ["parent_profile_id"], name: "index_starred_match_profiles_on_parent_profile_id"
   end
 
   create_table "user_profiles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "password_digest"
     t.boolean "admin", default: false
-    t.string "email"
     t.string "first_name", null: false
     t.string "last_name", null: false
   end
@@ -143,6 +155,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_08_161029) do
     t.index ["user_profile_id"], name: "index_user_question_answers_on_user_profile_id"
   end
 
+  add_foreign_key "accounts", "parent_profiles"
+  add_foreign_key "accounts", "user_profiles"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "answers", "questions"
@@ -153,10 +167,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_08_161029) do
   add_foreign_key "match_question_answers", "answers"
   add_foreign_key "match_question_answers", "match_profiles"
   add_foreign_key "match_question_answers", "questions"
-  add_foreign_key "parent_accounts", "user_profiles"
+  add_foreign_key "parent_profiles", "user_profiles"
   add_foreign_key "questions", "matchmaking_categories"
   add_foreign_key "starred_match_profiles", "match_profiles"
-  add_foreign_key "starred_match_profiles", "parent_accounts"
+  add_foreign_key "starred_match_profiles", "parent_profiles"
   add_foreign_key "user_question_answers", "answers"
   add_foreign_key "user_question_answers", "questions"
   add_foreign_key "user_question_answers", "user_profiles"

@@ -1,123 +1,152 @@
 class Api::V1::UserProfilesController < ApplicationController
-  before_action :set_user_profile, only: %i[ show edit update destroy ]
-  # before_action :require_user_profile, only: [:edit, :update]
-  # before_action :require_same_user_profile, only: [:edit, :update, :destroy]
+  before_action :current_account
 
-  # GET /user_profiles
-  def index
-    @user_profiles = UserProfile.all
-    render json: @user_profiles
-  end
-
-  # GET /user_profiles/1
+  # GET /user_profile
   def show
+    if !current_user_profile.nil?
+      @user_profile = @current_account.user_profile
+      render json: @user_profile
+    else
+      return head(:unauthorized)
+    end
   end
 
-  # POST /search-child
-  def search_child
-    email = params[:email]
-    @user_profile = UserProfile.where("email = ?", email)
-
-    # Might want some error / success message here
-    # if @user_profile.exists?
-    #   puts "found user"
-    # else 
-    #   puts "user not found"
-    # end
-    render json: @user_profile
-  end
-
-  # GET /user_profiles/new
+  # GET /signup-user
   def new
-    @user_profile = UserProfile.new
+    return true
   end
 
-  # GET /user_profiles/1/edit
-  def edit
-  end
-
-  # POST /user_profiles or /user_profiles.json
+  # POST /signup-user
   def create
     @user_profile = UserProfile.new(user_profile_params)
-
-    # respond_to do |format|
-      if @user_profile.save
-        # session[:user_profile_id] = @user_profile.id
-        render json: {
-          status: :created,
-          user_profile: @user_profile
-        }
-        # format.html { redirect_to user_profile_url(@user_profile), notice: "UserProfile was successfully created." }
-        # format.json { render :show, status: :created, location: @user_profile }
-      else
-        @user_profile.save
-        render json: {
-          status: 500,
-          error: @user_profile.errors.full_messages
-        }
-        # format.html { render :new, status: :unprocessable_entity }
-        # format.json { render json: @user_profile.errors, status: :unprocessable_entity }
-      end
-    # end
+    if @user_profile.save
+      render json: {
+        status: :created,
+        user_profile: @user_profile
+      }
+    else
+      render 'new'
+    end
   end
 
-  # PATCH/PUT /user_profiles/1 or /user_profliles/1.json
+  # PATCH/PUT /user_profile
   def update
-    # respond_to do |format|
+    if !current_user_profile.nil?
+      @user_profile = @current_user_profile
+      puts "user profile id =",@user_profile
       if @user_profile.update(user_profile_params)
-        # format.html { redirect_to user_profile_url(@user_profile), notice: "UserProfile was successfully updated." }
-        render :show, status: :ok
-        #, location: @user_profile
+        show
       else
-        # format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @user_profile.errors, status: :unprocessable_entity }
+        render json: @user_profile.errors, status: :unprocessable_entity
       end
-    # end
+    else
+      return head(:unauthorized)
+    end
+    puts "leaving user_profiles_controller > update"
   end
 
-  # DELETE /user_profiles/1 or /user_profiles/1.json
-  def destroy
-    @user_profile.destroy
-    # session[:user_profile_id] = nil if @user_profile == current_user_profile
-
-    # respond_to do |format|
-    #   format.html { redirect_to user_profiles_url, notice: "UserProfile was successfully destroyed." }
-    #   format.json { head :no_content }
-    # end
+  # PUT /user_profile/avatar
+  def set_avatar
+    puts "inside set_avatar"
+    if !current_user_profile.nil?
+      @current_user = @current_user_profile
+      @current_user.avatar.attach(params[:avatar])
+      render json: @current_user.avatar
+    else
+      return head(:unauthorized)
+    end
   end
 
-  # def update_piechart_percentages
-  #   Rails.logger.info 'hello from update_piechart_percentages'
-
-  #   respond_to do |format|
-  #     if @profile.update(pie_params[:pie_percentages])
-  #       format.json { redirect_to @profile, notice: 'Profile was successfully updated.' }
-  #     else
-  #       format.json { render json: @profile.errors, status: :unprocessable_entity }
-  #     end
+  # DELETE /user_profile
+  # def destroy
+  #   if !current_user_profile.nil?
+  #     @user_profile = @current_user_profile
+  #     @user_profile.destroy
+  #     log_out
+  #     return true
+  #   else
+  #     return head(:unauthorized)
   #   end
-  # end 
+  # end
+
+  # API endpoint for 'api/v1/match' that returns to user their matchmaking category_percentages and top 10 match_profiles via matching algorithm
+  def match
+    @matches = Hash.new
+    MatchProfile.find_each do |m|
+      puts "loop id =", m.id
+      # value = compare_user_to_match(m.id)
+      value = similarity_value(m.id)
+      @matches[m.id] = value
+    end
+
+    # join_test
+    @results = Hash[@matches.sort_by{|k,v| v}.reverse]
+    # names
+    render json: {matches: {scores: @results}}
+  end
+
+  def similarity_value(id)
+    # puts "compare_user_to_match"
+
+    @match_question_answers = MatchQuestionAnswer.where(match_profile_id: id)
+    @user_question_answers = UserQuestionAnswer.where(user_profile_id: @current_account.user_profile_id)
+
+
+    similarity = 0
+    @user_question_answers.each do |user_a|
+      @match_question_answers.each do |match_a|
+        if user_a.question_id == match_a.question_id
+          # check for question_type
+          question = Question.find_by(id: user_a.question_id)
+          # zero-one question type
+          if question.question_type == "zero-one"
+            puts "found a zero-one"
+            if user_a.answer_id == match_a.answer_id
+              similarity = similarity + 1
+            end
+          # range question type
+          elsif question.question_type == "range"
+            puts "found a range"
+            similarity = similarity + range_question_score(question.id, user_a.answer_id, match_a.answer_id)
+          end
+
+        end
+      end
+    end
+    puts "similairty = ",similarity
+    return similarity
+  end
+
+  def range_question_score(q_id, u_a_id, m_a_id)
+    answers = Answer.where(question_id: q_id)
+    t = answers.count
+    d = (u_a_id - m_a_id).abs
+    points = (t.to_f - d.to_f) / t.to_f
+    return points
+  end
+
+  def join_test
+    @hash = Hash.new
+    Question.find_each do |q|
+      answers = Answer.where(question_id: q.id)
+      @hash[q.id] = answers
+    end
+    render json: @hash
+  end
+
+  # def similarity_value(question_similarity, total_mutual_questions)
+
+  # end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_user_profile
-      @user_profile = UserProfile.find(params[:id])
-    end
-
     # Only allow a list of trusted parameters through.
     def user_profile_params
-      params.require(:user_profile).permit(:email, :password_digest, :first_name, :last_name, :admin, :image)
+      params.require(:user_profile).permit(:first_name, :last_name, :admin, :avatar)
     end
-
-    def require_same_user_profile
-      if current_user_profile != @user_profile && !current_user_profile.admin?
-        # flash[:alert] = "You can only edit or delete your own account"
-        redirect_to @user_profile
-      end
-    end
-
+  
     def pie_params
       params.permit!
       # params.permit(pie_percentages: [:cultureScore, :facialScore, :lifestyleScore, :kundaliScore, :locationScore])
     end
+
 end

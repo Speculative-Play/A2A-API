@@ -1,36 +1,36 @@
 require "test_helper"
 
-class ParentAccountsControllerTest < ActionDispatch::IntegrationTest
+class ParentProfilesControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @parent_account = parent_accounts(:one)
+    @parent_profile = parent_profiles(:one)
   end
 
   test "should get index" do
-    get parent_accounts_url, as: :json
+    get parent_profiles_url, as: :json
     assert_response :success
   end
 
-  test "should create parent_account" do
-    assert_difference("ParentAccount.count") do
-      post parent_accounts_url, params: { parent_account: {  } }, as: :json
+  test "should create parent_profile" do
+    assert_difference("ParentProfile.count") do
+      post parent_profiles_url, params: { parent_profile: {  } }, as: :json
     end
 
     assert_response :created
   end
 
-  test "should show parent_account" do
-    get parent_account_url(@parent_account), as: :json
+  test "should show parent_profile" do
+    get parent_profile_url(@parent_profile), as: :json
     assert_response :success
   end
 
-  test "should update parent_account" do
-    patch parent_account_url(@parent_account), params: { parent_account: {  } }, as: :json
+  test "should update parent_profile" do
+    patch parent_profile_url(@parent_profile), params: { parent_profile: {  } }, as: :json
     assert_response :success
   end
 
-  test "should destroy parent_account" do
-    assert_difference("ParentAccount.count", -1) do
-      delete parent_account_url(@parent_account), as: :json
+  test "should destroy parent_profile" do
+    assert_difference("ParentProfile.count", -1) do
+      delete parent_profile_url(@parent_profile), as: :json
     end
 
     assert_response :no_content

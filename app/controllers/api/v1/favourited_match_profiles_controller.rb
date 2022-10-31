@@ -1,27 +1,39 @@
 class Api::V1::FavouritedMatchProfilesController < ApplicationController
-  # before_action :set_favourited_match_profile, only: %i[ show update destroy ]
+  before_action :current_account
 
-  # GET /favourited_match_profiles
+  # GET /favourites
   def index
-    # Returns all starred_match_profiles that share parent_account_id
-    @favourited_match_profiles = if params[:user_profile_id].present?
-      FavouritedMatchProfile.where("user_profile_id = ?", params[:user_profile_id])
+    # Returns all favourited_match_profiles that share current_user_profile's id
+    if !current_user_profile.nil?
+      @favourited_match_profiles = FavouritedMatchProfile.where(user_profile_id: @current_user_profile.id)
+      render json: @favourited_match_profiles
+    else
+      return head(:unauthorized)
     end
-    render json: @starred_match_profiles
   end
 
-  # GET /favourited_match_profiles/1
+  # GET /favourite/1
   def show
     render json: @favourited_match_profile
   end
 
-  # POST /favourited_match_profiles
+  # POST /favourite
   def create
-    @favourited_match_profile = FavouritedMatchProfile.new(favourited_match_profile_params)
-    if @favourited_match_profile.save
-      render json: @favourited_match_profile, status: :created, location: @favourited_match_profile
+    if !current_user_profile.nil?
+      @favourited_match_profile = FavouritedMatchProfile.new(favourited_match_profile_params)
+      @favourited_match_profile.user_profile_id = @current_user_profile.id
+
+      # If favourited_match_profile is already starred, only render index
+      if FavouritedMatchProfile.where("user_profile_id = ? AND match_profile_id = ?", @favourited_match_profile.user_profile_id, @favourited_match_profile.match_profile_id).exists?
+        index
+      # else if starred_match_profile can be created, save it and render index
+      elsif @favourited_match_profile.save
+        index
+      else
+        render json: @favourited_match_profile.errors, status: :unprocessable_entity
+      end
     else
-      render json: @favourited_match_profile.errors, status: :unprocessable_entity
+      return head(:unauthorized)
     end
   end
 
@@ -36,28 +48,16 @@ class Api::V1::FavouritedMatchProfilesController < ApplicationController
 
   # DELETE /favourited_match_profiles
   def destroy
-    puts "begin destroy"
-    @json = JSON.parse(request.body.read)
-    @match_profile_id = @json["favourited_match_profile"]["match_profile_id"]
-    @favourited_match_profile = FavouritedMatchProfile.where("user_profile_id = ? AND match_profile_id = ?", params[:user_profile_id], @match_profile_id)
-    puts "favourited_match_profile found = ", @favourited_match_profile
-
-    @id = @favourited_match_profile.ids
-    puts "id found = ", @id
-    @favourited_match_profile = FavouritedMatchProfile.where("id = ?", @id)
-    # if params[:user_profile_id].present?
-    puts "favourited_match_profile found = ", @favourited_match_profile
-    # end
-    @favourited_match_profile.destroy
-    puts "end destroy"
+    if !current_user_profile.nil?
+      @favourited_match_profile = FavouritedMatchProfile.find_by("user_profile_id = ? AND match_profile_id = ?", @current_user_profile.id, favourited_match_profile_params[:match_profile_id])
+      @favourited_match_profile.destroy
+      index
+    else
+      return head(:unauthorized)
+    end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_favourited_match_profile
-      @favourited_match_profile = FavouritedMatchProfile.find(params[:id])
-    end
-
     # Only allow a list of trusted parameters through.
     def favourited_match_profile_params
       # params.fetch(:favourited_match_profile, {})

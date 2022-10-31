@@ -1,59 +1,77 @@
 Rails.application.routes.draw do
-  resources :favourited_match_profiles
   namespace :api do
     
     namespace :v1 do
 
+      resources :accounts
       resources :sessions
-      resources :user_profiles, only: [:create]
-      resources :user_profiles, shallow: true do
-        collection do
-          post 'update_piechart_percentages'
-        end
-        resources :parent_accounts, shallow: true do
-          resources :starred_match_profiles
-        end
-        resources :user_question_answers, shallow: true
-        resources :category_percentages, shallow: true
-        put '(/:id)/category_percentages', to: 'category_percentages#update'
-        # get '(/:id)/user_question_answers(/:id)', to: 'user_question_answers#get_individual_user_profile_user_question_answer'
-      end
-
-      resources :match_profiles, shallow: true do
-        collection do
-          get 'reorder_match_profiles'
-          get 'sort_match_profiles_by_attribute'
-        end
-        resources :match_question_answers, shallow: true
-        # get '(/:id)/match_question_answers(/:id)', to: 'match_question_answers#get_individual_match_profile_match_question_answer'
-      end
-
-      resources :matchmaking_categories, shallow: true do
-        resources :category_percentages, shallow: true do
-          resources :questions, shallow: true do
-            resources :answers, shallow: true
-          end
-        end
-      end
+      resources :user_profiles
+      resources :parent_profiles
+      resources :match_profiles
       resources :questions
       resources :answers
+      resources :user_question_answers
+      resources :match_question_answers
+      resources :matchmaking_categories
+      resources :category_percentages
+      resources :favourited_match_profiles
+      resources :starred_match_profiles
 
+      # Custom Routes
+
+      # Pages
       # get 'about', to: 'pages#index'
-      delete 'favourited_match_profiles(/:user_profile_id)', to: 'favourited_match_profiles#destroy'
-      post 'favourited_match_profiles', to: 'favourited_match_profiles#create'
-      post 'starred_match_profiles(/:parent_account_id)', to: 'starred_match_profiles#create'
-      get '/user_profiles(/:user_profile_id)/get_user_questions_answers', to: 'user_question_answers#get_user_questions_answers'
-      post '/search-child', to: 'parent_accounts#search_child'
-      get '/view-child', to: 'parent_accounts#view_child'
-      get '/questions/matchmaking_category(/:matchmaking_category_id)', to: 'questions#questions_by_category'
-      
-      get '/login', to: 'sessions#logged_in'
-      post '/login', to: 'sessions#create'
-      delete '/logout', to: 'sessions#destroy'
 
-      post '/signup_parent_accounts', to: 'parent_accounts#create'
-      get 'signup', to: 'user_profiles#new', as: 'signup'
-      post 'signup', to: 'user_profiles#create', as: 'signup'
+      # Accounts
+      get  '/signup',  to: 'accounts#new'
+      post '/signup',  to: 'accounts#create'
+      delete 'delete-account', to: "accounts#destroy"
+
+      # Sessions
+      get    '/login',   to: 'sessions#new'
+      post   '/login',   to: 'sessions#create'
+      delete '/logout',  to: 'sessions#destroy'
+
+      # User Profiles
+      get 'signup-user', to: 'user_profiles#new'
+      post 'signup-user', to: 'user_profiles#create'
+      get 'user_profile', to: 'user_profiles#show'
+      put 'user_profile/edit', to: 'user_profiles#update'
+      delete 'user_profile/delete', to: 'user_profiles#destroy'
+      get 'user_profile/get_user_questions_answers', to: 'user_question_answers#index'
+      get '/user_profiles(/:user_profile_id)/get_user_questions_answers', to: 'user_question_answers#get_user_questions_answers'
+      post '/match', to: 'user_profiles#match'
+      post '/user_profile/avatar', to: "user_profiles#set_avatar"
+
+
+      # Parent Accounts
+      get 'signup-parent', to: 'parent_profiles#new'
+      post 'signup-parent', to: 'parent_profiles#create'
+      post '/search-child', to: 'parent_profiles#search_child'
+      get '/view-child', to: 'parent_profiles#view_child'
+
+      # Favourited Match Profiles
+      get 'favourited_match_profiles', to: 'favourited_match_profiles#index'
+      post 'favourited_match_profiles', to: 'favourited_match_profiles#create'
+      delete 'favourited_match_profiles/delete', to: 'favourited_match_profiles#destroy'
+
+      # Starred Match Profiles
+      get 'starred_match_profiles', to: 'starred_match_profiles#index'
+      post 'starred_match_profiles', to: 'starred_match_profiles#create'
+      delete 'starred_match_profiles/delete', to: 'starred_match_profiles#destroy'
+      # get 'reorder_match_profiles'
+      # get 'sort_match_profiles_by_attribute'
+
+      # Questions
+      get '/questions/matchmaking_category(/:matchmaking_category_id)', to: 'questions#questions_by_category'
+
+      # Answers
+      get 'my_question_answers', to: 'user_question_answers#index'
+
+      # Category Percentages
+      get 'category_percentages', to: 'category_percentages#index'
+      put 'category_percentages', to: 'category_percentages#update'
+
     end
 
   end
