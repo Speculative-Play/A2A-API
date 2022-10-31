@@ -103,13 +103,26 @@ for p in 1..10 do
     end
 end
 
-# Create Questions
+# Create Zero-One Type Questions
 # Create 5 entries per MatchmakingCategory = 50 entries
 for n in 1..5 do
-    5.times do
+    3.times do
         Question.create(
             question_text: Faker::Lorem.unique.question,
-            matchmaking_category_id: n
+            matchmaking_category_id: n,
+            question_type: "zero-one"
+        )
+    end
+end
+
+# Create Range Type Questions
+# Create 5 entries per MatchmakingCategory = 50 entries
+for n in 1..5 do
+    3.times do
+        Question.create(
+            question_text: Faker::Lorem.unique.question,
+            matchmaking_category_id: n,
+            question_type: "range"
         )
     end
 end
