@@ -25,13 +25,12 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
       @starred_match_profile = StarredMatchProfile.new(starred_match_profile_params)
       @starred_match_profile.parent_profile_id = @current_parent_profile.id
       
-      # If favourited_match_profile is already starred, render it
+      # If favourited_match_profile is already starred, render index
       if StarredMatchProfile.where("parent_profile_id = ? AND match_profile_id = ?", @starred_match_profile.parent_profile_id, @starred_match_profile.match_profile_id).exists?
-        @starred_match_profile = StarredMatchProfile.where("parent_profile_id = ? AND match_profile_id = ?", @starred_match_profile.parent_profile_id, @starred_match_profile.match_profile_id)
-        render json: @starred_match_profile
-      # else if starred_match_profile can be created, save it
+        index
+      # else if starred_match_profile can be created, save it and render index
       elsif @starred_match_profile.save
-        render json: @starred_match_profile, status: :created
+        index
       else
         render json: @starred_match_profile.errors, status: :unprocessable_entity
       end
