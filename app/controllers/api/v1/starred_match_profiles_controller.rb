@@ -53,7 +53,6 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
       
       # if starred_match_profile does not belong to current_parent_profile, return 401
       if @starred_match_profile.parent_profile != @current_parent_profile
-        puts "can't destroy that one! not yours!!!"
         return head(:unauthorized)
       end
 
