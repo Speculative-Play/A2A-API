@@ -58,12 +58,6 @@ class Api::V1::FavouritedMatchProfilesController < ApplicationController
   end
 
   private
-    def authenticate_user_profile
-      if logged_in_user_profile?
-        render json: 'You are not logged in! Please log in to continue.', status: :unprocessable_entity
-      end
-    end
-
     # Only allow a list of trusted parameters through.
     def favourited_match_profile_params
       # params.fetch(:favourited_match_profile, {})

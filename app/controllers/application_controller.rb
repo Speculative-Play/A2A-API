@@ -29,8 +29,6 @@ class ApplicationController < ActionController::API
         session[:account_id] = account.id
     end
 
-
-
     def logged_in?
         current_account.present?
     end

@@ -42,15 +42,6 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
     end
   end
 
-  # # PATCH/PUT /starred_match_profiles/1
-  # def update
-  #   if @starred_match_profile.update(starred_match_profile_params)
-  #     render json: @starred_match_profile
-  #   else
-  #     render json: @starred_match_profile.errors, status: :unprocessable_entity
-  #   end
-  # end
-
   # DELETE /starred_match_profiles/1
   def destroy
     @starred_match_profile.destroy
@@ -59,7 +50,6 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
   private
   # Only allow a list of trusted parameters through.
   def starred_match_profile_params
-    # params.fetch(:starred_match_profile, {})
     params.require(:starred_match_profile).permit(:parent_profile_id, :match_profile_id)
   end
 end

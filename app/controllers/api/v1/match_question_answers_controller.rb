@@ -59,11 +59,6 @@ class Api::V1::MatchQuestionAnswersController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_match_question_answer
-      @match_question_answer = MatchQuestionAnswer.find(params[:id])
-    end
-
     # Only allow a list of trusted parameters through.
     def match_question_answer_params
       params.fetch(:match_question_answer, {})

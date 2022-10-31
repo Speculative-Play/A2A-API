@@ -65,8 +65,6 @@ class Api::V1::CategoryPercentagesController < ApplicationController
   private
   # Only allow a list of trusted parameters through.
   def category_percentage_params
-    # params.fetch(:category_percentage, {})
     params.permit(:category_percentage, :matchmaking_category_id, :user_profile_id)
-
   end
 end

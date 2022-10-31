@@ -1,7 +1,6 @@
 class Api::V1::AccountsController < ApplicationController
   before_action :current_account, only: :destroy
 
-
   # GET /signup
   def new
     # display account signup form here
@@ -43,9 +42,7 @@ class Api::V1::AccountsController < ApplicationController
     end
   end
 
-  
     private
-  
       # Only allow a list of trusted parameters through.
       def account_params
         params.require(:account).permit(:email, :password, :account_type)
@@ -56,9 +53,9 @@ class Api::V1::AccountsController < ApplicationController
       #   redirect_to login_url
       # end
 
-      def correct_account
-        @account = Account.find(params[:id])
-        redirect_to(account) unless current_account?(@account)
-      end
+      # def correct_account
+      #   @account = Account.find(params[:id])
+      #   redirect_to(account) unless current_account?(@account)
+      # end
 
 end
