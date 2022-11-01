@@ -1,6 +1,7 @@
 class MatchProfile < ApplicationRecord
-    has_many :match_question_answers,       dependent: :destroy
-    has_many :starred_match_profiles,       dependent: :destroy
-    has_many :favourited_match_profiles,    dependent: :destroy
-    has_one_attached :avatar,                dependent: :destroy
+    has_many                :match_question_answers,       dependent: :destroy
+    has_many                :starred_match_profiles,       dependent: :destroy
+    has_many                :favourited_match_profiles,    dependent: :destroy
+    has_one_attached        :avatar,                       dependent: :destroy
+    serialize               :languages,                    Array   
 end
