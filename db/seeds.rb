@@ -8,11 +8,33 @@
 
 require 'faker'
 
-# Create UserProfiles
-10.times do 
+# Create UserProfiles [Women]
+5.times do 
     UserProfile.create(
-        first_name: Faker::Name.unique.first_name,
+        first_name: Faker::Name.unique.female_first_name,
         last_name: Faker::Name.unique.last_name,
+        gender: "Woman",
+        city: Faker::Address.city,
+        country: Faker::Address.country,
+        birth_country: Faker::Address.country,
+        date_of_birth: Faker::Date.between(from: '1987-01-01', to: '2002-01-01'),
+        languages: Faker::Lorem.words,
+        marital_status: Faker::Demographic.marital_status
+    )
+end
+
+# Create UserProfiles [Men]
+5.times do 
+    UserProfile.create(
+        first_name: Faker::Name.unique.male_first_name,
+        last_name: Faker::Name.unique.last_name,
+        gender: "Man",
+        city: Faker::Address.city,
+        country: Faker::Address.country,
+        birth_country: Faker::Address.country,
+        date_of_birth: Faker::Date.between(from: '1987-01-01', to: '2002-01-01'),
+        languages: Faker::Lorem.words,
+        marital_status: Faker::Demographic.marital_status
     )
 end
 

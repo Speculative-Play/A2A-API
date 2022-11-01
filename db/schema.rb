@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_31_163656) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_01_155438) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -144,6 +144,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_31_163656) do
     t.boolean "admin", default: false
     t.string "first_name", null: false
     t.string "last_name", null: false
+    t.string "gender"
+    t.string "city"
+    t.string "country"
+    t.string "birth_country"
+    t.date "date_of_birth"
+    t.text "languages", default: ""
+    t.string "marital_status"
   end
 
   create_table "user_question_answers", force: :cascade do |t|
