@@ -1,27 +1,9 @@
 class Api::V1::ParentProfilesController < ApplicationController
   before_action :current_account, except: [:search_child, :create]
 
-  # GET / view-child
-  def view_child
-    if !current_parent_profile.nil?
-      @parent = @current_account.parent_profile
-      @user_profile = UserProfile.find_by(id: @parent.user_profile_id)
-      # render json of user_profile biodata here
-    else
-      return head(:unauthorized)
-    end
-  end
-
-  def search_child
-    if Account.exists?(email: params[:parent_profile][:child_email])
-      if !Account.find_by(email: params[:parent_profile][:child_email]).user_profile.nil?
-        return true
-      else
-        return false
-      end
-    else
-      return false
-    end
+  def new
+    puts "render parent sign up form here"
+    return true
   end
 
   # POST /parent_profiles
@@ -63,6 +45,29 @@ class Api::V1::ParentProfilesController < ApplicationController
   #     return head(:unauthorized)
   #   end
   # end
+
+  # GET / view-child
+  def view_child
+    if !current_parent_profile.nil?
+      @parent = @current_account.parent_profile
+      @user_profile = UserProfile.find_by(id: @parent.user_profile_id)
+      # render json of user_profile biodata here
+    else
+      return head(:unauthorized)
+    end
+  end
+
+  def search_child
+    if Account.exists?(email: params[:parent_profile][:child_email])
+      if !Account.find_by(email: params[:parent_profile][:child_email]).user_profile.nil?
+        return true
+      else
+        return false
+      end
+    else
+      return false
+    end
+  end
 
   # Only allow a list of trusted parameters through.
   def parent_profile_params

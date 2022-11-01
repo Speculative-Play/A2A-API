@@ -1,10 +1,11 @@
 class UserProfile < ApplicationRecord    
-    has_one  :account,                                                  dependent: :destroy
-    has_many :parent_profiles,                                          dependent: :destroy
-    has_many :favourited_match_profiles,                                dependent: :destroy
-    has_many :user_question_answers,                                    dependent: :destroy
-    has_many :category_percentages,                                     dependent: :destroy
-    has_one_attached :avatar,                                           dependent: :destroy    
+    has_one             :account,                                          dependent: :destroy
+    has_many            :parent_profiles,                                  dependent: :destroy
+    has_many            :favourited_match_profiles,                        dependent: :destroy
+    has_many            :user_question_answers,                            dependent: :destroy
+    has_many            :category_percentages,                             dependent: :destroy
+    has_one_attached    :avatar,                                           dependent: :destroy 
+    serialize           :languages,                                        Array   
     
 
     
