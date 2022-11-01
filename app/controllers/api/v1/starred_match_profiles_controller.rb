@@ -3,8 +3,6 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
 
   # GET /starred_match_profiles
   def index
-    puts "insie starred_match_profile controller > index"
-    puts "now will check for a current user"
     if !current_user_profile.nil?
       @starred_match_profiles = StarredMatchProfile.where(parent_profile_id: ParentProfile.find_by(user_profile_id: @current_user_profile))
       render json: @starred_match_profiles
@@ -27,13 +25,12 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
       @starred_match_profile = StarredMatchProfile.new(starred_match_profile_params)
       @starred_match_profile.parent_profile_id = @current_parent_profile.id
       
-      # If favourited_match_profile is already starred, render it
+      # If favourited_match_profile is already starred, render index
       if StarredMatchProfile.where("parent_profile_id = ? AND match_profile_id = ?", @starred_match_profile.parent_profile_id, @starred_match_profile.match_profile_id).exists?
-        @starred_match_profile = StarredMatchProfile.where("parent_profile_id = ? AND match_profile_id = ?", @favourited_match_profile.parent_profile_id, @favourited_match_profile.match_profile_id)
-        render json: @favourited_match_profile
-      # else if starred_match_profile can be created, save it
+        index
+      # else if starred_match_profile can be created, save it and render index
       elsif @starred_match_profile.save
-        render json: @starred_match_profile, status: :created
+        index
       else
         render json: @starred_match_profile.errors, status: :unprocessable_entity
       end
@@ -44,7 +41,26 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
 
   # DELETE /starred_match_profiles/1
   def destroy
-    @starred_match_profile.destroy
+    # if parent_profile is signed in
+    if !current_parent_profile.nil?
+      @starred_match_profile = StarredMatchProfile.find_by(id: params[:starred_match_profile_id])
+      
+      # if starred_match_profile with given id does not exist, return
+      if @starred_match_profile.nil?
+        return
+      end
+      
+      # if starred_match_profile does not belong to current_parent_profile, return 401
+      if @starred_match_profile.parent_profile != @current_parent_profile
+        return head(:unauthorized)
+      end
+
+      # if all checks pass, destroy record and render index
+      @starred_match_profile.destroy
+      index
+    else
+      return head(:unauthorized)
+    end
   end
 
   private
