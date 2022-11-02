@@ -100,54 +100,35 @@ class Api::V1::UserProfilesController < ApplicationController
       @match_categories_questions_hash[mc] = category_questions
     end
 
-
+    @match_categories_weights = CategoryPercentage.where(user_profile_id: @current_account.user_profile)
+    t = @match_categories.count
 
     @matches = Hash.new
-    # MatchProfile.find_each do |m|
-    MatchProfile.where(id: 1).each do |m|
-
-      # similarity_values = []
+    MatchProfile.find_each do |m|
       similarity_values = Hash.new
+      stored_val = 0
+      total_si = 0
+      weighted_sum = 0
 
-      # value = compare_user_to_match(m.id)
-      # value = similarity_value(m.id)
-      @match_categories_questions_hash.each {|key, value| similarity_values[key] = similarity_value(value, m.id)}
-      @matches[m.id] = similarity_values
+      @match_categories_questions_hash.each {|key, value| stored_val = similarity_value(value, m.id); similarity_values[key] = stored_val}
+      # @match_categories_questions_hash.each {|key, value| stored_val = similarity_value(value, m.id); puts "stored sim val = ", stored_val; similarity_values[key] = stored_val}
+      similarity_values.each_value {|value| total_si = total_si + value}
+      si_over_total = total_si / t
+      similarity_values.each {|key, value| weighted_sum = weighted_sum + (@match_categories_weights.find_by(matchmaking_category_id: key).category_percentage / 100.0) * value}
+      # similarity_values.each {|key, value| weighted_sum = weighted_sum + (@match_categories_weights.find_by(matchmaking_category_id: key).category_percentage / 100.0) * value; puts "value = ", value, "weighted_sum now = ", weighted_sum}
+
+      total_match = (si_over_total + weighted_sum) / 2.0
+      @matches[m.id] = total_match
     end
 
-    # @results = Hash[@matches.sort_by{|k,v| v}.reverse]
-    
-    render json: @matches
-    # render json: {matches: {scores: @results}}
-    # render json: {results: {match_categories_qs: @match_categories_questions_hash, values: @similarity_values}}
-  end
-
-  def similarity_index
-    # set number of questions answered
-    nj = @questions_user_has_answered.count
-
-
-
-    puts "match_categories = ", @match_categories
-
-    # @user_question_answers = UserQuestionAnswer.where(user_profile_id: @current_account.user_profile)
-
-    # @match_question_answers = MatchQuestionAnswer.where(match_profile_id: id, )
-
+    @results = Hash[@matches.sort_by{|k,v| v}.reverse]
+    render json: {matches: {scores: @results}}
   end
 
   def similarity_value(array_of_questions, match_id)
-  # def similarity_value(id)
 
     @match_question_answers = MatchQuestionAnswer.where(match_profile_id: match_id)
-    # puts "found this many match_questionAnswers: ", @match_question_answers.count
     @user_question_answers = UserQuestionAnswer.where(user_profile_id: @current_account.user_profile)
-    @category_percentages = CategoryPercentage.where(user_profile_id: @current_account.user_profile)
-
-    percentages = []
-    @category_percentages.each do |cp|
-      percentages.push(cp.category_percentage)
-    end
 
     similarity = 0
     questions_in_common = 0
@@ -158,28 +139,20 @@ class Api::V1::UserProfilesController < ApplicationController
           # check for question_type
           question = Question.find_by(id: user_a.question_id)
           @category_id = question.matchmaking_category_id
-          # puts "here is the category_id for this question: ", @category_id
-          @multiplier = percentages[(@category_id - 1)]
-          # puts "here is the multiplier: ", @multiplier
-          # zero-one question type
           if question.question_type == "zero-one"
             # puts "found a zero-one"
             if user_a.answer_id == match_a.answer_id
-              similarity = similarity + (1.0 * @multiplier)
-
+              similarity = similarity + 1.0
             end
           # range question type
           elsif question.question_type == "range"
-            # puts "found a range"
-            similarity = similarity + (range_question_score(question.id, user_a.answer_id, match_a.answer_id) * @multiplier)
+            similarity = similarity + range_question_score(question.id, user_a.answer_id, match_a.answer_id)
           end
 
         end
       end
     end
-    # puts "similairty = ",similarity
     similarity = similarity / questions_in_common
-    # puts "similarty divided = ", similarity
     return similarity
   end
 
@@ -190,19 +163,6 @@ class Api::V1::UserProfilesController < ApplicationController
     points = (t.to_f - d.to_f) / t.to_f
     return points
   end
-
-  # def join_test
-  #   @hash = Hash.new
-  #   Question.find_each do |q|
-  #     answers = Answer.where(question_id: q.id)
-  #     @hash[q.id] = answers
-  #   end
-  #   render json: @hash
-  # end
-
-  # def similarity_value(question_similarity, total_mutual_questions)
-
-  # end
 
   private
     # Only allow a list of trusted parameters through.

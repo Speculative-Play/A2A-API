@@ -61,7 +61,6 @@ class Api::V1::MatchProfilesController < ApplicationController
 
   # GET /reorder_match_profiles.json
   def reorder_match_profiles
-    Rails.logger.info 'hello from match_profiles_controller/reorder_match_profiles'
     @match_profiles = MatchProfile.all
     respond_to do |format|
       if @match_profiles.index()
@@ -72,12 +71,10 @@ class Api::V1::MatchProfilesController < ApplicationController
   end
 
   def sort_match_profiles_by_attribute
-    Rails.logger.info 'hello from sort_match_profiles_by_attribute'
 
     # @match_profiles = MatchProfile.order("#{params[:sort]}").reverse
     # @match_profiles = MatchProfile.find(:all, :order => )
 
-    Rails.logger.info 'inside sort_match_by_attributes match_profiles_controller'
     @match_profiles = MatchProfile.all
     respond_to do |format|
       # @match_profiles.sort_by {|prof| prof.culture_score}
