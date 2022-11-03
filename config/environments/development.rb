@@ -42,10 +42,10 @@ Rails.application.configure do
   config.active_support.deprecation = :log
 
   # LOGGING: Comment out line below to disable logging while debugging
-  # config.active_record.logger = nil
+  config.active_record.logger = nil
   # NOTE: Do not leave this turned off permanently; can cause errors
   # When debugging finished, uncomment line below and restart server to re-enable logging
-  ActiveRecord::Base.logger = Rails.logger
+  # ActiveRecord::Base.logger = Rails.logger
 
   # Raise exceptions for disallowed deprecations.
   config.active_support.disallowed_deprecation = :raise
