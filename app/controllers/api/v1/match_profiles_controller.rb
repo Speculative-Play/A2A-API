@@ -23,11 +23,9 @@ class Api::V1::MatchProfilesController < ApplicationController
         # check if current logged in account is user or parent, set variables to appropriate user_profile
         if !current_account.user_profile.nil?
             @current_user_profile = @current_account.user_profile
-            print "found user_profile and set user variable to ", @current_user_profile.id
         elsif !current_account.parent_profile.nil?
             parent = @current_account.parent_profile
             @current_user_profile = UserProfile.find_by(id: parent.user_profile_id)
-            print "found parent_profile and set user variable to ", @current_user_profile.id
         end
 
         # get list of questions that user answered questions for
