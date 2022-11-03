@@ -11,6 +11,47 @@ class Api::V1::MatchProfilesController < ApplicationController
     render json: @match_profile
   end
 
+  # POST /search-matches
+  # Search feature to search match_profiles based on passed attributes
+  def search_matches
+    # Column filters to search within:
+    # Gender 
+    if params[:categories][:gender].present?
+      matches = MatchProfile.where(gender: params[:categories][:gender])
+    end
+    # City
+    if params[:categories][:city].present?
+      matches = matches.where(city: params[:categories][:city])
+    end
+    # Country
+    if params[:categories][:country].present?
+      matches = matches.where(country: params[:categories][:country])
+    end
+    # Birth Country 
+    if params[:categories][:birth_country].present?
+      matches = matches.where(birth_country: params[:categories][:birth_country])
+    end
+    # Birthdate Before
+    if params[:categories][:birthdate_before].present?
+      matches = matches.where("date_of_birth < ?", params[:categories][:birthdate_before])
+    end
+    # Birthdate After
+    if params[:categories][:birthdate_after].present?
+      matches = matches.where("date_of_birth > ?", params[:categories][:birthdate_after])
+    end
+    # Language
+    if params[:categories][:language].present?
+      matches = matches.where("languages LIKE ?", "%" + params[:categories][:language] + "%" )
+    end
+    # Marital Status
+    if params[:categories][:marital_status].present?
+      matches = matches.where(marital_status: params[:categories][:marital_status])
+    end
+
+    render json: matches
+
+  end
+
   ### Matchmaking Algorithm Section ###
 
   # POST /match
@@ -110,7 +151,6 @@ class Api::V1::MatchProfilesController < ApplicationController
         question = Question.find_by(id: user_a.question_id)
         @category_id = question.matchmaking_category_id
         if question.question_type == "zero-one"
-            # puts "found a zero-one"
             if user_a.answer_id == match_a.answer_id
             similarity = similarity + 1.0
             end
@@ -137,8 +177,6 @@ class Api::V1::MatchProfilesController < ApplicationController
   private
     # Only allow a list of trusted parameters through.
     def match_profile_params
-      # params.fetch(:match_profile, {})
-      params.require(:match_profile).permit(:first_name, :last_name, :avatar)
-
+      params.require(:match_profile).permit(:first_name, :last_name, :gender, :city, :country, :birth_country, :date_of_birth, :birthdate_before, :birthdate_after, :languages, :marital_status, :avatar)
     end
 end
