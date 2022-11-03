@@ -50,6 +50,7 @@ Rails.application.routes.draw do
 
       # Match Profiles
       post 'match', to: 'match_profiles#match'
+      post 'search-matches', to: 'match_profiles#search_matches'
 
       # Favourited Match Profiles
       get 'favourited_match_profiles', to: 'favourited_match_profiles#index'
