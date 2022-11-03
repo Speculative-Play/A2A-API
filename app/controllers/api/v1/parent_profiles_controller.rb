@@ -17,7 +17,7 @@ class Api::V1::ParentProfilesController < ApplicationController
         render json: @parent_profile.errors, status: :unprocessable_entity
       end
     else
-      render json: "could not locate child profile"
+      return
     end
   end
 

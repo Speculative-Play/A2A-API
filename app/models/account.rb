@@ -12,43 +12,36 @@ class Account < ApplicationRecord
     validates :password, presence: true
     has_secure_password
 
-    # class << self
-        # Return the hash value of the given string
-        def Account.digest(string)
-            cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST : BCrypt::Engine.cost
-            BCrypt::Password.create(string, cost: cost)
-        end
+    # # class << self
+    #     # Return the hash value of the given string
+    #     def Account.digest(string)
+    #         cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST : BCrypt::Engine.cost
+    #         BCrypt::Password.create(string, cost: cost)
+    #     end
 
-        # Return a random token
-        def Account.generate_token
-            SecureRandom.urlsafe_base64
-        end
+    #     # Return a random token
+    #     def Account.generate_token
+    #         SecureRandom.urlsafe_base64
+    #     end
 
-        # Create a new token -> encrypt it -> stores the hash value in remember_digest in DB.
-        def remember
-            self.remember_token = Account.generate_token
-            update_attribute(:remember_digest, Account.digest(remember_token))
-            # remember_token = generate_token
-            # self.update_attributes(:remember_digest, digest(remember_token))
-        end
+    #     # Create a new token -> encrypt it -> stores the hash value in remember_digest in DB.
+    #     def remember
+    #         self.remember_token = Account.generate_token
+    #         update_attribute(:remember_digest, Account.digest(remember_token))
+    #         # remember_token = generate_token
+    #         # self.update_attributes(:remember_digest, digest(remember_token))
+    #     end
 
-        def forget
-            puts "inside account.rb > forget!"
-            # update_attribute(:remember_digest, nil)
-            update_attributes(:remember_digest, nil)
-        end
-
+    #     def forget
+    #         # update_attribute(:remember_digest, nil)
+    #         update_attributes(:remember_digest, nil)
+    #     end
 
     # end
     
-
-
-
     # Check if the given value matches the one stored in DB
-    def authenticated?(remember_token)
-        BCrypt::Password.new(remember_digest).is_password?(remember_token)
-    end
-    
-
+    # def authenticated?(remember_token)
+    #     BCrypt::Password.new(remember_digest).is_password?(remember_token)
+    # end
 
 end
