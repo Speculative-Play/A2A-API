@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_01_165828) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_07_173823) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -93,6 +93,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_01_165828) do
     t.date "date_of_birth"
     t.text "languages", default: ""
     t.string "marital_status"
+    t.string "education"
+    t.string "occupation"
+    t.string "religion"
+    t.string "father"
+    t.string "mother"
+    t.text "sisters", default: ""
+    t.text "brothers", default: ""
+    t.text "about_me", default: ""
   end
 
   create_table "match_question_answers", force: :cascade do |t|
