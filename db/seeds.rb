@@ -7,6 +7,10 @@
 #   Character.create(name: "Luke", movie: movies.first)
 
 require 'faker'
+require 'csv'
+qa_csv_file = File.read(Rails.root.join('db', 'assets', 'A2A-question-answer-bank.csv'))
+qa_table = CSV.parse(qa_csv_file)
+# puts qa_table
 
 # Create UserProfiles [Women]
 5.times do 
@@ -18,7 +22,7 @@ require 'faker'
         country: Faker::Address.country,
         birth_country: Faker::Address.country,
         date_of_birth: Faker::Date.between(from: '1987-01-01', to: '2002-01-01'),
-        languages: Faker::Lorem.words,
+        languages: MatchProfile::LANGUAGES.sample(2),
         marital_status: Faker::Demographic.marital_status
     )
 end
@@ -33,13 +37,13 @@ end
         country: Faker::Address.country,
         birth_country: Faker::Address.country,
         date_of_birth: Faker::Date.between(from: '1987-01-01', to: '2002-01-01'),
-        languages: Faker::Lorem.words,
+        languages: MatchProfile::LANGUAGES.sample(2),
         marital_status: Faker::Demographic.marital_status
     )
 end
 
 # Create MatchProfiles [Women]
-25.times do 
+for m in 1..25 do 
     MatchProfile.create(
         first_name: Faker::Name.unique.female_first_name,
         last_name: Faker::Name.unique.last_name,
@@ -48,13 +52,21 @@ end
         country: Faker::Address.country,
         birth_country: Faker::Address.country,
         date_of_birth: Faker::Date.between(from: '1987-01-01', to: '2002-01-01'),
-        languages: Faker::Lorem.words,
-        marital_status: Faker::Demographic.marital_status
+        languages: MatchProfile::LANGUAGES.sample(2),
+        marital_status: Faker::Demographic.marital_status,
+        education: MatchProfile::DEGREES[m % 17],
+        occupation: MatchProfile::JOBS[m % 17],
+        religion: MatchProfile::RELIGIONS.sample,
+        father: Faker::Name.unique.male_first_name,
+        mother: Faker::Name.unique.female_first_name,
+        sisters: Faker::Lorem.words,
+        brothers: Faker::Lorem.words,
+        about_me: Faker::Lorem.sentences
     )
 end
 
 # Create MatchProfiles [Men]
-25.times do 
+for m in 1..25 do 
     MatchProfile.create(
         first_name: Faker::Name.unique.male_first_name,
         last_name: Faker::Name.unique.last_name,
@@ -63,8 +75,16 @@ end
         country: Faker::Address.country,
         birth_country: Faker::Address.country,
         date_of_birth: Faker::Date.between(from: '1987-01-01', to: '2002-01-01'),
-        languages: Faker::Lorem.words,
-        marital_status: Faker::Demographic.marital_status
+        languages: MatchProfile::LANGUAGES.sample(2),
+        marital_status: Faker::Demographic.marital_status,
+        education: MatchProfile::DEGREES[m % 17],
+        occupation: MatchProfile::JOBS[m % 17],
+        religion: MatchProfile::RELIGIONS.sample,
+        father: Faker::Name.unique.male_first_name,
+        mother: Faker::Name.unique.female_first_name,
+        sisters: Faker::Lorem.words,
+        brothers: Faker::Lorem.words,
+        about_me: Faker::Lorem.sentences
     )
 end
 
@@ -116,7 +136,7 @@ for u in 1..10 do
 end
 
 # Create MatchmakingCategories
-5.times do
+10.times do
     MatchmakingCategory.create(
         category_name: Faker::Lorem.unique.word,
         category_description: Faker::Lorem.sentence
@@ -147,29 +167,47 @@ for p in 1..10 do
     end
 end
 
-# Create Zero-One Type Questions
-# Create 5 entries per MatchmakingCategory = 50 entries
-for n in 1..5 do
-    3.times do
-        Question.create(
-            question_text: Faker::Lorem.unique.question,
-            matchmaking_category_id: n,
-            question_type: "zero-one"
-        )
+# # Create Zero-One Type Questions
+# # Create 5 entries per MatchmakingCategory = 50 entries
+# for n in 1..5 do
+#     3.times do
+#         Question.create(
+#             question_text: Faker::Lorem.unique.question,
+#             matchmaking_category_id: n,
+#             question_type: "zero-one"
+#         )
+#     end
+# end
+
+# # Create Range Type Questions
+# # Create 5 entries per MatchmakingCategory = 50 entries
+# for n in 1..5 do
+#     3.times do
+#         Question.create(
+#             question_text: Faker::Lorem.unique.question,
+#             matchmaking_category_id: n,
+#             question_type: "range"
+#         )
+#     end
+# end
+
+@categories = []
+qa_table.drop(1).each do |question|
+    if !@categories.include?(question[2])
+        @categories << question[2]
     end
+
+    Question.create(
+        question_text: question[0],
+        matchmaking_category_id: @categories.size,
+        question_type: question[1]
+    )
 end
 
-# Create Range Type Questions
-# Create 5 entries per MatchmakingCategory = 50 entries
-for n in 1..5 do
-    3.times do
-        Question.create(
-            question_text: Faker::Lorem.unique.question,
-            matchmaking_category_id: n,
-            question_type: "range"
-        )
-    end
-end
+# CSV.foreach(qa_csv_file.by_col!, headers: true, col_sep: "|") do |col|
+#     # Your code here, trait your data
+#     puts col[0]
+#   end
 
 # Create Answers
 # Create 5 entries per Question = 250 entries
