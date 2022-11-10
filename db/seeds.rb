@@ -136,7 +136,7 @@ for u in 1..10 do
 end
 
 # Create MatchmakingCategories
-10.times do
+11.times do
     MatchmakingCategory.create(
         category_name: Faker::Lorem.unique.word,
         category_description: Faker::Lorem.sentence
@@ -192,33 +192,47 @@ end
 # end
 
 @categories = []
-qa_table.drop(1).each do |question|
-    if !@categories.include?(question[2])
-        @categories << question[2]
+@number_of_questions = 0
+qa_table.drop(1).each do |row|
+    if !@categories.include?(row[2])
+        @categories << row[2]
     end
 
     Question.create(
-        question_text: question[0],
+        question_text: row[0],
         matchmaking_category_id: @categories.size,
-        question_type: question[1]
+        question_type: row[1]
     )
+    @number_of_questions = @number_of_questions + 1
 end
-
-# CSV.foreach(qa_csv_file.by_col!, headers: true, col_sep: "|") do |col|
-#     # Your code here, trait your data
-#     puts col[0]
-#   end
 
 # Create Answers
 # Create 5 entries per Question = 250 entries
-for q in 1..50 do
-    5.times do
-        Answer.create(
-            answer_text: Faker::Lorem.sentence,
-            question_id: q
-        )
+@answers_hash = Hash.new
+qa_table.drop(1).each_with_index do |row, index|
+    # answers = []
+    row.each_with_index do |col, i|
+        
+        unless col
+            puts "empty at !!!!", index, i
+            break
+        end
+        if i > 2
+            # answers << col
+            Answer.create(
+                answer_text: col,
+                question_id: index
+            )
+        end
     end
+    # @answers_hash[index] = answers
+    # 5.times do
+
+    # end
+
 end
+# puts "answers_hash = ", @answers_hash
+
 
 # Create UserQuestionAnswers
 # Create 1 entry per Question per UserProfile = 50 * 10 = 500 entries
