@@ -47,6 +47,18 @@ class Api::V1::MatchProfilesController < ApplicationController
     if params[:categories][:marital_status].present?
       matches = matches.where(marital_status: params[:categories][:marital_status])
     end
+    # Education
+    if params[:categories][:education].present?
+      matches = matches.where(education: params[:categories][:education])
+    end
+    # Occupation
+    if params[:categories][:occupation].present?
+      matches = matches.where(occupation: params[:categories][:occupation])
+    end
+    # Religion
+    if params[:categories][:religion].present?
+      matches = matches.where(religion: params[:categories][:religion])
+    end
 
     render json: matches
 
