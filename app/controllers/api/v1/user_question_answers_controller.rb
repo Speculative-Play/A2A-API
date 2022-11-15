@@ -11,14 +11,16 @@ class Api::V1::UserQuestionAnswersController < ApplicationController
         @questions.each do |q|
           @answers = Answer.where(question_id: q.id)
           answers_arr = Hash.new
+          matching_algo_arr = Hash.new
           @answers.each do |a|
             if UserQuestionAnswer.where("question_id = ? AND answer_id = ? AND user_profile_id = ?", q.id, a.id, current_user_profile.id).present?
               answers_arr[a.answer_text] = [1]
+              matching_algo_arr["question "+q.id.to_s+" matching_algo"] = UserQuestionAnswer.find_by("question_id = ? AND answer_id = ? AND user_profile_id = ?", q.id, a.id, current_user_profile.id).matching_algo
             else
               answers_arr[a.answer_text] = [0]
             end
           end
-          questions_arr[q.question_text] = [answers_arr]
+          questions_arr[q.question_text] = [answers_arr, matching_algo_arr]
         end
         @categories_arr[match_cat.category_name] = [questions_arr]
       end
@@ -69,6 +71,21 @@ class Api::V1::UserQuestionAnswersController < ApplicationController
     end
   end
 
+  # PUT /toggle_question/[question_id]
+  def toggle_question
+    if @question = UserQuestionAnswer.find_by("question_id = ? AND user_profile_id = ?", params[:question_id], @current_account.user_profile)
+      toggle = !@question.matching_algo
+      @question.matching_algo = toggle
+      if @question.save
+        return index
+      else
+        render json: @user_question_answer.errors, status: :unprocessable_entity
+      end
+    else
+      return
+    end
+  end
+
   # DELETE /user_question_answers/1
   def destroy
     @user_question_answer.destroy
@@ -77,7 +94,7 @@ class Api::V1::UserQuestionAnswersController < ApplicationController
   private
   # Only allow a list of trusted parameters through.
   def user_question_answer_params
-    params.fetch(:user_question_answer, {})
+    params.require(:user_question_answer).permit(:question_id, :answer_id, :user_profile_id, :matching_algo)
   end
 
 end

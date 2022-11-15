@@ -81,11 +81,14 @@ class Api::V1::MatchProfilesController < ApplicationController
             @current_user_profile = UserProfile.find_by(id: parent.user_profile_id)
         end
 
+        puts "current user id = ", 
         # get list of questions that user answered questions for
         @questions_user_has_answered = []
         Question.find_each do |q|
-          if !UserQuestionAnswer.find_by(question_id: q.id).nil?
+          if !UserQuestionAnswer.find_by("question_id = ? AND user_profile_id = ?", q.id, @current_user_profile).nil?
+            if UserQuestionAnswer.find_by("question_id = ? AND user_profile_id = ?", q.id, @current_user_profile).matching_algo == true
               @questions_user_has_answered.push(q)
+            end
           end
         end
 
@@ -140,12 +143,13 @@ class Api::V1::MatchProfilesController < ApplicationController
           @matches[m.id] = total_match.round(2)
         end
 
-        # @results = Hash[@matches.sort_by{|k,v| v}.reverse]
-        # min = @results.values[@results.size - 1]
-        # max = @results.values.first
+        @results = Hash[@matches.sort_by{|k,v| v}.reverse]
 
         # Scaled results
         # f(x) = (x - min) / (max - min)
+
+        # min = @results.values[@results.size - 1]
+        # max = @results.values.first
         # results_mod = Hash.new
         # @results.each {|key, value| results_mod[key] = (value - min) / (max - min)}
 

@@ -253,7 +253,8 @@ for q in 1..@number_of_questions do
         UserQuestionAnswer.create(
             question_id: q,
             answer_id: answer_id,
-            user_profile_id: u
+            user_profile_id: u,
+            matching_algo: true
         )
     end
 end

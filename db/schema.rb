@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_15_161152) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_15_202209) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -182,6 +182,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_15_161152) do
     t.integer "user_profile_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "matching_algo", default: true
     t.index ["answer_id"], name: "index_user_question_answers_on_answer_id"
     t.index ["question_id"], name: "index_user_question_answers_on_question_id"
     t.index ["user_profile_id"], name: "index_user_question_answers_on_user_profile_id"

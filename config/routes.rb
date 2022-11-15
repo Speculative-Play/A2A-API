@@ -65,8 +65,9 @@ Rails.application.routes.draw do
       # Questions
       get '/questions/matchmaking_category(/:matchmaking_category_id)', to: 'questions#questions_by_category'
 
-      # Answers
+      # User Question Answers
       get 'my_question_answers', to: 'user_question_answers#index'
+      put 'toggle_question(/:question_id)', to: 'user_question_answers#toggle_question'
 
       # Category Percentages
       get 'category_percentages', to: 'category_percentages#index'
