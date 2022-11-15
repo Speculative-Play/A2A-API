@@ -84,30 +84,30 @@ class Api::V1::MatchProfilesController < ApplicationController
         # get list of questions that user answered questions for
         @questions_user_has_answered = []
         Question.find_each do |q|
-        if !UserQuestionAnswer.find_by(question_id: q.id).nil?
-            @questions_user_has_answered.push(q)
-        end
+          if !UserQuestionAnswer.find_by(question_id: q.id).nil?
+              @questions_user_has_answered.push(q)
+          end
         end
 
         # get list of matchmaking categories to query (matchmaking_categories that user has answered questions for)
         @match_categories = []
         @questions_user_has_answered.each do |q|
-        unless @match_categories.include?(q.matchmaking_category_id)
-            @match_categories << q.matchmaking_category_id
-        end
+          unless @match_categories.include?(q.matchmaking_category_id)
+              @match_categories << q.matchmaking_category_id
+          end
         end
 
         # sort questions into matchmaking_categories hash 
         # {key: matchmaking_category, value: array of questions in that category}
         @match_categories_questions_hash = Hash.new
         @match_categories.each do |mc|
-        category_questions = []
-        @questions_user_has_answered.each do |q|
-            if q.matchmaking_category_id == mc
-            category_questions << q
-            end
-        end
-        @match_categories_questions_hash[mc] = category_questions
+          category_questions = []
+          @questions_user_has_answered.each do |q|
+              if q.matchmaking_category_id == mc
+              category_questions << q
+              end
+          end
+          @match_categories_questions_hash[mc] = category_questions
         end
 
         # set t variable for total number of categories
@@ -119,12 +119,14 @@ class Api::V1::MatchProfilesController < ApplicationController
           @match_categories_weights = CategoryPercentage.where(user_profile_id: @current_user_profile.id)
         elsif !@current_account.parent_profile.nil?
           @match_categories_weights = CategoryPercentage.where(parent_profile_id: @current_account.parent_profile)
+        else 
+          return 
         end
-
 
         # execute matching algorithm on every match
         @matches = Hash.new
-        MatchProfile.find_each do |m|
+        # MatchProfile.find_each do |m|
+        MatchProfile.where("id <= ?", 50).each do |m|
           similarity_values = Hash.new
           stored_val = 0
           weighted_sum = 0
@@ -133,16 +135,24 @@ class Api::V1::MatchProfilesController < ApplicationController
           @match_categories_questions_hash.each {|key, value| stored_val = similarity_value(value, m.id); similarity_values[key] = stored_val}
           similarity_values.each_value {|value| total_similarity_index = total_similarity_index + value}
           si_over_total = total_similarity_index / total_categories
-          similarity_values.each {|key, value| weighted_sum = weighted_sum + (@match_categories_weights.find_by(matchmaking_category_id: key).category_percentage / 100.0) * value}
-
+          similarity_values.each {|key, value| weighted_sum = weighted_sum + (@match_categories_weights[key - 1].category_percentage / 100.0) * value;}
           total_match = (si_over_total + weighted_sum) / 2.0
           @matches[m.id] = total_match.round(2)
         end
 
-        @results = Hash[@matches.sort_by{|k,v| v}.reverse]
-        @results = Hash[@results.take(10)]
+        # @results = Hash[@matches.sort_by{|k,v| v}.reverse]
+        # min = @results.values[@results.size - 1]
+        # max = @results.values.first
 
+        # Scaled results
+        # f(x) = (x - min) / (max - min)
+        # results_mod = Hash.new
+        # @results.each {|key, value| results_mod[key] = (value - min) / (max - min)}
+
+        @results = Hash[@results.take(10)]
         render json: {match_scores: @results}
+
+        # render json: {match_scores: {results: @results, results_mod: results_mod}}
     else
         return head(:unauthorized)
     end
@@ -173,6 +183,9 @@ class Api::V1::MatchProfilesController < ApplicationController
 
         end
     end
+    end
+    if questions_in_common < 1
+      return 0
     end
     similarity = similarity / questions_in_common
     return similarity

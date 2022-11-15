@@ -13,7 +13,7 @@ qa_table = CSV.parse(qa_csv_file)
 # puts qa_table
 
 # Create UserProfiles [Women]
-5.times do 
+for u in 1..5 do 
     UserProfile.create(
         first_name: Faker::Name.unique.female_first_name,
         last_name: Faker::Name.unique.last_name,
@@ -23,30 +23,46 @@ qa_table = CSV.parse(qa_csv_file)
         birth_country: Faker::Address.country,
         date_of_birth: Faker::Date.between(from: '1987-01-01', to: '2002-01-01'),
         languages: MatchProfile::LANGUAGES.sample(2),
-        marital_status: Faker::Demographic.marital_status
+        marital_status: Faker::Demographic.marital_status,
+        education: MatchProfile::DEGREES[u % 17],
+        occupation: MatchProfile::JOBS[u % 17],
+        religion: MatchProfile::RELIGIONS.sample,
+        father: Faker::Name.unique.male_first_name,
+        mother: Faker::Name.unique.female_first_name,
+        sisters: Faker::Lorem.words,
+        brothers: Faker::Lorem.words,
+        about_me: Faker::Lorem.sentences
     )
 end
 
 # Create UserProfiles [Men]
-5.times do 
+for u in 1..5 do
     UserProfile.create(
         first_name: Faker::Name.unique.male_first_name,
-        last_name: Faker::Name.unique.last_name,
+        last_name: Faker::Name.last_name,
         gender: "Man",
         city: Faker::Address.city,
         country: Faker::Address.country,
         birth_country: Faker::Address.country,
         date_of_birth: Faker::Date.between(from: '1987-01-01', to: '2002-01-01'),
         languages: MatchProfile::LANGUAGES.sample(2),
-        marital_status: Faker::Demographic.marital_status
+        marital_status: Faker::Demographic.marital_status,
+        education: MatchProfile::DEGREES[u % 17],
+        occupation: MatchProfile::JOBS[u % 17],
+        religion: MatchProfile::RELIGIONS.sample,
+        father: Faker::Name.unique.male_first_name,
+        mother: Faker::Name.unique.female_first_name,
+        sisters: Faker::Lorem.words,
+        brothers: Faker::Lorem.words,
+        about_me: Faker::Lorem.sentences
     )
 end
 
 # Create MatchProfiles [Women]
-for m in 1..25 do 
+for m in 1..250 do 
     MatchProfile.create(
         first_name: Faker::Name.unique.female_first_name,
-        last_name: Faker::Name.unique.last_name,
+        last_name: Faker::Name.last_name,
         gender: "Woman",
         city: Faker::Address.city,
         country: Faker::Address.country,
@@ -66,7 +82,7 @@ for m in 1..25 do
 end
 
 # Create MatchProfiles [Men]
-for m in 1..25 do 
+for m in 1..250 do 
     MatchProfile.create(
         first_name: Faker::Name.unique.male_first_name,
         last_name: Faker::Name.unique.last_name,
@@ -119,7 +135,7 @@ for p in 1..10 do
     5.times do
         StarredMatchProfile.create(
             parent_profile_id: p,
-            match_profile_id: Faker::Number.between(from: 1, to: 50)
+            match_profile_id: Faker::Number.between(from: 1, to: 500)
         ) 
     end
 end
@@ -130,7 +146,7 @@ for u in 1..10 do
     5.times do
         FavouritedMatchProfile.create(
             user_profile_id: u,
-            match_profile_id: Faker::Number.between(from: 1, to: 50)
+            match_profile_id: Faker::Number.between(from: 1, to: 500)
         ) 
     end
 end
@@ -146,7 +162,7 @@ end
 # Create CategoryPercentages for Users
 # Create 1 entry per MatchmakingCategory per UserProfile = 50 entries
 for u in 1..10 do
-    for a in 1..5 do
+    for a in 1..11 do
         CategoryPercentage.create(
             category_percentage: 20,
             matchmaking_category_id: a,
@@ -158,7 +174,7 @@ end
 # Create CategoryPercentages for Parents
 # Create 1 entry per MatchmakingCategory per ParentProfile = 50 entries
 for p in 1..10 do
-    for a in 1..5 do
+    for a in 1..11 do
         CategoryPercentage.create(
             category_percentage: 20,
             matchmaking_category_id: a,
@@ -207,52 +223,56 @@ qa_table.drop(1).each do |row|
 end
 
 # Create Answers
-# Create 5 entries per Question = 250 entries
-@answers_hash = Hash.new
 qa_table.drop(1).each_with_index do |row, index|
-    # answers = []
     row.each_with_index do |col, i|
         
         unless col
-            puts "empty at !!!!", index, i
             break
         end
         if i > 2
-            # answers << col
             Answer.create(
                 answer_text: col,
-                question_id: index
+                question_id: index + 1
             )
         end
     end
-    # @answers_hash[index] = answers
-    # 5.times do
-
-    # end
-
 end
-# puts "answers_hash = ", @answers_hash
 
 
 # Create UserQuestionAnswers
-# Create 1 entry per Question per UserProfile = 50 * 10 = 500 entries
-for q in 1..50 do
+for q in 1..@number_of_questions do
+
+    possible_answers = Answer.where(question_id: q)
+    answers_count = possible_answers.count
+    if answers_count < 1
+        break
+    end
+
     for u in 1..10 do
+        answer_id = rand(possible_answers.first.id..(possible_answers.first.id + answers_count - 1))
         UserQuestionAnswer.create(
             question_id: q,
-            answer_id: q*5-Faker::Number.between(from: 0, to: 4),
+            answer_id: answer_id,
             user_profile_id: u
         )
     end
 end
 
 # Create MatchQuestionAnswers
-# Create 1 entry per Question per MatchProfile = 50 * 50 = 2500 entries
-for q in 1..50 do
-    for m in 1..50 do
+for q in 1..@number_of_questions do
+
+    possible_answers = Answer.where(question_id: q)
+    answers_count = possible_answers.count
+    if answers_count < 1
+        break
+    end
+
+    for m in 1..500 do
+        answer_id = rand(possible_answers.first.id..(possible_answers.first.id + answers_count - 1))
+
         MatchQuestionAnswer.create(
             question_id: q,
-            answer_id: q*5-Faker::Number.between(from: 0, to: 4),
+            answer_id: answer_id,
             match_profile_id: m
         )
     end
