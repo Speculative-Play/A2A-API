@@ -69,6 +69,9 @@ Rails.application.routes.draw do
       get 'my_question_answers', to: 'user_question_answers#index'
       put 'toggle_question(/:question_id)', to: 'user_question_answers#toggle_question'
 
+      # Match Question Answers
+      get 'match_questions(/:match_profile_id)', to: 'match_question_answers#index'
+
       # Category Percentages
       get 'category_percentages', to: 'category_percentages#index'
       put 'category_percentages', to: 'category_percentages#update'
