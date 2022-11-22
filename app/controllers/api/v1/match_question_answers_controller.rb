@@ -6,8 +6,13 @@ class Api::V1::MatchQuestionAnswersController < ApplicationController
     if !current_user_profile.nil?
       @match_question_answers = MatchQuestionAnswer.where(match_profile_id: params[:match_profile_id])
       @current_user_questions = UserQuestionAnswer.where(user_profile_id: @current_user_profile).pluck(:question_id)
+
       @match_question_answers.each do |i|
         if !@current_user_questions.include? i.question_id
+          @match_question_answers.delete(i)
+        end
+        question = UserQuestionAnswer.find_by("question_id = ? AND user_profile_id = ?", i.question_id, @current_user_profile)
+        if !question.visible
           @match_question_answers.delete(i)
         end
       end
