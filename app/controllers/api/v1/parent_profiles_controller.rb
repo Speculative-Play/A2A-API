@@ -58,14 +58,17 @@ class Api::V1::ParentProfilesController < ApplicationController
   end
 
   def search_child
-    if Account.exists?(email: params[:parent_profile][:child_email])
-      if !Account.find_by(email: params[:parent_profile][:child_email]).user_profile.nil?
-        return true
+    puts params[:child_email]
+    # if Account.exists?(email: params[:parent_profile][:child_email])
+    if Account.exists?
+      if !Account.find_by(email: params[:child_email]).nil?
+        @user = Account.find_by(email: params[:child_email]).user_profile
+        render json: @user
       else
         return false
       end
     else
-      return false
+      render json: []
     end
   end
 
