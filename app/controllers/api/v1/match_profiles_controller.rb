@@ -1,4 +1,6 @@
 class Api::V1::MatchProfilesController < ApplicationController
+  before_action :current_account
+
 
   # GET /match_profiles
   def index
@@ -8,6 +10,7 @@ class Api::V1::MatchProfilesController < ApplicationController
 
   # GET /match_profiles/1
   def show
+
     render json: @match_profile
   end
 
@@ -81,11 +84,12 @@ class Api::V1::MatchProfilesController < ApplicationController
             @current_user_profile = UserProfile.find_by(id: parent.user_profile_id)
         end
 
-        puts "current user id = ", 
         # get list of questions that user answered questions for
         @questions_user_has_answered = []
         Question.find_each do |q|
           if !UserQuestionAnswer.find_by("question_id = ? AND user_profile_id = ?", q.id, @current_user_profile).nil?
+            puts "user answered question ", q.id
+            puts "with match cat ", q.matchmaking_category_id
             if UserQuestionAnswer.find_by("question_id = ? AND user_profile_id = ?", q.id, @current_user_profile).matching_algo == true
               @questions_user_has_answered.push(q)
             end
@@ -96,9 +100,13 @@ class Api::V1::MatchProfilesController < ApplicationController
         @match_categories = []
         @questions_user_has_answered.each do |q|
           unless @match_categories.include?(q.matchmaking_category_id)
+            puts "adding category ", q.matchmaking_category_id
               @match_categories << q.matchmaking_category_id
           end
         end
+
+        puts "match categories are:"
+        puts @match_categories
 
         # sort questions into matchmaking_categories hash 
         # {key: matchmaking_category, value: array of questions in that category}
@@ -129,11 +137,13 @@ class Api::V1::MatchProfilesController < ApplicationController
         # execute matching algorithm on every match
         @matches = Hash.new
         # MatchProfile.find_each do |m|
-        MatchProfile.where("id <= ?", 50).each do |m|
+        MatchProfile.where("id <= ?", 10).each do |m|
+          puts "now comparing match_id ", m.id
           similarity_values = Hash.new
           stored_val = 0
           weighted_sum = 0
           total_similarity_index = 0
+          puts "match_category_questions = ", @match_categories_questions_hash
 
           @match_categories_questions_hash.each {|key, value| stored_val = similarity_value(value, m.id); similarity_values[key] = stored_val}
           similarity_values.each_value {|value| total_similarity_index = total_similarity_index + value}
@@ -163,35 +173,53 @@ class Api::V1::MatchProfilesController < ApplicationController
   end
 
   def similarity_value(array_of_questions, match_id)
+    puts "now doing similarity_value function for match_id ", match_id
+    # puts "with questions: ", array_of_questions
 
     @match_question_answers = MatchQuestionAnswer.where(match_profile_id: match_id)
     @user_question_answers = UserQuestionAnswer.where(user_profile_id: @current_user_profile.id)
-
     similarity = 0
     questions_in_common = 0
     @user_question_answers.each do |user_a|
-    @match_question_answers.each do |match_a|
-        if user_a.question_id == match_a.question_id && array_of_questions.include?(Question.find_by(id: user_a.question_id))
-        questions_in_common = questions_in_common + 1
-        # check for question_type
-        question = Question.find_by(id: user_a.question_id)
-        @category_id = question.matchmaking_category_id
-        if question.question_type == "zero-one"
-            if user_a.answer_id == match_a.answer_id
-            similarity = similarity + 1.0
-            end
-        # range question type
-        elsif question.question_type == "range"
-            similarity = similarity + range_question_score(question.id, user_a.answer_id, match_a.answer_id)
+      question = Question.find_by(id: user_a.question_id)
+      if !@match_question_answers.include?(MatchQuestionAnswer.find_by(question_id: question.id))
+        next
+      # else
+      #   print "will do match on user_question_answer ", user_a.id
+      #   puts
+      end
+      match_a = MatchQuestionAnswer.find_by("match_profile_id = ? AND question_id = ?", match_id, question.id)
+      # @match_question_answers.each do |match_a|
+        # if user_a.question_id == match_a.question_id && array_of_questions.include?(Question.find_by(id: user_a.question_id))
+          # check for question_type
+      @category_id = question.matchmaking_category_id
+      if question.question_type == "zero-one"
+        if user_a.answer_id == match_a.answer_id
+        similarity = similarity + 1.0
         end
+      # range question type
+      elsif question.question_type == "range"
+        similarity = similarity + range_question_score(question.id, user_a.answer_id, match_a.answer_id)
+      # mirror question type
+      elsif question.question_type == "mirror-A"
+        
+        partner_category_id = MatchmakingCategory.find_by(category_name: "partner traits").id
+        mirror_questions = Question.where(matchmaking_category_id: partner_category_id)
+        # puts "mirror q's:", mirror_questions
+      else
+        next
+      end
 
-        end
+      questions_in_common = questions_in_common + 1
+        # end
     end
-    end
+    # end
     if questions_in_common < 1
+      puts "return 0 > 0 questions in common"
       return 0
     end
     similarity = similarity / questions_in_common
+    puts "return similarity value: ", similarity
     return similarity
   end
 
@@ -206,6 +234,6 @@ class Api::V1::MatchProfilesController < ApplicationController
   private
     # Only allow a list of trusted parameters through.
     def match_profile_params
-      params.require(:match_profile).permit(:first_name, :last_name, :gender, :city, :country, :birth_country, :date_of_birth, :birthdate_before, :birthdate_after, :languages, :marital_status, :avatar)
+      params.require(:match_profile).permit(:first_name, :last_name, :gender, :city, :country, :birth_country, :date_of_birth, :birthdate_before, :birthdate_after, :languages, :marital_status, :education, :occupation, :religion, :father, :mother, :sisters, :brothers, :about_me, :avatar)
     end
 end

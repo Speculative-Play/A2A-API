@@ -151,10 +151,17 @@ for u in 1..10 do
     end
 end
 
+@categories = []
+qa_table.drop(1).each do |row|
+    if !@categories.include?(row[2])
+        @categories << row[2]
+    end
+end
+
 # Create MatchmakingCategories
-11.times do
+@categories.each do |c|
     MatchmakingCategory.create(
-        category_name: Faker::Lorem.unique.word,
+        category_name: c,
         category_description: Faker::Lorem.sentence
     )
 end
@@ -162,7 +169,7 @@ end
 # Create CategoryPercentages for Users
 # Create 1 entry per MatchmakingCategory per UserProfile = 50 entries
 for u in 1..10 do
-    for a in 1..11 do
+    for a in 1..@categories.count do
         CategoryPercentage.create(
             category_percentage: 20,
             matchmaking_category_id: a,
@@ -174,7 +181,7 @@ end
 # Create CategoryPercentages for Parents
 # Create 1 entry per MatchmakingCategory per ParentProfile = 50 entries
 for p in 1..10 do
-    for a in 1..11 do
+    for a in 1..@categories.count do
         CategoryPercentage.create(
             category_percentage: 20,
             matchmaking_category_id: a,
@@ -213,7 +220,6 @@ qa_table.drop(1).each do |row|
     if !@categories.include?(row[2])
         @categories << row[2]
     end
-
     Question.create(
         question_text: row[0],
         matchmaking_category_id: @categories.size,
