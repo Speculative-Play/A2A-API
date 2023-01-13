@@ -17,8 +17,6 @@ class Api::V1::AccountsController < ApplicationController
         redirect_to controller: :user_profiles, action: :new 
       elsif account_params[:account_type] == "parent"
         redirect_to controller: :parent_profiles, action: :new 
-      else
-        puts "neither type of account created"
       end
     else
       render json: @account.errors, status: :unprocessable_entity

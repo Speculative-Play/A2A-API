@@ -4,19 +4,16 @@ include ActionController::Cookies
 
   def new
     puts "inside Sessions > new"
-    # see login form
+    return true
   end
 
   # Creates session object that allows user_profile to be logged in persistently
   def create
     # post the form
-    puts "inside Sessions_controller > create"
     account = Account.find_by(email: params[:session][:email].downcase)
-    puts "account = nil?", account.nil?
     if !account.nil?
       if account && account.authenticate(params[:session][:password])
         session[:account_id] = account.id
-        puts "inside sessions_controller > create > passed authentication if"
         log_in account
 
         if !current_user_profile.nil?
@@ -36,9 +33,7 @@ include ActionController::Cookies
   end
 
   def destroy
-    puts "inside sessions_controller > destroy"
     if !current_account.nil?
-      puts "inside sessions_controller > destroy > now will log_out"
       log_out
     end
     # return true

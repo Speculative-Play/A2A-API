@@ -3,7 +3,6 @@ class ApplicationController < ActionController::API
     include ActionController::Cookies
 
     def current_account
-        puts "inside ApplicationController > current_account"
         @current_account = Account.find_by(id: session[:account_id])
     end
 

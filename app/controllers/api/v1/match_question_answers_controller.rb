@@ -1,16 +1,24 @@
 class Api::V1::MatchQuestionAnswersController < ApplicationController
-  before_action :set_match_question_answer, only: %i[ show update destroy ]
+  before_action :current_account
 
-  # GET /match_question_answers
+  # GET /match_questions/match_profile_id
   def index
-    # IF match_profile_id is present THEN return only match_question_answers with matching match_profile_id
-    @match_question_answers = if params[:match_profile_id].present?
-      MatchQuestionAnswer.where("match_profile_id = ?", params[:match_profile_id])
-    # ELSE return ALL user_question_answers
+    if !current_user_profile.nil?
+      @match_question_answers = MatchQuestionAnswer.where(match_profile_id: params[:match_profile_id])
+      @current_user_questions = UserQuestionAnswer.where(user_profile_id: @current_user_profile).pluck(:question_id)
+
+      @match_question_answers.each do |i|
+        if !@current_user_questions.include? i.question_id
+          @match_question_answers.delete(i)
+        end
+        question = UserQuestionAnswer.find_by("question_id = ? AND user_profile_id = ?", i.question_id, @current_user_profile)
+        if !question.visible
+          @match_question_answers.delete(i)
+        end
+      end
     else
-      MatchQuestionAnswer.all
+      return head(:unauthorized)
     end
-    
     render json: @match_question_answers
   end
 
