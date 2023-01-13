@@ -42,7 +42,7 @@ Rails.application.routes.draw do
       get '/user_profiles(/:user_profile_id)/get_user_questions_answers', to: 'user_question_answers#get_user_questions_answers'
       post '/user_profile/avatar', to: "user_profiles#set_avatar"
 
-      # Parent Accounts
+      # Parent Profiles
       get 'signup-parent', to: 'parent_profiles#new'
       post 'signup-parent', to: 'parent_profiles#create'
       post '/search-child', to: 'parent_profiles#search_child'
