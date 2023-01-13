@@ -20,18 +20,8 @@ class Api::V1::AccountsController < ApplicationController
   def create
     # receive signup form here
     @account = Account.new(account_params)
-    puts "account new passed"
     if @account.save
-      if account_params[:account_type] == "user"
-        # render json: {
-        #   status: :created,
-        #   account: @account
-        # }
-        redirect_to controller: :sessions, action: :create
-
-      elsif account_params[:account_type] == "parent"
-        redirect_to controller: :parent_profiles, action: :new 
-      end
+      redirect_to controller: :sessions, action: :create
     else
       render json: @account.errors, status: :unprocessable_entity
     end
