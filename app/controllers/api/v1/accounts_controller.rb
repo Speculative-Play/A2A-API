@@ -1,20 +1,34 @@
 class Api::V1::AccountsController < ApplicationController
-  before_action :current_account, only: :destroy
+  before_action :current_account, only: [:destroy, :show]
 
   # GET /signup
   def new
     # display account signup form here
-    return true
+    render json: "display account signup form here"
+  end
+
+  # GET /account
+  def show
+    if !current_account.nil?
+      render json: @current_account 
+    else
+      return head(:unauthorized)
+    end
   end
 
   # POST /signup
   def create
     # receive signup form here
     @account = Account.new(account_params)
-
+    puts "account new passed"
     if @account.save
       if account_params[:account_type] == "user"
-        redirect_to controller: :user_profiles, action: :new 
+        # render json: {
+        #   status: :created,
+        #   account: @account
+        # }
+        redirect_to controller: :sessions, action: :create
+
       elsif account_params[:account_type] == "parent"
         redirect_to controller: :parent_profiles, action: :new 
       end

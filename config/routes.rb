@@ -24,6 +24,7 @@ Rails.application.routes.draw do
 
       # Accounts
       get  '/signup',  to: 'accounts#new'
+      get 'account', to: 'accounts#show'
       post '/signup',  to: 'accounts#create'
       delete 'delete-account', to: "accounts#destroy"
 

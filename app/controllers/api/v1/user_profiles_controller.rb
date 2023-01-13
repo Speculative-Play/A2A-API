@@ -12,13 +12,15 @@ class Api::V1::UserProfilesController < ApplicationController
   end
 
   # GET /signup-user
-  def new
-    puts "render user signup form here"
-    return true
-  end
+  # def new
+  #   puts "inside user new"
+  #   render json: "Render user signup form here. Once form is filled, POST to 'signup-user'"
+  # end
 
   # POST /signup-user
   def create
+    puts "inside user create"
+    
     @user_profile = UserProfile.new(user_profile_params)
     if @user_profile.save
       render json: {

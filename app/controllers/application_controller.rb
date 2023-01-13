@@ -4,6 +4,7 @@ class ApplicationController < ActionController::API
 
     def current_account
         @current_account = Account.find_by(id: session[:account_id])
+        puts "leaving current_account"
     end
 
     def current_user_profile
