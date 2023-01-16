@@ -4,7 +4,7 @@ Rails.application.routes.draw do
     namespace :v1 do
 
       resources :accounts
-      resources :sessions
+      resources :sessions, only: [:new, :create, :destroy]
       resources :user_profiles
       resources :parent_profiles
       resources :match_profiles
@@ -23,15 +23,15 @@ Rails.application.routes.draw do
       # get 'about', to: 'pages#index'
 
       # Accounts
-      get  '/signup',  to: 'accounts#new'
+      get  'signup',  to: 'accounts#new'
       get 'account', to: 'accounts#show'
-      post '/signup',  to: 'accounts#create'
+      post 'signup',  to: 'accounts#create'
       delete 'delete-account', to: "accounts#destroy"
 
       # Sessions
-      get    '/login',   to: 'sessions#new'
-      post   '/login',   to: 'sessions#create'
-      delete '/logout',  to: 'sessions#destroy'
+      get    'login',   to: 'sessions#new'
+      post   'login',   to: 'sessions#create'
+      delete 'logout',  to: 'sessions#destroy'
 
       # User Profiles
       get 'signup-user', to: 'user_profiles#new'

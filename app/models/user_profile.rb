@@ -5,10 +5,12 @@ class UserProfile < ApplicationRecord
     has_many                :user_question_answers,                             dependent: :destroy
     has_many                :category_percentages,                              dependent: :destroy
     has_one_attached        :avatar,                                            dependent: :destroy 
-    serialize               :languages,                                         Array  
-    serialize               :sisters,                                           Array   
-    serialize               :brothers,                                          Array   
-    serialize               :about_me,                                          Array  
+    serialize               :languages,                                         JSON  
+    serialize               :sisters,                                           JSON  
+    serialize               :brothers,                                          JSON   
+    serialize               :about_me,                                          JSON  
+
+
     
     # class << self
     #     # Return the hash value of the given string

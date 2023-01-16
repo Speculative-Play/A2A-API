@@ -21,10 +21,12 @@ class Api::V1::AccountsController < ApplicationController
     # receive signup form here
     @account = Account.new(account_params)
     if @account.save
-      redirect_to controller: :sessions, action: :create
+      log_in @account
+      render json: @account
     else
       render json: @account.errors, status: :unprocessable_entity
     end
+    
   end
 
   # DELETE /delete-account

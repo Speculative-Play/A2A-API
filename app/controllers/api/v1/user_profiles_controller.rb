@@ -19,14 +19,15 @@ class Api::V1::UserProfilesController < ApplicationController
 
   # POST /signup-user
   def create
-    puts "inside user create"
-    
     @user_profile = UserProfile.new(user_profile_params)
     if @user_profile.save
-      render json: {
-        status: :created,
-        user_profile: @user_profile
-      }
+      @account = @current_account
+      if @account.update(user_profile_id: @user_profile.id)
+        render json: {
+          status: :created,
+          user_profile: @user_profile
+        }
+      end
     else
       render 'new'
     end
@@ -60,7 +61,25 @@ class Api::V1::UserProfilesController < ApplicationController
   private
     # Only allow a list of trusted parameters through.
     def user_profile_params
-      params.require(:user_profile).permit(:first_name, :last_name, :admin, :avatar)
+      params.require(:user_profile).permit(:first_name, 
+                                           :last_name, 
+                                           :admin, 
+                                           :gender, 
+                                           :city, 
+                                           :country, 
+                                           :birth_country, 
+                                           :date_of_birth, 
+                                           {:languages => []},
+                                           :marital_status, 
+                                           :education, 
+                                           :occupation, 
+                                           :religion, 
+                                           :father, 
+                                           :mother, 
+                                           {:sisters => []}, 
+                                           {:brothers => []}, 
+                                           {:about_me => []}, 
+                                           :avatar)
     end
 
 end
