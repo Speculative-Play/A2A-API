@@ -12,7 +12,7 @@ class Api::V1::ParentProfilesController < ApplicationController
       @parent_profile = ParentProfile.new(user_profile_id: params[:parent_profile][:child_email])
       @parent_profile.user_profile = UserProfile.find_by(id: Account.find_by(email: params[:parent_profile][:child_email]).user_profile_id)
       if @parent_profile.save
-        render @parent_profile
+        render json: @parent_profile
       else
         render json: @parent_profile.errors, status: :unprocessable_entity
       end
