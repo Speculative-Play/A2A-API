@@ -1,5 +1,5 @@
 class Account < ApplicationRecord
-    attr_accessor :remember_token, :remember_digest
+    # attr_accessor :remember_token, :remember_digest
 
     belongs_to :user_profile,   optional: true
     belongs_to :parent_profile, optional: true
