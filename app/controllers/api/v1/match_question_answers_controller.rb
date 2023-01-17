@@ -12,8 +12,16 @@ class Api::V1::MatchQuestionAnswersController < ApplicationController
           @match_question_answers.delete(i)
         end
         question = UserQuestionAnswer.find_by("question_id = ? AND user_profile_id = ?", i.question_id, @current_user_profile)
-        if !question.visible
+        if !question.nil?
           @match_question_answers.delete(i)
+          next
+          if !question.visible
+            @match_question_answers.delete(i)
+            next
+          end
+        else
+          puts "no question found"
+          return true
         end
       end
     else

@@ -3,10 +3,10 @@ class MatchProfile < ApplicationRecord
     has_many                :starred_match_profiles,       dependent: :destroy
     has_many                :favourited_match_profiles,    dependent: :destroy
     has_one_attached        :avatar,                       dependent: :destroy
-    serialize               :languages,                    Array   
-    serialize               :sisters,                      Array   
-    serialize               :brothers,                     Array   
-    serialize               :about_me,                     Array   
+    serialize               :languages,                    JSON   
+    serialize               :sisters,                      JSON    
+    serialize               :brothers,                     JSON    
+    serialize               :about_me,                     JSON    
 
     # Database Seeding Arrays
 
