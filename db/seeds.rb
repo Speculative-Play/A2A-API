@@ -22,16 +22,16 @@ for u in 1..5 do
         country: Faker::Address.country,
         birth_country: Faker::Address.country,
         date_of_birth: Faker::Date.between(from: '1987-01-01', to: '2002-01-01'),
-        languages: MatchProfile::LANGUAGES.sample(2),
+        languages: MatchProfile::LANGUAGES.sample(2).to_json,
         marital_status: Faker::Demographic.marital_status,
         education: MatchProfile::DEGREES[u % 17],
         occupation: MatchProfile::JOBS[u % 17],
         religion: MatchProfile::RELIGIONS.sample,
         father: Faker::Name.unique.male_first_name,
         mother: Faker::Name.unique.female_first_name,
-        sisters: Faker::Lorem.words,
-        brothers: Faker::Lorem.words,
-        about_me: Faker::Lorem.sentences
+        sisters: Faker::Lorem.words.to_json,
+        brothers: Faker::Lorem.words.to_json,
+        about_me: Faker::Lorem.sentences.to_json
     )
 end
 
@@ -49,12 +49,12 @@ for u in 1..5 do
         marital_status: Faker::Demographic.marital_status,
         education: MatchProfile::DEGREES[u % 17],
         occupation: MatchProfile::JOBS[u % 17],
-        religion: MatchProfile::RELIGIONS.sample,
+        religion: MatchProfile::RELIGIONS.sample.to_json,
         father: Faker::Name.unique.male_first_name,
         mother: Faker::Name.unique.female_first_name,
-        sisters: Faker::Lorem.words,
-        brothers: Faker::Lorem.words,
-        about_me: Faker::Lorem.sentences
+        sisters: Faker::Lorem.words.to_json,
+        brothers: Faker::Lorem.words.to_json,
+        about_me: Faker::Lorem.sentences.to_json
     )
 end
 
@@ -72,12 +72,12 @@ for m in 1..250 do
         marital_status: Faker::Demographic.marital_status,
         education: MatchProfile::DEGREES[m % 17],
         occupation: MatchProfile::JOBS[m % 17],
-        religion: MatchProfile::RELIGIONS.sample,
+        religion: MatchProfile::RELIGIONS.sample.to_json,
         father: Faker::Name.unique.male_first_name,
         mother: Faker::Name.unique.female_first_name,
-        sisters: Faker::Lorem.words,
-        brothers: Faker::Lorem.words,
-        about_me: Faker::Lorem.sentences
+        sisters: Faker::Lorem.words.to_json,
+        brothers: Faker::Lorem.words.to_json,
+        about_me: Faker::Lorem.sentences.to_json
     )
 end
 
@@ -95,12 +95,12 @@ for m in 1..250 do
         marital_status: Faker::Demographic.marital_status,
         education: MatchProfile::DEGREES[m % 17],
         occupation: MatchProfile::JOBS[m % 17],
-        religion: MatchProfile::RELIGIONS.sample,
+        religion: MatchProfile::RELIGIONS.sample.to_json,
         father: Faker::Name.unique.male_first_name,
         mother: Faker::Name.unique.female_first_name,
-        sisters: Faker::Lorem.words,
-        brothers: Faker::Lorem.words,
-        about_me: Faker::Lorem.sentences
+        sisters: Faker::Lorem.words.to_json,
+        brothers: Faker::Lorem.words.to_json,
+        about_me: Faker::Lorem.sentences.to_json
     )
 end
 
