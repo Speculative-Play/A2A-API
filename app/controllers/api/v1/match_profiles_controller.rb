@@ -10,7 +10,7 @@ class Api::V1::MatchProfilesController < ApplicationController
 
   # GET /match_profiles/1
   def show
-
+    @match_profile = MatchProfile.find_by(params[:id])
     render json: @match_profile
   end
 
