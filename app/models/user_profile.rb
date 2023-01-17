@@ -10,6 +10,18 @@ class UserProfile < ApplicationRecord
     serialize               :brothers,                                          JSON   
     serialize               :about_me,                                          JSON  
 
+    after_create            :create_category_percentages
+
+    def create_category_percentages
+        for mc in 0..MatchmakingCategory.count
+            CategoryPercentage.create(
+                category_percentage: 20,
+                matchmaking_category_id: mc,
+                user_profile_id: self.id
+            )
+        end
+    end
+
 
     
     # class << self

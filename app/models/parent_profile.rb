@@ -1,8 +1,19 @@
 class ParentProfile < ApplicationRecord
-    belongs_to  :user_profile,              class_name: "UserProfile", foreign_key: "user_profile_id"
-    has_one     :account,                   dependent: :destroy
-    has_many    :starred_match_profiles,    dependent: :destroy
-    has_many    :category_percentages,      dependent: :destroy
+    belongs_to              :user_profile,                  class_name: "UserProfile", foreign_key: "user_profile_id"
+    has_one                 :account,                       dependent: :destroy
+    has_many                :starred_match_profiles,        dependent: :destroy
+    has_many                :category_percentages,          dependent: :destroy
+    after_create            :create_category_percentages
+
+    def create_category_percentages
+        for mc in 0..MatchmakingCategory.count
+            CategoryPercentage.create(
+                category_percentage: 20,
+                matchmaking_category_id: mc,
+                user_profile_id: self.id
+            )
+        end
+    end
 
     # class << self
     #     # Return the hash value of the given string
