@@ -86,24 +86,32 @@ class Api::V1::MatchProfilesController < ApplicationController
 
         # get list of questions that user answered questions for
         @questions_user_has_answered = []
+        @match_categories = []
         Question.find_each do |q|
           if !UserQuestionAnswer.find_by("question_id = ? AND user_profile_id = ?", q.id, @current_user_profile).nil?
-            puts "user answered question ", q.id
-            puts "with match cat ", q.matchmaking_category_id
+            # puts "user answered question ", q.id
+            # puts "with match cat ", q.matchmaking_category_id
             if UserQuestionAnswer.find_by("question_id = ? AND user_profile_id = ?", q.id, @current_user_profile).matching_algo == true
               @questions_user_has_answered.push(q)
+              unless @match_categories.include?(q.matchmaking_category_id)
+                # puts "adding category ", q.matchmaking_category_id
+                  @match_categories << q.matchmaking_category_id
+              end
             end
           end
         end
 
-        # get list of matchmaking categories to query (matchmaking_categories that user has answered questions for)
-        @match_categories = []
-        @questions_user_has_answered.each do |q|
-          unless @match_categories.include?(q.matchmaking_category_id)
-            puts "adding category ", q.matchmaking_category_id
-              @match_categories << q.matchmaking_category_id
-          end
-        end
+        puts "user has answered number of questions: ", @questions_user_has_answered.count 
+
+        # get list of matchmaking categories to query 
+        # (matchmaking_categories that user has answered questions for)
+        # @match_categories = []
+        # @questions_user_has_answered.each do |q|
+        #   unless @match_categories.include?(q.matchmaking_category_id)
+        #     puts "adding category ", q.matchmaking_category_id
+        #       @match_categories << q.matchmaking_category_id
+        #   end
+        # end
 
         puts "match categories are:"
         puts @match_categories
@@ -143,7 +151,7 @@ class Api::V1::MatchProfilesController < ApplicationController
           stored_val = 0
           weighted_sum = 0
           total_similarity_index = 0
-          puts "match_category_questions = ", @match_categories_questions_hash
+          # puts "match_category_questions = ", @match_categories_questions_hash
 
           @match_categories_questions_hash.each {|key, value| stored_val = similarity_value(value, m.id); similarity_values[key] = stored_val}
           similarity_values.each_value {|value| total_similarity_index = total_similarity_index + value}
