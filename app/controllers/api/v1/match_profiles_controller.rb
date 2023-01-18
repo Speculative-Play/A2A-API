@@ -79,82 +79,77 @@ class Api::V1::MatchProfilesController < ApplicationController
         # check if current logged in account is user or parent, set variables to appropriate user_profile
         if !current_account.user_profile.nil?
             @current_user_profile = @current_account.user_profile
+            @match_categories_weights = CategoryPercentage.where(user_profile_id: @current_user_profile.id)
         elsif !current_account.parent_profile.nil?
             parent = @current_account.parent_profile
             @current_user_profile = UserProfile.find_by(id: parent.user_profile_id)
+            @match_categories_weights = CategoryPercentage.where(parent_profile_id: @current_account.parent_profile)
         end
 
         # get list of questions that user answered questions for
-        @questions_user_has_answered = []
+        @questions_user_has_answered = Question.where(id: (UserQuestionAnswer.where(user_profile_id: @current_user_profile.id).select("question_id")))
+        puts "check before! questions user has answered = ", @questions_user_has_answered.count
+        
         @match_categories = []
+        # get list of user_question_answers
+        @user_question_answers = UserQuestionAnswer.where(user_profile_id: @current_user_profile.id)
+
+        # get list of match_categories that contain questions user has answered
+        @match_categories = MatchmakingCategory.where(id: (@questions_user_has_answered.select("matchmaking_category_id")))
+        puts "list of categories check = ", @match_categories.count
+
+        # create hash that pairs together matchmaking categories and user_question_answers
+        # key: mathcmaking_catgory | value: array of user_question_answers
         @match_categories_questions_hash = Hash.new
-        Question.find_each do |q|
-          if !UserQuestionAnswer.find_by("question_id = ? AND user_profile_id = ?", q.id, @current_user_profile).nil?
-            # puts "user answered question ", q.id
-            # puts "with match cat ", q.matchmaking_category_id
-            if UserQuestionAnswer.find_by("question_id = ? AND user_profile_id = ?", q.id, @current_user_profile).matching_algo == true
-              @questions_user_has_answered << q
-              # sort questions into matchmaking_categories hash 
-              # if not already in hash, initialize -> else add question at appropriate key
-              # {key: matchmaking_category, value: array of questions in that category}
-              (@match_categories_questions_hash[q.matchmaking_category_id] ||= []) << q
-              # create list of matchmaking categories
-              # TODO remove this and only use above hash
-              unless @match_categories.include?(q.matchmaking_category_id)
-                # puts "adding category ", q.matchmaking_category_id
-                  @match_categories << q.matchmaking_category_id
-              end
-            end
-          end
+        @user_question_answers.each do |q|
+          category_id = MatchmakingCategory.find_by(id: (Question.where(id: q.question_id).select("matchmaking_category_id")))
+          (@match_categories_questions_hash[category_id] ||= []) << q
         end
 
-        puts "user has answered number of questions: ", @questions_user_has_answered.count
-        puts "match categories are:"
-        puts @match_categories
-        puts "keys in @match_categories_questions_hash = ", @match_categories_questions_hash.keys
-
-
-        # @match_categories_questions_hash = Hash.new
-        # @match_categories.each do |mc|
-        #   category_questions = []
-        #   @questions_user_has_answered.each do |q|
-        #       if q.matchmaking_category_id == mc
-        #         category_questions << q
-        #       end
-        #   end
-        #   @match_categories_questions_hash[mc] = category_questions
-        # end
+        # puts "before"
+        # puts "match categories questions hash check = ", @match_categories_questions_hash.each {|key,value| puts key.id; puts " test "; puts " "; puts value.each.answer_id}
+        # puts "after"
+        # return
 
         # set t variable for total number of categories
         total_categories = @match_categories.count
 
-
-        # get user_profile's or parent_profile's matchmaking_category category_percentages
-        if !@current_account.user_profile.nil?
-          @match_categories_weights = CategoryPercentage.where(user_profile_id: @current_user_profile.id)
-        elsif !@current_account.parent_profile.nil?
-          @match_categories_weights = CategoryPercentage.where(parent_profile_id: @current_account.parent_profile)
-        else 
-          return 
-        end
+        puts "user has answered number of questions: ", @questions_user_has_answered.count
+        puts "the number of match categories considered is:"
+        puts total_categories
+        puts "keys in @match_categories_questions_hash = ", @match_categories_questions_hash.keys
+        puts "q_a's in user_questions_answers = ", @user_question_answers.count
 
         # execute matching algorithm on every match
         @matches = Hash.new
         # MatchProfile.find_each do |m|
-        MatchProfile.where("id <= ?", 10).each do |m|
-          puts "now comparing match_id ", m.id
+        MatchProfile.where("id <= ?", 10).each do |match_profile|
+          puts "now comparing match_id ", match_profile.id
           similarity_values = Hash.new
           stored_val = 0
           weighted_sum = 0
           total_similarity_index = 0
           # puts "match_category_questions = ", @match_categories_questions_hash
 
-          @match_categories_questions_hash.each {|key, value| stored_val = similarity_value(value, m.id); similarity_values[key] = stored_val}
+          @match_categories_questions_hash.each { |key, value| 
+            stored_val = similarity_value(value, match_profile.id, @user_question_answers); 
+            similarity_values[key] = stored_val }
+
           similarity_values.each_value {|value| total_similarity_index = total_similarity_index + value}
+
           si_over_total = total_similarity_index / total_categories
-          similarity_values.each {|key, value| weighted_sum = weighted_sum + (@match_categories_weights[key - 1].category_percentage / 100.0) * value;}
+          puts "match category weights = ",@match_categories_weights[0].category_percentage
+
+
+          # similarity_values.each {|key, value| puts "start iterate"; weighted_sum = weighted_sum + (@match_categories_weights[key - 1].category_percentage / 100.0) * value;}
+          # TODO: fix this below to better iteration
+          i = 0
+          similarity_values.each {|key, value| weighted_sum = weighted_sum + ((@match_categories_weights[i].category_percentage) / 100.0) * value; i = i+1}
+
+          
           total_match = (si_over_total + weighted_sum) / 2.0
-          @matches[m.id] = total_match.round(2)
+          
+          @matches[match_profile.id] = total_match.round(2)
         end
 
         @results = Hash[@matches.sort_by{|k,v| v}.reverse]
@@ -176,12 +171,14 @@ class Api::V1::MatchProfilesController < ApplicationController
     end
   end
 
-  def similarity_value(array_of_questions, match_id)
+  def similarity_value(array_of_questions, match_id, user_question_answers)
     puts "now doing similarity_value function for match_id ", match_id
     # puts "with questions: ", array_of_questions
 
+    # check 
+    # get list of user_q_a 1:1 for each question in array_of_questions
+
     @match_question_answers = MatchQuestionAnswer.where(match_profile_id: match_id)
-    @user_question_answers = UserQuestionAnswer.where(user_profile_id: @current_user_profile.id)
     similarity = 0
     questions_in_common = 0
     @user_question_answers.each do |user_a|
@@ -219,11 +216,11 @@ class Api::V1::MatchProfilesController < ApplicationController
     end
     # end
     if questions_in_common < 1
-      puts "return 0 > 0 questions in common"
+      # puts "return 0 > 0 questions in common"
       return 0
     end
     similarity = similarity / questions_in_common
-    puts "return similarity value: ", similarity
+    # puts "return similarity value: ", similarity
     return similarity
   end
 
