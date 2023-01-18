@@ -87,12 +87,19 @@ class Api::V1::MatchProfilesController < ApplicationController
         # get list of questions that user answered questions for
         @questions_user_has_answered = []
         @match_categories = []
+        @match_categories_questions_hash = Hash.new
         Question.find_each do |q|
           if !UserQuestionAnswer.find_by("question_id = ? AND user_profile_id = ?", q.id, @current_user_profile).nil?
             # puts "user answered question ", q.id
             # puts "with match cat ", q.matchmaking_category_id
             if UserQuestionAnswer.find_by("question_id = ? AND user_profile_id = ?", q.id, @current_user_profile).matching_algo == true
-              @questions_user_has_answered.push(q)
+              @questions_user_has_answered << q
+              # sort questions into matchmaking_categories hash 
+              # if not already in hash, initialize -> else add question at appropriate key
+              # {key: matchmaking_category, value: array of questions in that category}
+              (@match_categories_questions_hash[q.matchmaking_category_id] ||= []) << q
+              # create list of matchmaking categories
+              # TODO remove this and only use above hash
               unless @match_categories.include?(q.matchmaking_category_id)
                 # puts "adding category ", q.matchmaking_category_id
                   @match_categories << q.matchmaking_category_id
@@ -101,33 +108,22 @@ class Api::V1::MatchProfilesController < ApplicationController
           end
         end
 
-        puts "user has answered number of questions: ", @questions_user_has_answered.count 
-
-        # get list of matchmaking categories to query 
-        # (matchmaking_categories that user has answered questions for)
-        # @match_categories = []
-        # @questions_user_has_answered.each do |q|
-        #   unless @match_categories.include?(q.matchmaking_category_id)
-        #     puts "adding category ", q.matchmaking_category_id
-        #       @match_categories << q.matchmaking_category_id
-        #   end
-        # end
-
+        puts "user has answered number of questions: ", @questions_user_has_answered.count
         puts "match categories are:"
         puts @match_categories
+        puts "keys in @match_categories_questions_hash = ", @match_categories_questions_hash.keys
 
-        # sort questions into matchmaking_categories hash 
-        # {key: matchmaking_category, value: array of questions in that category}
-        @match_categories_questions_hash = Hash.new
-        @match_categories.each do |mc|
-          category_questions = []
-          @questions_user_has_answered.each do |q|
-              if q.matchmaking_category_id == mc
-              category_questions << q
-              end
-          end
-          @match_categories_questions_hash[mc] = category_questions
-        end
+
+        # @match_categories_questions_hash = Hash.new
+        # @match_categories.each do |mc|
+        #   category_questions = []
+        #   @questions_user_has_answered.each do |q|
+        #       if q.matchmaking_category_id == mc
+        #         category_questions << q
+        #       end
+        #   end
+        #   @match_categories_questions_hash[mc] = category_questions
+        # end
 
         # set t variable for total number of categories
         total_categories = @match_categories.count
