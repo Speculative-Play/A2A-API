@@ -131,9 +131,9 @@ class Api::V1::MatchProfilesController < ApplicationController
 
         # execute matching algorithm on every match
         @matches = Hash.new
-        # MatchProfile.find_each do |m|
-        MatchProfile.where("id <= ?", 10).each do |match_profile|
-          puts "now comparing match_id ", match_profile.id
+        # MatchProfile.find_each do |match_profile|
+        MatchProfile.where("id <= ?", 200).each do |match_profile|
+          # puts "now comparing match_id ", match_profile.id
           similarity_values_hash = Hash.new
           stored_val = 0
           weighted_sum = 0
@@ -145,10 +145,11 @@ class Api::V1::MatchProfilesController < ApplicationController
           #   similarity_values[key] = stored_val }
           @user_responses_hash.each { |key, value|
             stored_val = similarity_value(value, match_profile.id);
+            # puts "stored val = ", stored_val;
             similarity_values_hash[key] = stored_val}
 
-            return
-          similarity_values.each_value {|value| total_similarity_index = total_similarity_index + value}
+            # return
+          similarity_values_hash.each_value {|value| total_similarity_index += value}
 
           si_over_total = total_similarity_index / total_categories
           # puts "match category weights = ",@match_categories_weights[0].category_percentage
@@ -185,58 +186,49 @@ class Api::V1::MatchProfilesController < ApplicationController
   end
 
   def similarity_value(user_question_answers_hash, match_id)
-    puts "now doing similarity_value function for match_id ", match_id
+    # puts "now doing similarity_value function for match_id ", match_id
     # puts "with questions: ", array_of_questions
 
     # check which question_answers user and match have entries in common (check by questions in x category?)
     @match_qs = MatchQuestionAnswer.where(match_profile_id: match_id).pluck(:question_id)
-    # puts "match q's = ",@match_qs
     questions_in_common = 0
+    match_qa_in_common = []
     user_question_answers_hash.each { |key, value| 
-      # puts "key = ",key
-      # puts "value = ", value
       if key.in?(@match_qs) 
         questions_in_common +=1
-      # else
-      #   puts key, "not found"
+        match_qa_in_common << MatchQuestionAnswer.where(match_profile_id: match_id).where(question_id: key).limit(1)
       end
-      # puts "loop"
     }
-    # }
-    # question = Question.find_by(id: array_of_user_question_answers[0].question_id)
-    # @match_category = MatchmakingCategory.find_by(id: question.matchmaking_category_id)
-    # puts "match category = ", @match_category.category_name
-    # return
+
     # compare answers
 
-    @match_question_answers = MatchQuestionAnswer.where(match_profile_id: match_id)
     similarity = 0
-    puts "questions in common ", questions_in_common
-    return
-    
-    match_qa_in_common = []
+    # puts "questions in common ", questions_in_common    
+    # puts "match qa in common ", match_qa_in_common
 
-    for i in 0..array_of_user_question_answers.count - 1
-      # puts" at i = "
-      # puts array_of_user_question_answers[i]
-          # match_qa_in_common << MatchQuestionAnswer.where(match_profile_id: match_id).where(array_of_user_question_answers.select("question_id")))
-      match_qa_in_common << MatchQuestionAnswer.where(match_profile_id: match_id).where(question_id: array_of_user_question_answers[i].question_id)
+    # for i in 0..array_of_user_question_answers.count - 1
+    #   # puts" at i = "
+    #   # puts array_of_user_question_answers[i]
+    #       # match_qa_in_common << MatchQuestionAnswer.where(match_profile_id: match_id).where(array_of_user_question_answers.select("question_id")))
+    #   match_qa_in_common << MatchQuestionAnswer.where(match_profile_id: match_id).where(question_id: array_of_user_question_answers[i].question_id)
 
-    end
+    # end
     # @match_categories = MatchmakingCategory.where(id: (@questions_user_has_answered.select("matchmaking_category_id")))
 
-    puts "match qa in common = ", match_qa_in_common.count
+    # puts "match qa in common = ", match_qa_in_common.count
     # return
   # end
-    array_of_user_question_answers.each do |user_qa|
-      question = Question.find_by(id: user_a.question_id)
-      if !@match_question_answers.include?(MatchQuestionAnswer.find_by(question_id: question.id))
-        next
+    user_question_answers_hash.each do |key, value|
+      # puts "VALUE = ", value
+      question = Question.find_by(id: key)
+      # if !@match_question_answers.include?(MatchQuestionAnswer.find_by(question_id: question.id))
+      #   next
       # else
       #   print "will do match on user_question_answer ", user_a.id
       #   puts
-      end
+      # end
       match_a = MatchQuestionAnswer.find_by("match_profile_id = ? AND question_id = ?", match_id, question.id)
+      user_a = UserQuestionAnswer.find_by(id: value)
       # @match_question_answers.each do |match_a|
         # if user_a.question_id == match_a.question_id && array_of_questions.include?(Question.find_by(id: user_a.question_id))
           # check for question_type
