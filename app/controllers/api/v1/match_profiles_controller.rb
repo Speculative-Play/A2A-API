@@ -90,7 +90,7 @@ class Api::V1::MatchProfilesController < ApplicationController
 
         # get list of questions that user answered questions for
         @questions_user_has_answered = Question.where(id: (UserQuestionAnswer.where(user_profile_id: @current_user_profile.id).select("question_id")))
-        puts "check before! questions user has answered = ", @questions_user_has_answered.count
+        # puts "check before! questions user has answered = ", @questions_user_has_answered.count
         
         @match_categories = []
         # get list of user_question_answers
@@ -98,7 +98,7 @@ class Api::V1::MatchProfilesController < ApplicationController
 
         # get list of match_categories that contain questions user has answered
         @match_categories = MatchmakingCategory.where(id: (@questions_user_has_answered.select("matchmaking_category_id")))
-        puts "list of categories check = ", @match_categories.count
+        # puts "list of categories check = ", @match_categories.count
 
         # create hash that pairs together matchmaking categories, 
         # questions which user has answered, 
@@ -107,10 +107,19 @@ class Api::V1::MatchProfilesController < ApplicationController
         @match_categories_questions_hash = Hash.new
         @user_responses_hash = Hash.new { |h, k| h[k] = h.dup.clear}
         @user_question_answers_hash = Hash.new
+        # @questions_user_has_answered.each do |question|
+        #   question_id = question.id
+        #   category_id = MatchmakingCategory.find_by(id: question.matchmaking_category_id).id
+        #   question_answer_id = UserQuestionAnswer.where(question_id: question_id).where(user_profile_id: @current_user_profile.id).pick(:id)
+        #   # @user_question_answers_hash[]
+        #   @user_responses_hash[category_id][question_id] = question_answer_id
+        #   # (@match_categories_questions_hash[category_id] ||= []) << 
+        # end
+
         @questions_user_has_answered.each do |question|
-          question_id = question.id
-          category_id = MatchmakingCategory.find_by(id: question.matchmaking_category_id).id
-          question_answer_id = UserQuestionAnswer.where(question_id: question_id).where(user_profile_id: @current_user_profile.id).pick(:id)
+          question_id = question
+          category_id = MatchmakingCategory.find_by(id: question.matchmaking_category_id)
+          question_answer_id = UserQuestionAnswer.where(question_id: question_id).where(user_profile_id: @current_user_profile.id)
           # @user_question_answers_hash[]
           @user_responses_hash[category_id][question_id] = question_answer_id
           # (@match_categories_questions_hash[category_id] ||= []) << 
@@ -131,8 +140,8 @@ class Api::V1::MatchProfilesController < ApplicationController
 
         # execute matching algorithm on every match
         @matches = Hash.new
-        # MatchProfile.find_each do |match_profile|
-        MatchProfile.where("id <= ?", 200).each do |match_profile|
+        MatchProfile.find_each do |match_profile|
+        # MatchProfile.where("id <= ?", 20).each do |match_profile|
           # puts "now comparing match_id ", match_profile.id
           similarity_values_hash = Hash.new
           stored_val = 0
@@ -144,6 +153,7 @@ class Api::V1::MatchProfilesController < ApplicationController
           #   stored_val = similarity_value(value, match_profile.id); 
           #   similarity_values[key] = stored_val }
           @user_responses_hash.each { |key, value|
+            # puts "value-hash = ", value
             stored_val = similarity_value(value, match_profile.id);
             # puts "stored val = ", stored_val;
             similarity_values_hash[key] = stored_val}
@@ -187,40 +197,28 @@ class Api::V1::MatchProfilesController < ApplicationController
 
   def similarity_value(user_question_answers_hash, match_id)
     # puts "now doing similarity_value function for match_id ", match_id
-    # puts "with questions: ", array_of_questions
 
     # check which question_answers user and match have entries in common (check by questions in x category?)
-    @match_qs = MatchQuestionAnswer.where(match_profile_id: match_id).pluck(:question_id)
-    questions_in_common = 0
+    # @match_qs = MatchQuestionAnswer.where(match_profile_id: match_id).pluck(:question_id)
+    match_qs = MatchQuestionAnswer.where(match_profile_id: match_id)
     match_qa_in_common = []
-    user_question_answers_hash.each { |key, value| 
-      if key.in?(@match_qs) 
-        questions_in_common +=1
-        match_qa_in_common << MatchQuestionAnswer.where(match_profile_id: match_id).where(question_id: key).limit(1)
-      end
-    }
+    match_qa_in_common << match_qs
+    questions_in_common = 0
+    # user_question_answers_hash.each { |key, value| 
+    #   # if key.in?(@match_qs) 
+    #     questions_in_common +=1
+    #     # match_qa_in_common << MatchQuestionAnswer.where(match_profile_id: match_id).where(question_id: key).limit(1)
+    #   end
+    # }
 
     # compare answers
 
     similarity = 0
-    # puts "questions in common ", questions_in_common    
-    # puts "match qa in common ", match_qa_in_common
 
-    # for i in 0..array_of_user_question_answers.count - 1
-    #   # puts" at i = "
-    #   # puts array_of_user_question_answers[i]
-    #       # match_qa_in_common << MatchQuestionAnswer.where(match_profile_id: match_id).where(array_of_user_question_answers.select("question_id")))
-    #   match_qa_in_common << MatchQuestionAnswer.where(match_profile_id: match_id).where(question_id: array_of_user_question_answers[i].question_id)
-
-    # end
-    # @match_categories = MatchmakingCategory.where(id: (@questions_user_has_answered.select("matchmaking_category_id")))
-
-    # puts "match qa in common = ", match_qa_in_common.count
-    # return
-  # end
     user_question_answers_hash.each do |key, value|
+      # puts "passed hash key =",key
       # puts "VALUE = ", value
-      question = Question.find_by(id: key)
+      question = key
       # if !@match_question_answers.include?(MatchQuestionAnswer.find_by(question_id: question.id))
       #   next
       # else
@@ -228,18 +226,21 @@ class Api::V1::MatchProfilesController < ApplicationController
       #   puts
       # end
       match_a = MatchQuestionAnswer.find_by("match_profile_id = ? AND question_id = ?", match_id, question.id)
-      user_a = UserQuestionAnswer.find_by(id: value)
+      # user_a = UserQuestionAnswer.find_by(id: value)
+      user_a = value.first
+      # puts "then"
+      # puts "user_a = ",user_a
       # @match_question_answers.each do |match_a|
         # if user_a.question_id == match_a.question_id && array_of_questions.include?(Question.find_by(id: user_a.question_id))
           # check for question_type
-      @category_id = question.matchmaking_category_id
+      # @category_id = question.matchmaking_category_id
       if question.question_type == "zero-one"
         if user_a.answer_id == match_a.answer_id
-        similarity = similarity + 1.0
+        similarity += 1.0
         end
       # range question type
       elsif question.question_type == "range"
-        similarity = similarity + range_question_score(question.id, user_a.answer_id, match_a.answer_id)
+        similarity += range_question_score(question.id, user_a.answer_id, match_a.answer_id)
       # mirror question type
       elsif question.question_type == "mirror-A"
         
