@@ -207,18 +207,14 @@ class Api::V1::MatchProfilesController < ApplicationController
           partner_category_id = MatchmakingCategory.find_by(category_name: "partner traits").id
           mirror_questions = Question.where(matchmaking_category_id: partner_category_id)
           # puts "mirror q's:", mirror_questions
+          # put mirror logic here
         else
           next
         end
-
         questions_in_common += 1
-          # end
-        similarity = similarity / questions_in_common
-
       end
-      puts "similarity = ", similarity
+      similarity = similarity / questions_in_common
       similarity_array << similarity
-
     end
 
     # end
