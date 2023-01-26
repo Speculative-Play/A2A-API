@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_22_164611) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_26_210814) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -19,7 +19,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_22_164611) do
     t.integer "account_type"
     t.string "email"
     t.string "password_digest"
-    # t.string "remember_digest"
     t.index ["parent_profile_id"], name: "index_accounts_on_parent_profile_id"
     t.index ["user_profile_id"], name: "index_accounts_on_user_profile_id"
   end
@@ -72,6 +71,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_22_164611) do
     t.index ["user_profile_id"], name: "index_category_percentages_on_user_profile_id"
   end
 
+  create_table "category_user_match_scores", force: :cascade do |t|
+    t.integer "user_profile_id"
+    t.integer "match_profile_id"
+    t.integer "matchmaking_category_id"
+    t.integer "category_percentage_id"
+    t.float "score"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "favourited_match_profiles", force: :cascade do |t|
     t.integer "user_profile_id"
     t.integer "match_profile_id"
@@ -79,6 +88,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_22_164611) do
     t.datetime "updated_at", null: false
     t.index ["match_profile_id"], name: "index_favourited_match_profiles_on_match_profile_id"
     t.index ["user_profile_id"], name: "index_favourited_match_profiles_on_user_profile_id"
+  end
+
+  create_table "global_user_match_scores", force: :cascade do |t|
+    t.integer "user_profile_id"
+    t.integer "match_profile_id"
+    t.float "score"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "match_profiles", force: :cascade do |t|
@@ -164,16 +181,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_22_164611) do
     t.string "country"
     t.string "birth_country"
     t.date "date_of_birth"
-    t.text "languages", default: '{}'
+    t.text "languages", default: "{}"
     t.string "marital_status"
     t.string "education"
     t.string "occupation"
     t.string "religion"
     t.string "father"
     t.string "mother"
-    t.text "sisters", default: '{}'
-    t.text "brothers", default: '{}'
-    t.text "about_me", default: '{}'
+    t.text "sisters", default: "{}"
+    t.text "brothers", default: "{}"
+    t.text "about_me", default: "{}"
   end
 
   create_table "user_question_answers", force: :cascade do |t|
