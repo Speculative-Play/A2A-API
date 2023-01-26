@@ -4,6 +4,8 @@ class UserProfile < ApplicationRecord
     has_many                :favourited_match_profiles,                         dependent: :destroy
     has_many                :user_question_answers,                             dependent: :destroy
     has_many                :category_percentages,                              dependent: :destroy
+    has_many                :global_user_match_scores,                          dependent: :destroy
+    has_many                :category_user_match_scores,                        dependent: :destroy    
     has_one_attached        :avatar,                                            dependent: :destroy 
     serialize               :languages,                                         JSON  
     serialize               :sisters,                                           JSON  
