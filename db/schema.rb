@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_26_210814) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_26_213103) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -76,7 +76,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_26_210814) do
     t.integer "match_profile_id"
     t.integer "matchmaking_category_id"
     t.integer "category_percentage_id"
-    t.float "score"
+    t.float "score", default: 0.0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -93,7 +93,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_26_210814) do
   create_table "global_user_match_scores", force: :cascade do |t|
     t.integer "user_profile_id"
     t.integer "match_profile_id"
-    t.float "score"
+    t.float "score", default: 0.0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
