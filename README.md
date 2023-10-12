@@ -1,26 +1,6 @@
-# README
+# Aunties + Algorithms 
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This branch contains the final state of the ruby version of the API. The other branches are stale, and left as a timestamp. 
 
-Things you may want to cover:
+Most of them are fully merged into this one, except a few. To view these differences, look at the [All Branches](https://github.com/Speculative-Play/A2A-API/branches/all) page.  
 
-* Ruby version: 3.1.2p20
-
-* Rails version: 7.0.3.1
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
