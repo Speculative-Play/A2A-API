@@ -13,7 +13,7 @@ Documentation can be found in the [Documentation folder](./Documentation) which 
 
 ### Tech Stack 
 1. Python 3.9.6
-2. Django 4.2.6 (LTS)
-3. MySQL
+2. Django 4.2.6 (LTS) (v5.0 is coming out in December)
+3. MySQL 8.0.33 for macos13.3 on arm64 (Homebrew)
 
-API to be deployed on AWS at https://matchme.speculativeplay.com and the frontend as aunties2algos.speculativeplay.com 
+API to be deployed on AWS at https://matchme.speculativeplay.com and the frontend as https://aunties2algos.speculativeplay.com 
