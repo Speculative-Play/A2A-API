@@ -1,26 +1,19 @@
-# README
+# Aunties + Algorithms: API 
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+`v0.1`
 
-Things you may want to cover:
+A speculative web design project imagining a new vision of matrimonial websites in a South-Asian context. This is the backend for that application. 
 
-* Ruby version: 3.1.2p20
+The initial project was developed in Ruby. But this was re-written in Python because I'm not cool enough to learn Ruby :( 
 
-* Rails version: 7.0.3.1
+Documentation can be found in the [Documentation folder](./Documentation) which also contains the [changelogs](./Documentation/Changelogs/)
 
-* System dependencies
+### Getting Started 
+1. Coming soon 
 
-* Configuration
+### Tech Stack 
+1. Python 3.9.6
+2. Django 4.2.6 (LTS)
+3. MySQL
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+API to be deployed on AWS at https://matchme.speculativeplay.com and the frontend as aunties2algos.speculativeplay.com 
