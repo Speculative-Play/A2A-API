@@ -4,4 +4,6 @@
 Launched: In Progress 
 
 Changes: 
-1. 
+1. Initialization 
+2. First Test run 
+3. 
