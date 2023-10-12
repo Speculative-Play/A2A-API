@@ -1,16 +1,52 @@
 class Api::V1::MatchQuestionAnswersController < ApplicationController
-  before_action :set_match_question_answer, only: %i[ show update destroy ]
+  before_action :current_account
 
-  # GET /match_question_answers
+  # GET /match_questions/match_profile_id
   def index
-    @match_question_answers = MatchQuestionAnswer.all
+    if !current_user_profile.nil?
+      @match_question_answers = MatchQuestionAnswer.where(match_profile_id: params[:match_profile_id])
+      @current_user_questions = UserQuestionAnswer.where(user_profile_id: @current_user_profile).pluck(:question_id)
 
+      @match_question_answers.each do |i|
+        if !@current_user_questions.include? i.question_id
+          @match_question_answers.delete(i)
+        end
+        question = UserQuestionAnswer.find_by("question_id = ? AND user_profile_id = ?", i.question_id, @current_user_profile)
+        if !question.nil?
+          @match_question_answers.delete(i)
+          next
+          if !question.visible
+            @match_question_answers.delete(i)
+            next
+          end
+        else
+          puts "no question found"
+          return true
+        end
+      end
+    else
+      return head(:unauthorized)
+    end
     render json: @match_question_answers
   end
 
   # GET /match_question_answers/1
   def show
     render json: @match_question_answer
+  end
+
+  def get_individual_match_profile_match_question_answer
+    @match_question_answers = MatchQuestionAnswer.where("match_profile_id = ?", params[:match_profile_id])
+    @@nth = params[:id]
+    @@limit = MatchQuestionAnswer.where("match_profile_id = ?", params[:match_profile_id]).count()
+
+    if @@nth.to_i < @@limit
+      @nth_match = @match_question_answers.limit(@@nth).last
+
+      render json: @nth_match
+    else 
+      render json: "Error: User_Question_Answer Not Found"
+    end
   end
 
   # POST /match_question_answers
@@ -39,11 +75,6 @@ class Api::V1::MatchQuestionAnswersController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_match_question_answer
-      @match_question_answer = MatchQuestionAnswer.find(params[:id])
-    end
-
     # Only allow a list of trusted parameters through.
     def match_question_answer_params
       params.fetch(:match_question_answer, {})

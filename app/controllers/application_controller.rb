@@ -1,33 +1,40 @@
 class ApplicationController < ActionController::API
-    # helper_method :current_user, :logged_in?
-    include ActionController::Helpers
+    include SessionsHelper
+    include ActionController::Cookies
+
+    def current_account
+        @current_account = Account.find_by(id: session[:account_id])
+    end
 
     def current_user_profile
-        @current_user_profile ||= UserProfile.find(session[:user_profile_id]) if session[:user_profile_id] 
-    end
-
-    def logged_in?
-        !!current_user_profile
-    end
-
-    def authorize
-        redirect_to login_url, alert: "Not authorized" if current_user_profile.nil?
-    end
-
-    def create_profile_path
-        redirect_to new_user_profile_path
-    end
-
-    def require_user_profile
-        if !logged_in?
-            flash[:alert] = "You must be logged in to perform that action!"
-            redirect_to login_path
+        if current_account.nil?
+            return
+        else
+            @current_user_profile = UserProfile.find_by(id: @current_account.user_profile)
         end
     end
 
-    # sorts the match-profiles by x attribute - could be used for search or for piechart matching
-    def sort_match_profiles_by_attribute(a:)
-        match_profiles.sort_by {|prof| prof.a}
-        Rails.logger.info 'inside sort_match_by_attributes ApplicationController'
+    def current_parent_profile
+        if current_account.nil?
+            return
+        else
+            @current_parent_profile = ParentProfile.find_by(id: @current_account.parent_profile)
+        end
     end
+
+    private
+
+    def log_in(account)
+        session[:account_id] = account.id
+    end
+
+    def logged_in?
+        current_account.present?
+    end
+
+    def log_out
+        reset_session
+        @curent_account = nil
+    end
+
 end

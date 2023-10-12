@@ -1,71 +1,50 @@
 class Api::V1::SessionsController < ApplicationController
+include ActionController::Cookies
+# before_action :authenticate_account, only: :destroy
 
-  # GET /sessions
-  def index
-    @sessions = Session.all
-    render json: @sessions
-  end
-
-  # GET /sessions/1
-  def show
-    render json: @session
+  def new
+    puts "inside Sessions > new"
+    return true
   end
 
   # Creates session object that allows user_profile to be logged in persistently
   def create
-    @user_profile = UserProfile.find_by(email: session_params[:email])
-    puts "user profile = ", @user_profile.id
-    if @user_profile && @user_profile.authenticate(session_params[:password])
-      # if user_profile.admin == 1
-      #   redirect_to user_profiles_url, notice: "Logged in as ADMIN!"
-      # else
-        session[:user_profile_id] = @user_profile.id
+    # post the form
+    if params[:session].present?
+      account = Account.find_by(email: params[:session][:email].downcase)
+    elsif params[:account].present?
+      account = Account.find_by(email: params[:account][:email].downcase)
+      params[:session][:email] = params[:account][:email]
+      params[:session][:password] = params[:account][:password]
+    end
+    # if !account.nil?
+    if account && account.authenticate(params[:session][:password])
+      session[:account_id] = account.id
+      log_in account
+
+      if !current_user_profile.nil?
+        @user_profile = account.user_profile
         render json: @user_profile
+      elsif !current_parent_profile.nil?
+        @parent_profile = account.parent_profile
+        render json: @parent_profile
+      else
+        render json: account
+      end
+    
     else
-      render json: { 
-        status: 401, 
-        error: "Could not authenticate your account"
-      }
+      return head(:unauthorized)
     end
+    # end
   end
-
-  def is_logged_in?
-    @current_user_profile = UserProfile.find(session[:user_profile_id]) if session[:user_profile_id]
-    if @current_user_profile
-      render json: {
-        logged_in: true,
-        user: UserProfileSerializer.new(@current_user_profile)
-      }
-    else
-      render json: {
-        logged_in: false
-      }
-    end
-  end
-
-  # PATCH/PUT /sessions/1
-  # def update
-  #   if @session.update(session_params)
-  #     render json: @session
-  #   else
-  #     render json: @session.errors, status: :unprocessable_entity
-  #   end
-  # end
 
   def destroy
-    session.delete :user_id
-    render json: {
-      status: 200,
-      logged_out: true
-    }
+    if !current_account.nil?
+      log_out
+    end
+    # return true
+    render :nothing => true, :status => 204 and return
+    # redirect_to root_url
   end
 
-  private
-
-    # Only allow a list of trusted parameters through.
-    def session_params
-      params.permit!
-      # params.require(:user_profile).permit(:email, :password)
-      # params.fetch(:session, {})
-    end
 end

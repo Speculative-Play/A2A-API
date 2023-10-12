@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_22_162244) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_26_213103) do
+  create_table "accounts", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_profile_id"
+    t.integer "parent_profile_id"
+    t.integer "account_type"
+    t.string "email"
+    t.string "password_digest"
+    t.index ["parent_profile_id"], name: "index_accounts_on_parent_profile_id"
+    t.index ["user_profile_id"], name: "index_accounts_on_user_profile_id"
+  end
+
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -53,8 +65,37 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_22_162244) do
     t.integer "user_profile_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "parent_profile_id"
     t.index ["matchmaking_category_id"], name: "index_category_percentages_on_matchmaking_category_id"
+    t.index ["parent_profile_id"], name: "index_category_percentages_on_parent_profile_id"
     t.index ["user_profile_id"], name: "index_category_percentages_on_user_profile_id"
+  end
+
+  create_table "category_user_match_scores", force: :cascade do |t|
+    t.integer "user_profile_id"
+    t.integer "match_profile_id"
+    t.integer "matchmaking_category_id"
+    t.integer "category_percentage_id"
+    t.float "score", default: 0.0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "favourited_match_profiles", force: :cascade do |t|
+    t.integer "user_profile_id"
+    t.integer "match_profile_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["match_profile_id"], name: "index_favourited_match_profiles_on_match_profile_id"
+    t.index ["user_profile_id"], name: "index_favourited_match_profiles_on_user_profile_id"
+  end
+
+  create_table "global_user_match_scores", force: :cascade do |t|
+    t.integer "user_profile_id"
+    t.integer "match_profile_id"
+    t.float "score", default: 0.0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "match_profiles", force: :cascade do |t|
@@ -62,6 +103,21 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_22_162244) do
     t.datetime "updated_at", null: false
     t.string "first_name", null: false
     t.string "last_name", null: false
+    t.string "gender"
+    t.string "city"
+    t.string "country"
+    t.string "birth_country"
+    t.date "date_of_birth"
+    t.text "languages", default: ""
+    t.string "marital_status"
+    t.string "education"
+    t.string "occupation"
+    t.string "religion"
+    t.string "father"
+    t.string "mother"
+    t.text "sisters", default: ""
+    t.text "brothers", default: ""
+    t.text "about_me", default: ""
   end
 
   create_table "match_question_answers", force: :cascade do |t|
@@ -82,13 +138,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_22_162244) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "parent_accounts", force: :cascade do |t|
+  create_table "parent_profiles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_profile_id"
-    t.string "password_digest", null: false
-    t.string "email", null: false
-    t.index ["user_profile_id"], name: "index_parent_accounts_on_user_profile_id"
+    t.index ["user_profile_id"], name: "index_parent_profiles_on_user_profile_id"
   end
 
   create_table "questions", force: :cascade do |t|
@@ -96,31 +150,47 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_22_162244) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "matchmaking_category_id"
+    t.string "question_type"
     t.index ["matchmaking_category_id"], name: "index_questions_on_matchmaking_category_id"
   end
 
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "session_type"
+    t.integer "account_id"
   end
 
   create_table "starred_match_profiles", force: :cascade do |t|
-    t.integer "parent_account_id"
+    t.integer "parent_profile_id"
     t.integer "match_profile_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["match_profile_id"], name: "index_starred_match_profiles_on_match_profile_id"
-    t.index ["parent_account_id"], name: "index_starred_match_profiles_on_parent_account_id"
+    t.index ["parent_profile_id"], name: "index_starred_match_profiles_on_parent_profile_id"
   end
 
   create_table "user_profiles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "password_digest"
     t.boolean "admin", default: false
-    t.string "email"
     t.string "first_name", null: false
     t.string "last_name", null: false
+    t.string "gender"
+    t.string "city"
+    t.string "country"
+    t.string "birth_country"
+    t.date "date_of_birth"
+    t.text "languages", default: "{}"
+    t.string "marital_status"
+    t.string "education"
+    t.string "occupation"
+    t.string "religion"
+    t.string "father"
+    t.string "mother"
+    t.text "sisters", default: "{}"
+    t.text "brothers", default: "{}"
+    t.text "about_me", default: "{}"
   end
 
   create_table "user_question_answers", force: :cascade do |t|
@@ -129,23 +199,30 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_22_162244) do
     t.integer "user_profile_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "matching_algo", default: true
+    t.boolean "visible", default: true
     t.index ["answer_id"], name: "index_user_question_answers_on_answer_id"
     t.index ["question_id"], name: "index_user_question_answers_on_question_id"
     t.index ["user_profile_id"], name: "index_user_question_answers_on_user_profile_id"
   end
 
+  add_foreign_key "accounts", "parent_profiles"
+  add_foreign_key "accounts", "user_profiles"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "answers", "questions"
   add_foreign_key "category_percentages", "matchmaking_categories"
+  add_foreign_key "category_percentages", "parent_profiles"
   add_foreign_key "category_percentages", "user_profiles"
+  add_foreign_key "favourited_match_profiles", "match_profiles"
+  add_foreign_key "favourited_match_profiles", "user_profiles"
   add_foreign_key "match_question_answers", "answers"
   add_foreign_key "match_question_answers", "match_profiles"
   add_foreign_key "match_question_answers", "questions"
-  add_foreign_key "parent_accounts", "user_profiles"
+  add_foreign_key "parent_profiles", "user_profiles"
   add_foreign_key "questions", "matchmaking_categories"
   add_foreign_key "starred_match_profiles", "match_profiles"
-  add_foreign_key "starred_match_profiles", "parent_accounts"
+  add_foreign_key "starred_match_profiles", "parent_profiles"
   add_foreign_key "user_question_answers", "answers"
   add_foreign_key "user_question_answers", "questions"
   add_foreign_key "user_question_answers", "user_profiles"

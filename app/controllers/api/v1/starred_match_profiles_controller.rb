@@ -1,11 +1,17 @@
 class Api::V1::StarredMatchProfilesController < ApplicationController
-  before_action :set_starred_match_profile, only: %i[ show update destroy ]
+  before_action :current_account
 
   # GET /starred_match_profiles
   def index
-    @starred_match_profiles = StarredMatchProfile.all
-
-    render json: @starred_match_profiles
+    if !current_user_profile.nil?
+      @starred_match_profiles = StarredMatchProfile.where(parent_profile_id: ParentProfile.find_by(user_profile_id: @current_user_profile))
+      render json: @starred_match_profiles
+    elsif !current_parent_profile.nil?
+      @starred_match_profiles = StarredMatchProfile.where(parent_profile_id: @current_parent_profile)
+      render json: @starred_match_profiles
+    else
+      return head(:unauthorized)
+    end
   end
 
   # GET /starred_match_profiles/1
@@ -15,37 +21,51 @@ class Api::V1::StarredMatchProfilesController < ApplicationController
 
   # POST /starred_match_profiles
   def create
-    @starred_match_profile = StarredMatchProfile.new(starred_match_profile_params)
-
-    if @starred_match_profile.save
-      render json: @starred_match_profile, status: :created, location: @starred_match_profile
+    if !current_parent_profile.nil?
+      @starred_match_profile = StarredMatchProfile.new(starred_match_profile_params)
+      @starred_match_profile.parent_profile_id = @current_parent_profile.id
+      
+      # If favourited_match_profile is already starred, render index
+      if StarredMatchProfile.where("parent_profile_id = ? AND match_profile_id = ?", @starred_match_profile.parent_profile_id, @starred_match_profile.match_profile_id).exists?
+        index
+      # else if starred_match_profile can be created, save it and render index
+      elsif @starred_match_profile.save
+        index
+      else
+        render json: @starred_match_profile.errors, status: :unprocessable_entity
+      end
     else
-      render json: @starred_match_profile.errors, status: :unprocessable_entity
-    end
-  end
-
-  # PATCH/PUT /starred_match_profiles/1
-  def update
-    if @starred_match_profile.update(starred_match_profile_params)
-      render json: @starred_match_profile
-    else
-      render json: @starred_match_profile.errors, status: :unprocessable_entity
+      return head(:unauthorized)
     end
   end
 
   # DELETE /starred_match_profiles/1
   def destroy
-    @starred_match_profile.destroy
+    # if parent_profile is signed in
+    if !current_parent_profile.nil?
+      @starred_match_profile = StarredMatchProfile.find_by(id: params[:starred_match_profile_id])
+      
+      # if starred_match_profile with given id does not exist, return
+      if @starred_match_profile.nil?
+        return
+      end
+      
+      # if starred_match_profile does not belong to current_parent_profile, return 401
+      if @starred_match_profile.parent_profile != @current_parent_profile
+        return head(:unauthorized)
+      end
+
+      # if all checks pass, destroy record and render index
+      @starred_match_profile.destroy
+      index
+    else
+      return head(:unauthorized)
+    end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_starred_match_profile
-      @starred_match_profile = StarredMatchProfile.find(params[:id])
-    end
-
-    # Only allow a list of trusted parameters through.
-    def starred_match_profile_params
-      params.fetch(:starred_match_profile, {})
-    end
+  # Only allow a list of trusted parameters through.
+  def starred_match_profile_params
+    params.require(:starred_match_profile).permit(:parent_profile_id, :match_profile_id)
+  end
 end
